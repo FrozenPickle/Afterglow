@@ -37,10 +37,10 @@ namespace Afterglow.Core
         }
         
         #region Light Setup Plugins
-        [ConfigTable(DisplayName = "Light Setup Plugin", IsHidden = true)]
+        [ConfigTable(DisplayName = "Light Setup Plugin", IsHidden = true, RetrieveValuesFrom ="GetLightSetupPlugins")]
         public ILightSetupPlugin LightSetupPlugin
         {
-            get { return Get(() => LightSetupPlugin); }
+            get { return Get(() => LightSetupPlugin, () => DefaultLightSetupPlugin());}
             set { Set(() => LightSetupPlugin, value); }
         }
 
@@ -51,13 +51,26 @@ namespace Afterglow.Core
             SaveToStorage(() => this.LightSetupPlugin, this.LightSetupPlugin);
             return plugin;
         }
+
+        public Type[] GetLightSetupPlugins()
+        {
+            //TODO log fatal error if there are no results found
+            return this.Runtime.Loader.GetPlugins(typeof(ILightSetupPlugin)); 
+        }
+
+        public ILightSetupPlugin DefaultLightSetupPlugin()
+        {
+            Type type = GetLightSetupPlugins().FirstOrDefault();
+            return SetLightSetupPlugin(type);
+        }
+
         #endregion
 
         #region Capture Plugins
-        [ConfigTable(DisplayName = "Capture Plugin", IsHidden = true)]
+        [ConfigTable(DisplayName = "Capture Plugin", IsHidden = true, RetrieveValuesFrom = "GetCapturePlugins")]
         public ICapturePlugin CapturePlugin
         {
-            get { return Get(() => CapturePlugin); }
+            get { return Get(() => CapturePlugin, () => DefaultCapturePlugin()); }
             set { Set(() => CapturePlugin, value); }
         }
 
@@ -69,27 +82,51 @@ namespace Afterglow.Core
             return plugin;
         }
 
+        public Type[] GetCapturePlugins()
+        {
+            //TODO log fatal error if there are no results found
+            return this.Runtime.Loader.GetPlugins(typeof(ICapturePlugin));
+        }
+
+        public ICapturePlugin DefaultCapturePlugin()
+        {
+            Type type = GetCapturePlugins().FirstOrDefault();
+            return SetCapturePlugin(type);
+        }
+
         #endregion
 
         #region Colour Extraction Plugins
-        [ConfigTable(DisplayName = "Colour Extraction Plugin", IsHidden = true)]
+        [ConfigTable(DisplayName = "Colour Extraction Plugin", IsHidden = true, RetrieveValuesFrom = "GetColourExtractionPlugins")]
         public IColourExtractionPlugin ColourExtractionPlugin
         {
-            get { return Get(() => ColourExtractionPlugin); }
+            get { return Get(() => ColourExtractionPlugin, () => DefaultColourExtractionPlugin()); }
             set { Set(() => ColourExtractionPlugin, value); }
         }
 
-        public IColourExtractionPlugin AddColourExtractionPlugin(Type pluginType)
+        public IColourExtractionPlugin SetColourExtractionPlugin(Type pluginType)
         {
             IColourExtractionPlugin plugin = Activator.CreateInstance(pluginType, new object[] { Table.Database.AddTable(), Logger, Runtime }) as IColourExtractionPlugin;
             this.ColourExtractionPlugin = plugin;
             SaveToStorage(() => this.ColourExtractionPlugin, this.ColourExtractionPlugin);
             return plugin;
         }
+
+        public Type[] GetColourExtractionPlugins()
+        {
+            //TODO log fatal error if there are no results found
+            return this.Runtime.Loader.GetPlugins(typeof(IColourExtractionPlugin));
+        }
+
+        public IColourExtractionPlugin DefaultColourExtractionPlugin()
+        {
+            Type type = GetColourExtractionPlugins().FirstOrDefault();
+            return SetColourExtractionPlugin(type);
+        }
         #endregion
 
         #region Post Process Plugins
-        [ConfigTable(DisplayName = "Post Process Plugins", IsHidden = true)]
+        [ConfigTable(DisplayName = "Post Process Plugins", IsHidden = true, RetrieveValuesFrom="GetPostProcessPlugins")]
         public ObservableCollection<IPostProcessPlugin> PostProcessPlugins
         {
             get { return Get(() => PostProcessPlugins); }
@@ -109,10 +146,16 @@ namespace Afterglow.Core
             this.PostProcessPlugins.Remove(plugin);
             SaveToStorage(() => this.PostProcessPlugins, this.PostProcessPlugins);
         }
+
+        public Type[] GetPostProcessPlugins()
+        {
+            //TODO log fatal error if there are no results found
+            return this.Runtime.Loader.GetPlugins(typeof(IPostProcessPlugin));
+        }
         #endregion
 
         #region Output Plugins
-        [ConfigTable(DisplayName = "Output Plugins", IsHidden = true)]
+        [ConfigTable(DisplayName = "Output Plugins", IsHidden = true, RetrieveValuesFrom="GetOutputPlugins")]
         public ObservableCollection<IOutputPlugin> OutputPlugins
         {
             get { return Get(() => OutputPlugins); }
@@ -131,6 +174,12 @@ namespace Afterglow.Core
         {
             this.OutputPlugins.Remove(plugin);
             SaveToStorage(() => this.OutputPlugins, this.OutputPlugins);
+        }
+
+        public Type[] GetOutputPlugins()
+        {
+            //TODO log fatal error if there are no results found
+            return this.Runtime.Loader.GetPlugins(typeof(IOutputPlugin));
         }
         #endregion
 

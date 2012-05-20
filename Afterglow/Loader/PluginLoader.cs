@@ -24,6 +24,7 @@ namespace Afterglow.Loader
             Afterglow.Plugins.ColourExtraction.AverageColourExtraction d = new AverageColourExtraction();
             Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetup e = new Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetup();
             Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl f = new Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl();
+            Afterglow.Plugins.PostProcess.ColourCorrectionPostProcess g = new Plugins.PostProcess.ColourCorrectionPostProcess();
         }
 
         public Type GetObjectType(string typeName)
@@ -44,17 +45,17 @@ namespace Afterglow.Loader
             return type;
         }
 
-        public IEnumerable<Type> GetPlugins(Type iPluginType)
+        public Type[] GetPlugins(Type pluginType)
         {
-            IEnumerable<Type> plugins;
+            Type[] plugins;
 
-            plugins = from assembly in System.AppDomain.CurrentDomain.GetAssemblies()
+            plugins = (from assembly in System.AppDomain.CurrentDomain.GetAssemblies()
                         from assemblyType in assembly.GetTypes()
                         where assemblyType.IsInterface == false &&
                         (from i in assemblyType.GetInterfaces()
-                         where i == iPluginType
+                         where i == pluginType
                          select i).Any()
-                        select assemblyType;
+                        select assemblyType).ToArray();
 
             return plugins;
         }

@@ -6,6 +6,7 @@ using Afterglow.Core.Plugins;
 using Afterglow.Core.Storage;
 using Afterglow.Core;
 using Afterglow.Core.Configuration;
+using System.Drawing;
 
 namespace Afterglow.Plugins.PostProcess
 {
@@ -88,12 +89,61 @@ namespace Afterglow.Plugins.PostProcess
     
         public void Process(Core.Light led)
         {
+            double red = led.LEDColour.R;
+            double green = led.LEDColour.G;
+            double blue = led.LEDColour.B;
+
+            bool coloursChanged = false;
+
  	        //Change brightness first
-            if (this.Brightness != 100)
+            if (this.Brightness != null && this.Brightness != 100)
             {
-                //led.LEDColour.B = led.LEDColour.B % Brightness;
+                double percent = Brightness.Value / 100.00;
+                red = red * percent;
+                green = green * percent;
+                blue = blue * percent;
+
+                coloursChanged = true;
             }
-            //
+
+            if (this.RedSaturation != null && this.RedSaturation != 100)
+            {
+                double percent = RedSaturation.Value / 100.00;
+                red = red * percent;
+
+                coloursChanged = true;
+            }
+
+            if (this.GreenSaturation != null && this.GreenSaturation != 100)
+            {
+                double percent = GreenSaturation.Value / 100.00;
+                green = green * percent;
+
+                coloursChanged = true;
+            }
+
+            if (this.BlueSaturation != null && this.BlueSaturation != 100)
+            {
+                double percent = BlueSaturation.Value / 100.00;
+                blue = blue * percent;
+
+                coloursChanged = true;
+            }
+
+
+            if (coloursChanged)
+            {
+                int resultRed = led.LEDColour.R;
+                int resultGreen = led.LEDColour.G;
+                int resultBlue = led.LEDColour.B;
+
+                resultRed = Convert.ToInt32(red);
+                resultGreen = Convert.ToInt32(green);
+                resultBlue = Convert.ToInt32(blue);
+
+                led.LEDColour = Color.FromArgb(resultRed, resultGreen, resultBlue);
+            }
+
         }
     }
 }

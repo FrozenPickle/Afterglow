@@ -8,5 +8,7 @@ namespace Afterglow.Core.Load
     public interface ILoader
     {
         Type GetObjectType(string type);
+
+        Type[] GetPlugins(Type pluginType);
     }
 }

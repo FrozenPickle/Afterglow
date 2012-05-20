@@ -89,6 +89,7 @@
             this.btnDown.TabIndex = 10;
             this.btnDown.Text = "V";
             this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
             // btnUp
             // 
@@ -100,6 +101,7 @@
             this.btnUp.Tag = "";
             this.btnUp.Text = "/\\";
             this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
             // 
             // btnRemove
             // 
@@ -110,6 +112,7 @@
             this.btnRemove.TabIndex = 8;
             this.btnRemove.Text = "Remove";
             this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // lbSelected
             // 
@@ -122,6 +125,7 @@
             this.lbSelected.Name = "lbSelected";
             this.lbSelected.Size = new System.Drawing.Size(148, 108);
             this.lbSelected.TabIndex = 7;
+            this.lbSelected.SelectedValueChanged += new System.EventHandler(this.lbSelected_SelectedValueChanged);
             // 
             // groupBox3
             // 
@@ -145,6 +149,7 @@
             this.btnSelect.TabIndex = 7;
             this.btnSelect.Text = "Select";
             this.btnSelect.UseVisualStyleBackColor = true;
+            this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
             // 
             // lbAvailable
             // 
@@ -157,6 +162,7 @@
             this.lbAvailable.Name = "lbAvailable";
             this.lbAvailable.Size = new System.Drawing.Size(155, 108);
             this.lbAvailable.TabIndex = 6;
+            this.lbAvailable.SelectedValueChanged += new System.EventHandler(this.lbAvailable_SelectedValueChanged);
             // 
             // PostProcessPluginSelectUserControl
             // 
@@ -166,6 +172,7 @@
             this.Controls.Add(this.label1);
             this.Name = "PostProcessPluginSelectUserControl";
             this.Size = new System.Drawing.Size(409, 215);
+            this.Load += new System.EventHandler(this.PostProcessPluginSelectUserControl_Load);
             this.groupBox.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);

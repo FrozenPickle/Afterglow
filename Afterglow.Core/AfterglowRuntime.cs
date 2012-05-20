@@ -101,7 +101,7 @@ namespace Afterglow.Core
 
             try
             {
-                int cycles = 0;
+                //int cycles = 0;
                 while (_active)
                 {
                     ILightSetupPlugin lightSetupPlugin = CurrentProfile.LightSetupPlugin;
@@ -112,13 +112,11 @@ namespace Afterglow.Core
                         light.OldSourceColour = light.SourceColour;
                     }
 
-                    //TODO this will only run one capture plugin
                     IDictionary<Light, PixelReader> ledSources = CurrentProfile.CapturePlugin.Capture(lightSetupPlugin);
                     try
                     {
                         foreach (var keyValue in ledSources)
                         {
-                            //TODO this will only run one colour extraction plugin
                             keyValue.Key.SourceColour = CurrentProfile.ColourExtractionPlugin.Extract(keyValue.Key, keyValue.Value);
                             keyValue.Key.LEDColour = keyValue.Key.SourceColour;
                         }
@@ -143,12 +141,12 @@ namespace Afterglow.Core
 
                     // TODO: implement timing logic
 
-
-                    cycles++;
-                    if (cycles % 5 == 0)
-                    {
-                        Debug.WriteLine("");
-                    }
+                    //TODO implement debug logging
+                    //cycles++;
+                    //if (cycles % 5 == 0)
+                    //{
+                    //    Debug.WriteLine("");
+                    //}
                 }
                 
 

@@ -281,6 +281,8 @@ namespace Afterglow.Core.Storage
 
         public T Get<T>(Expression<Func<T>> property, Func<T> defaultValue)
         {
+            bool loaded = false;
+
             if (property == null)
             {
                 throw new ArgumentException("cannot be null", "property");
@@ -297,6 +299,10 @@ namespace Afterglow.Core.Storage
             {
                 //load from disk
                 result = LoadFromStorage<T>(name);
+                if (result != null)
+                {
+                    loaded = true;
+                }
 
                 //get default value
                 if ((Equals(result, default(T)) || result == null) && defaultValue != null)
@@ -314,14 +320,14 @@ namespace Afterglow.Core.Storage
 
                 if (result != null)
                 {
-                    Set(property, result);
+                    Set(property, result, !loaded);
                 }
             }
 
             return result;
         }
 
-        public bool Set<T>(Expression<Func<T>> property, T value)
+        public bool Set<T>(Expression<Func<T>> property, T value, bool save = true)
         {
             if (property == null)
             {
@@ -349,7 +355,10 @@ namespace Afterglow.Core.Storage
                 PropertyMap.Add(name, value);
             }
 
-            SaveToStorage(name, value);
+            if (save)
+            {
+                SaveToStorage(name, value);
+            }
             NotifyPropertyChanged(name);
             return true;
         }

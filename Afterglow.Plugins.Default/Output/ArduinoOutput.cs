@@ -92,6 +92,7 @@ namespace Afterglow.Plugins.Output
             else
             {
                 _port = new SerialPort(Port, BaudRate.Value);
+                _port.DataReceived += new SerialDataReceivedEventHandler(DataReceived);
                 try
                 {
                     _port.Open();
@@ -103,15 +104,24 @@ namespace Afterglow.Plugins.Output
             }
         }
 
+        private void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            string magicwork = _port.ReadLine();
+            if (magicwork == this.MagicWord)
+            {
+                string a = "W";
+            }
+        }
+
         public void Output(List<Core.Light> leds)
         {
             if (_serialData == null || _serialData.Length != leds.Count)
             {
                 _serialData = new byte[6 + leds.Count * 3];
 
-                _serialData[0] = Convert.ToByte('G'); // Magic word
-                _serialData[1] = Convert.ToByte('l');
-                _serialData[2] = Convert.ToByte('o');
+                _serialData[0] = Convert.ToByte(this.MagicWord.ToCharArray(0, 1)[0]); // Magic word
+                _serialData[1] = Convert.ToByte(this.MagicWord.ToCharArray(1, 1)[0]);
+                _serialData[2] = Convert.ToByte(this.MagicWord.ToCharArray(2, 1)[0]);
                 _serialData[3] = (byte)((leds.Count) >> 8); // LED count high byte
                 _serialData[4] = (byte)((leds.Count) & 0xff); // LED count low byte
                 _serialData[5] = (byte) (_serialData[3] ^ _serialData[4] ^ 0x55); // Checksum

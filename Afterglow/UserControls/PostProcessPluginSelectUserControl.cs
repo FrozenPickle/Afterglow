@@ -11,6 +11,8 @@ using Afterglow.Core.Plugins;
 using Afterglow.Core.UI;
 using Afterglow.Core.UI.Controls;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using Afterglow.Core.Configuration;
 
 namespace Afterglow.UserControls
 {
@@ -29,14 +31,11 @@ namespace Afterglow.UserControls
             InitializeComponent();
         }
 
-        private void availableSelectedUserControl_Load(object sender, EventArgs e)
+        private void PostProcessPluginSelectUserControl_Load(object sender, EventArgs e)
         {
-            ObservableCollection<IPostProcessPlugin> available = new ObservableCollection<IPostProcessPlugin>();
-
-            //TODO add post process plugins
-
-            LoadLists(_profile.PostProcessPlugins, available);
+            LoadLists(_profile.PostProcessPlugins, GetLookupValues());
         }
+
         #region Available Selected
 
         public void LoadLists(ObservableCollection<IPostProcessPlugin> selected, ObservableCollection<IPostProcessPlugin> available)
@@ -129,6 +128,41 @@ namespace Afterglow.UserControls
             PluginsChanged();
         }
         #endregion
+
+        private ObservableCollection<IPostProcessPlugin> GetLookupValues()
+        {
+            PropertyInfo prop = _profile.GetType().GetProperties().Where(p => p.Name == "PostProcessPlugins").FirstOrDefault();
+            ConfigTableAttribute configAttribute = Attribute.GetCustomAttribute(prop, typeof(ConfigTableAttribute)) as ConfigTableAttribute;
+
+            Type pluginType = _profile.GetType();
+            Type propertyType = prop.PropertyType;
+
+            IEnumerable<Type> availableValues = null;
+            if (configAttribute.RetrieveValuesFrom != null)
+            {
+                var member = pluginType.GetMember(configAttribute.RetrieveValuesFrom);
+                if (member.Length > 0)
+                {
+                    if (member[0].MemberType == MemberTypes.Method)
+                    {
+                        MethodInfo mi = pluginType.GetMethod(configAttribute.RetrieveValuesFrom);
+
+                        var propertyValue = mi.Invoke(_profile, null);
+
+                        availableValues = propertyValue as IEnumerable<Type>;
+                    }
+                }
+            }
+
+            ObservableCollection<IPostProcessPlugin> result = new ObservableCollection<IPostProcessPlugin>();
+            foreach (Type item in availableValues)
+            {
+                IPostProcessPlugin plugin = Activator.CreateInstance(item) as IPostProcessPlugin;
+                result.Add(plugin);
+            }
+
+            return result;
+        }
 
     }
 }
