@@ -1,0 +1,2 @@
+For copyright and licensing see: http://code.google.com/p/fastspi/ and http://www.opensource.org/licenses/mit-license.php
+
