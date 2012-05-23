@@ -315,6 +315,17 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 			}
         }
 
+        internal void SetCellColours(IEnumerable<Light> lights)
+        {
+            foreach (var light in lights)
+            {
+                if (light.Top.HasValue && light.Left.HasValue)
+                {
+                    dgvRegions.Rows[light.Top.Value].Cells[light.Left.Value].Style = new DataGridViewCellStyle() { BackColor = light.LEDColour };
+                }
+            }
+        }
+
         #region ValueChanged
         void nudWidth_ValueChanged(object sender, EventArgs e)
         {
