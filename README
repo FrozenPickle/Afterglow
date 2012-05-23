@@ -1,4 +1,4 @@
-﻿Afterglow provides a framework for plugins to perform image capturing, 
+﻿Afterglow provides a plugin framework to perform image capturing, 
 colour extraction, post processing and colour output - primarily 
 for use with lighting systems such as for ambient lighting.
 
