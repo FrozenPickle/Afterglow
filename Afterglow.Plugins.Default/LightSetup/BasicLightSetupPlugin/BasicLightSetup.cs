@@ -100,19 +100,19 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 
         private int _height;
 
-        public IEnumerable<Light> GetLightsForBounds(int Width, int Height)
+        public IEnumerable<Light> GetLightsForBounds(int CaptureWidth, int CaptureHeight, int LeftOffset, int TopOffset)
         {
-            if (_height != Height || _width != Width)
+            if (_height != CaptureHeight || _width != CaptureWidth)
             {
-                _width = Width;
-                _height = Height;
+                _width = CaptureWidth;
+                _height = CaptureHeight;
 
-                int segmentWidth = Width / NumberOfLightsWide.Value;
-                int segmentHight = Height / NumberOfLightsHigh.Value;
-
+                int segmentWidth = CaptureWidth / NumberOfLightsWide.Value;
+                int segmentHight = CaptureHeight / NumberOfLightsHigh.Value;
+                
                 foreach (Light light in this.Lights)
                 {
-                    light.CalculateRegion(segmentWidth, segmentHight);
+                    light.CalculateRegion(segmentWidth, segmentHight, LeftOffset, TopOffset);
                 }
             }
 

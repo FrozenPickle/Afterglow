@@ -35,26 +35,26 @@ namespace Afterglow.Core.Plugins
             }
         }
 
-        [ConfigString(DisplayName = "Name", SortIndex = 700)]
+        [ConfigString(DisplayName = "Name", SortIndex = -100)]
         public string DisplayName
         {
             get { return Get(() => DisplayName, () => this.Name); }
             set { Set(() => DisplayName, value); }
         }
 
-        [ConfigReadOnly(DisplayName = "Name", SortIndex= 100)]
+        [ConfigReadOnly(DisplayName = "Name", SortIndex= -600)]
         public abstract string Name { get; }
 
-        [ConfigReadOnly(DisplayName = "Author", SortIndex = 200, Description = "These two guys started the Afterglow project")]
+        [ConfigReadOnly(DisplayName = "Author", SortIndex = -500, Description = "These two guys started the Afterglow project")]
         public abstract string Author { get; }
 
-        [ConfigReadOnly(DisplayName = "Description", SortIndex = 300)]
+        [ConfigReadOnly(DisplayName = "Description", SortIndex = -400)]
         public abstract string Description { get; }
 
-        [ConfigReadOnly(DisplayName = "Website", SortIndex = 400, IsHyperlink = true)]
+        [ConfigReadOnly(DisplayName = "Website", SortIndex = -300, IsHyperlink = true)]
         public abstract string Website { get; }
 
-        [ConfigReadOnly(DisplayName = "Version", SortIndex = 500)]
+        [ConfigReadOnly(DisplayName = "Version", SortIndex = -200)]
         public abstract Version Version { get; }
 
         /// <summary>

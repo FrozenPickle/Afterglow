@@ -14,6 +14,6 @@ namespace Afterglow.Core.Plugins
 
         int? NumberOfLightsWide { get; set; }
 
-        IEnumerable<Light> GetLightsForBounds(int Width, int Height);
+        IEnumerable<Light> GetLightsForBounds(int CaptureWidth, int CaptureHeight, int LeftOffset, int TopOffset);
     }
 }

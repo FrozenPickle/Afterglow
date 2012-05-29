@@ -84,7 +84,7 @@ namespace Afterglow.Plugins.Output
         public override void Start()
         {
             //TODO: error checking and configuration of port
-            
+            //TODO lots of work here
             if (Ports.Length == 0)
             {
                 Logger.Warn("No serial ports found");
@@ -128,7 +128,7 @@ namespace Afterglow.Plugins.Output
             }
 
             int serialDataPos = 6;
-            foreach (var led in leds)
+            foreach (var led in leds.OrderBy(l => l.Index))
             {
                 _serialData[serialDataPos++] = Convert.ToByte(led.LEDColour.R);
                 _serialData[serialDataPos++] = Convert.ToByte(led.LEDColour.G);

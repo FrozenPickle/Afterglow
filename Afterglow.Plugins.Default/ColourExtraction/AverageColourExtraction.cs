@@ -58,25 +58,32 @@ namespace Afterglow.Plugins.ColourExtraction
 
         public Color Extract(Core.Light led, Core.PixelReader pixelReader)
         {
-            // GetEveryNthPixel(this.PixelSkip) = so we average only every Nth pixel on each row starting with first
-
-            // Average the pixels
-            int r = 0, g = 0, b = 0, pixelCount = 0;
-            foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip.Value))
+            //Region might not be set if the whole screen is black
+            if (led.Region == null || led.Region == Rectangle.Empty)
             {
-                r += pixel.R;
-                g += pixel.G;
-                b += pixel.B;
-                pixelCount++;
+                return Color.Black;
+            }
+            else
+            {
+                // Average the pixels
+                int r = 0, g = 0, b = 0, pixelCount = 0;
+                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip.Value))
+                {
+                    r += pixel.R;
+                    g += pixel.G;
+                    b += pixel.B;
+                    pixelCount++;
+                }
+
+                int redAvg = r / pixelCount;
+
+                int greenAvg = g / pixelCount;
+
+                int blueAvg = b / pixelCount;
+
+                return Color.FromArgb(redAvg, greenAvg, blueAvg);
             }
 
-            int redAvg = r/pixelCount;
-
-            int greenAvg = g/pixelCount;
-
-            int blueAvg = b/pixelCount;
-
-            return Color.FromArgb(redAvg, greenAvg, blueAvg);
         }
 
         public override void Start()

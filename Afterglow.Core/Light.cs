@@ -67,19 +67,27 @@ namespace Afterglow.Core
         public Color LEDColour { get; set; }
         public Rectangle Region { get; set; }
 
-        public void CalculateRegion(int segmentWidth, int segmentHight)
+        public void CalculateRegion(int SegmentWidth, int SegmentHight, int LeftOffset = 0, int TopOffset = 0)
         {
             int left = 0;
             int top = 0;
             int width = 0;
             int height = 0;
 
-            left = this.Left.Value * segmentWidth;
-            top = this.Top.Value * segmentHight;
-            width = this.Width.Value * segmentWidth;
-            height = this.Height.Value * segmentHight;
+            left = this.Left.Value * SegmentWidth + LeftOffset;
+            top = this.Top.Value * SegmentHight + TopOffset;
+            width = this.Width.Value * SegmentWidth;
+            height = this.Height.Value * SegmentHight;
 
-            this.Region = new Rectangle(left, top, width, height);
+            //if width or height is 0 then set region to empty this will equate to black
+            if (width == 0 || height == 0)
+            {
+                this.Region = Rectangle.Empty;
+            }
+            else
+            {
+                this.Region = new Rectangle(left, top, width, height);
+            }
         }
     }
 }

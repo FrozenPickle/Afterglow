@@ -73,6 +73,8 @@ namespace Afterglow.Core
             if (_active)
             {
                 _active = false;
+
+                //TODO the wait sometimes never finishes executing
                 _mainLoopTask.Wait();
                 _mainLoopTask.Dispose();
                 _mainLoopTask = null;
