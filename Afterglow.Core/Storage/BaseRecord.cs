@@ -53,7 +53,7 @@ namespace Afterglow.Core.Storage
 
         public Afterglow.Core.AfterglowRuntime Runtime { get; set; }
 
-        [ConfigLookup(DisplayName = "Log Level", SortIndex = 600)]
+        [ConfigLookup(DisplayName = "Log Level", SortIndex = -50)]
         public Afterglow.Core.Log.Level LogLevel
         {
             get { return Get(() => LogLevel, () => Afterglow.Core.Log.Level.Error); }
@@ -164,6 +164,19 @@ namespace Afterglow.Core.Storage
                         {
                             result = (T)(Enum.Parse(propertyType, value) as Object);
                         }
+                    }
+                    else if (prop.PropertyType == typeof(int?))
+                    {
+                        result = (T)(Table.GetInt(prop.Name) as object);
+                    }
+                    else if (prop.PropertyType == typeof(string))
+                    {
+                        result = (T)(Table.GetString(prop.Name) as object);
+                    }
+                    else
+                    {
+                        //TODO change to log error
+                        throw new Exception(prop.PropertyType.ToString() + " is not supported update BasePlugin.LoadFromStorage() to implement support");
                     }
                 }
                 else if (Attribute.IsDefined(prop, typeof(ConfigNumberAttribute)))
@@ -297,6 +310,7 @@ namespace Afterglow.Core.Storage
             }
             else
             {
+
                 //load from disk
                 result = LoadFromStorage<T>(name);
                 if (result != null)
@@ -305,7 +319,7 @@ namespace Afterglow.Core.Storage
                 }
 
                 //get default value
-                if ((Equals(result, default(T)) || result == null) && defaultValue != null)
+                if (!loaded && defaultValue != null)
                 {
                     try
                     {
@@ -335,7 +349,7 @@ namespace Afterglow.Core.Storage
             }
 
             var name = property.PropertyName();
-            
+
             object tryValue;
 
             if (PropertyMap.TryGetValue(name, out tryValue))

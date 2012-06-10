@@ -52,7 +52,7 @@ namespace Afterglow.Plugins.Output
         Form _previewForm;
         TextBox _messageBox;
         BasicLightSetupUserControl _lightControlDisplay;
-        Task _task;
+        
         public override void Start()
         {
             Task _task = new Task(() =>

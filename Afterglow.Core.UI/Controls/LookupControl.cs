@@ -17,6 +17,7 @@ namespace Afterglow.Core.UI.Controls
         private ComboBox _valueComboBox;
         private PropertyInfo _propertyInfo;
         private IAfterglowPlugin _plugin;
+        private bool _useCollectionIndex = false;
 
         public LookupControl(PropertyInfo prop, IAfterglowPlugin plugin) : base(prop)
         {
@@ -53,9 +54,28 @@ namespace Afterglow.Core.UI.Controls
         private void LookupControl_Load(object sender, EventArgs e)
         {
             object value = _propertyInfo.GetValue(_plugin, null).ToString();
-            object selectedItem = (from a in _valueComboBox.DataSource as IEnumerable<object>
-                                   where a == value
-                                   select a).FirstOrDefault();
+            object selectedItem = null;
+
+            if (_valueComboBox.DataSource != null)
+            {
+                if (_useCollectionIndex)
+                {
+                    int index = Convert.ToInt32(value);
+                    selectedItem = (_valueComboBox.DataSource as IEnumerable<object>).ToList()[index];
+                }
+                else
+                {
+                    selectedItem = (from a in _valueComboBox.DataSource as IEnumerable<object>
+                                    where a == value
+                                    select a).FirstOrDefault();
+                }
+            }
+            else
+            {
+                _plugin.Logger.Error("{0} could not be set as no lookup values could not be loaded", _plugin.Name);
+            }
+
+
             //an item must be selected
             if (selectedItem == null)
             {
@@ -79,6 +99,10 @@ namespace Afterglow.Core.UI.Controls
                 object enumValue = Enum.Parse(_propertyInfo.PropertyType, value);
                 _propertyInfo.SetValue(_plugin, enumValue, null);
 
+            }
+            else if (_useCollectionIndex)
+            {
+                _propertyInfo.SetValue(_plugin, _valueComboBox.SelectedIndex, null);
             }
             else
             {
@@ -131,6 +155,22 @@ namespace Afterglow.Core.UI.Controls
                             throw new ArgumentException("incorrect type", "RetrieveValuesFrom");
                         }
                     }
+                    else if (member[0].MemberType == MemberTypes.Field)
+                    {
+                        FieldInfo fi = pluginType.GetField(configAttribute.RetrieveValuesFrom);
+                        
+                        var propertyValue = fi.GetValue(plugin);
+                        if (typeof(System.Collections.ObjectModel.ObservableCollection<string>) == propertyValue.GetType())
+                        {
+                            availableValues = propertyValue as IEnumerable<object>;
+                            _useCollectionIndex = true;
+                        }
+                        else
+                        {
+                            throw new ArgumentException("incorrect type", "RetrieveValuesFrom");
+                        }
+                    }
+
                 }
             }
             return availableValues;
