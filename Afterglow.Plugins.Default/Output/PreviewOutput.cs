@@ -74,7 +74,14 @@ namespace Afterglow.Plugins.Output
 
         public override void Stop()
         {
-            _previewForm.Invoke(new Action(() => { _previewForm.Close(); }));
+            try
+            {
+                _previewForm.Invoke(new Action(() => { _previewForm.Close(); }));
+            }
+            catch
+            {
+                // Ignore errors while trying to close the form if already closed
+            }
         }
 
         public void Output(List<Core.Light> lights)
