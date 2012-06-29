@@ -80,6 +80,12 @@ namespace Afterglow.DirectX.Plugin
             // Inject to process
             this.TargetProcess = this.Target;
 
+            if (String.IsNullOrEmpty(this.TargetProcess))
+            {
+                Logger.Warn("Configuration: No executable name has been provided to capture");
+                return;
+            }
+
             ScreenshotManager.OnScreenshotDebugMessage += (pid, message) => Debug.WriteLine("{0}: {1}", pid, message);
 
             Inject();
@@ -207,9 +213,11 @@ namespace Afterglow.DirectX.Plugin
         public override void Stop()
         {
             _stopped = true;
-            
-            _screenshotServer.StopListening(null);
-            _screenshotServer = null;
+            if (_screenshotServer != null)
+            {
+                _screenshotServer.StopListening(null);
+                _screenshotServer = null;
+            }
             _channelName = null;
         }
 
