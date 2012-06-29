@@ -50,7 +50,6 @@ namespace Afterglow.Plugins.Output
         #endregion
 
         Form _previewForm;
-        TextBox _messageBox;
         BasicLightSetupUserControl _lightControlDisplay;
         
         public override void Start()
@@ -60,10 +59,8 @@ namespace Afterglow.Plugins.Output
                 _previewForm = new Form();
                 _previewForm.Width = 1024;
                 _previewForm.Height = 768;
-                _messageBox = new TextBox() { Top = 0, Multiline = true, Left = 0, Width = 1020, Height = 100, Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Left };
-                _lightControlDisplay = new BasicLightSetupUserControl(this.Runtime.CurrentProfile.LightSetupPlugin) { Top = 101, Left = 0, Width = 1020, Height = 620, Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left };
+                _lightControlDisplay = new BasicLightSetupUserControl(this.Runtime.CurrentProfile.LightSetupPlugin) { Top = 0, Left = 0, Width = 1020, Height = 768, Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left };
 
-                _previewForm.Controls.Add(_messageBox);
                 _previewForm.Controls.Add(_lightControlDisplay);
                 
                 Application.Run(_previewForm);
@@ -94,11 +91,6 @@ namespace Afterglow.Plugins.Output
                     {
                         try
                         {
-                            if (!_messageBox.IsDisposed)
-                            {
-                                _messageBox.Text = "Light colours output here\r\n" + _messageBox.Text.Substring(0, Math.Min(_messageBox.Text.Length, 1000));
-                            }
-
                             _lightControlDisplay.SetCellColours(lights);
                         }
                         catch
