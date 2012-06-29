@@ -192,6 +192,10 @@
       <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
       <Name>Afterglow.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Afterglow.DirectX.Plugin\Afterglow.DirectX.Plugin.csproj">
+      <Project>{DE6ED890-7EF2-403A-BF90-99EFF2968CE7}</Project>
+      <Name>Afterglow.DirectX.Plugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Afterglow.Plugins.Default\Afterglow.Plugins.Default.csproj">
       <Project>{A9EE9C93-3F96-4810-9B90-74920DAD0560}</Project>
       <Name>Afterglow.Plugins.Default</Name>

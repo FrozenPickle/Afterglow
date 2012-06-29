@@ -21,6 +21,7 @@ namespace Afterglow.Loader
             Afterglow.Plugins.Output.ArduinoOutput a = new ArduinoOutput();
             Afterglow.Plugins.Output.DebugOutput b = new DebugOutput();
             Afterglow.Plugins.Capture.CopyScreenCapture c = new CopyScreenCapture();
+            Afterglow.DirectX.Plugin.Direct3DCapture d3d = new DirectX.Plugin.Direct3DCapture();
             Afterglow.Plugins.ColourExtraction.AverageColourExtraction d = new AverageColourExtraction();
             Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetup e = new Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetup();
             Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl f = new Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl();
