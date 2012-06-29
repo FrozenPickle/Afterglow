@@ -77,6 +77,17 @@ static const uint8_t magic[] = {'G','l','o'};
 // quitting LED display programs on the host computer.
 static const unsigned long serialTimeout = 15000; // 15 seconds
 
+void setLEDChipSet()
+{
+  // Be sure to check FastSPI documentation for how to use with other chipsets http://code.google.com/p/fastspi/
+  FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD6803);
+  //FastSPI_LED.setChipset(CFastSPI_LED::SPI_TM1809); // See FastSPI documentation for pin configuration for TM1809 
+                                                      // (setPinCount, setPin)
+  //FastSPI_LED.setChipset(CFastSPI_LED::SPI_HL1606);
+  //FastSPI_LED.setChipset(CFastSPI_LED::SPI_595);
+  //FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
+}
+
 void setup()
 {
   // Note: the buffer is 256, and indexIn/Out are bytes that overflow back to 0.
@@ -110,6 +121,18 @@ void setup()
   startTime    = micros();
   lastByteTime = lastAckTime = millis();
 
+  // Initialise for 100 LEDs and set all to black (doesn't hurt if there are less LEDs)
+  // this gives us all LEDs off on startup
+  oldLedCount   = 100;
+  ledCount      = 100;
+  FastSPI_LED.setLeds(ledCount);
+  setLEDChipSet();
+  FastSPI_LED.init();
+  FastSPI_LED.start();
+  leds = (struct RGB*)FastSPI_LED.getRGBData();
+  memset(leds, 0, ledCount * 3);
+  FastSPI_LED.show();
+                
   // using infinite loop instead of loop() function to increase performance.
   for(;;) {
 
@@ -164,13 +187,7 @@ void setup()
                 }
                 FastSPI_LED.setLeds(ledCount);
                 
-                // Be sure to check FastSPI documentation for how to use with other chipsets http://code.google.com/p/fastspi/
-                FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD6803);
-                //FastSPI_LED.setChipset(CFastSPI_LED::SPI_TM1809); // See FastSPI documentation for pin configuration for TM1809 
-                                                                    // (setPinCount, setPin)
-                //FastSPI_LED.setChipset(CFastSPI_LED::SPI_HL1606);
-                //FastSPI_LED.setChipset(CFastSPI_LED::SPI_595);
-                //FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);
+                setLEDChipSet();
                 
                 FastSPI_LED.init();
                 FastSPI_LED.start();
