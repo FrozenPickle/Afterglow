@@ -237,9 +237,16 @@ namespace Afterglow.Core.Storage
                                 //Get type from local project if possible, if not use other loader
                                 Type tableType = System.Type.GetType(tableTypeString) ?? Runtime.Loader.GetObjectType(tableTypeString);
                                 string id = table.GetString("Id");
-                                BaseRecord createdTable = Activator.CreateInstance(tableType, Table.Database.AddTable(id), Logger, this.Runtime) as BaseRecord;
+                                try
+                                {
+                                    BaseRecord createdTable = Activator.CreateInstance(tableType, Table.Database.AddTable(id), Logger, this.Runtime) as BaseRecord;
 
-                                result.GetType().GetMethod("Add").Invoke(result, new object[] { createdTable });
+                                    result.GetType().GetMethod("Add").Invoke(result, new object[] { createdTable });
+                                }
+                                catch
+                                {
+                                    // TODO: There is a frequent error here when loading lights plugin where Afterglow.ini is already in use.
+                                }
                             }
                         }
                     }
