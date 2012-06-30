@@ -37,7 +37,7 @@ namespace Afterglow.DirectX.Plugin
 
         public override string Author
         {
-            get { return "Justin S."; }
+            get { return "Jono C. and Justin S."; }
         }
 
         public override string Description
