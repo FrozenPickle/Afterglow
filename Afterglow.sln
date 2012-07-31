@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Afterglow.DirectX.Plugin", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Afterglow.Core.UI", "Afterglow.Core.UI\Afterglow.Core.UI.csproj", "{D6D27730-4ED5-4CAE-AC03-862EDDD27577}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Afterglow.Web", "Afterglow.Web\Afterglow.Web.csproj", "{1460C928-D1D3-4A7B-807A-0D975E1F35D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,14 @@ Global
 		{D6D27730-4ED5-4CAE-AC03-862EDDD27577}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6D27730-4ED5-4CAE-AC03-862EDDD27577}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6D27730-4ED5-4CAE-AC03-862EDDD27577}.Release|x86.Build.0 = Release|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Debug|x86.Build.0 = Debug|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Release|x86.ActiveCfg = Release|Any CPU
+		{1460C928-D1D3-4A7B-807A-0D975E1F35D6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
