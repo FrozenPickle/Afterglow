@@ -4,22 +4,12 @@ using System.Linq;
 using System.Text;
 using Afterglow.Core.Plugins;
 using System.Diagnostics;
-using Afterglow.Core.Storage;
 using Afterglow.Core;
 
 namespace Afterglow.Plugins.Output
 {
     public class DebugOutput : BasePlugin, IOutputPlugin
     {
-        public DebugOutput()
-        {
-        }
-
-        public DebugOutput(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
         #region Read Only Properties
         public override string Name
         {

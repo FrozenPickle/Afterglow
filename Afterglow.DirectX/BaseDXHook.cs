@@ -42,7 +42,7 @@ namespace Afterglow.DirectX
             {
                 Interface.OnDebugMessage(this.ProcessId, HookName + ": " + message);
             }
-            catch (RemotingException re)
+            catch (RemotingException)
             {
                 // Ignore remoting exceptions
             }
@@ -117,7 +117,7 @@ namespace Afterglow.DirectX
                 // Send the buffer back to the host process
                 Interface.OnScreenshotResponse(RemoteHooking.GetCurrentProcessId(), requestId, bitmapData);
             }
-            catch (RemotingException re)
+            catch (RemotingException)
             {
                 // Ignore remoting exceptions
                 // .NET Remoting will throw an exception if the host application is unreachable

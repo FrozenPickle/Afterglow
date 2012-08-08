@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace Afterglow.Core.Plugins
 {
     public interface IAfterglowPlugin : INotifyPropertyChanged
     {
+        /// <summary>
+        /// The identifier of the plugin
+        /// This is unique accross a plugin type
+        /// </summary>
+        int Id { get; set; }
+
         /// <summary>
         /// The name of the plugin given by a user.
         /// </summary>
@@ -37,25 +44,11 @@ namespace Afterglow.Core.Plugins
         /// The version of the plugin.
         /// </summary>
         Version Version { get; }
-
-        /// <summary>
-        /// The logging level to log for this plugin.
-        /// </summary>
-        Afterglow.Core.Log.Level LogLevel { get; set; }
-
-        /// <summary>
-        /// The logger for this plugin.
-        /// </summary>
-        Afterglow.Core.Log.ILogger Logger { get; set; }
-
-        /// <summary>
-        /// The storage for this plugin.
-        /// </summary>
-        Afterglow.Core.Storage.ITable Table { get; set; }
         
         /// <summary>
         /// A reference to the runtime.
         /// </summary>
+        [XmlIgnore]
         Afterglow.Core.AfterglowRuntime Runtime { get; set; }
 
         void Start();

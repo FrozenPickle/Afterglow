@@ -6,22 +6,13 @@ using System.Linq.Expressions;
 using System.Text;
 using Afterglow.Core.Extensions;
 using Afterglow.Core.Configuration;
-using System.Reflection;
-using Afterglow.Core.Storage;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 
 namespace Afterglow.Core.Plugins
 {
-    public abstract class BasePlugin: BaseRecord, IAfterglowPlugin
+    public abstract class BasePlugin: BaseModel, IAfterglowPlugin
     {
-        public BasePlugin()
-        {
-
-        }
-
-        public BasePlugin(ITable table, Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
 
         public override string ToString()
         {
@@ -35,33 +26,34 @@ namespace Afterglow.Core.Plugins
             }
         }
 
-        [ConfigString(DisplayName = "Name", SortIndex = -100)]
+        [Display(Name = "Configuration Name", Order = -100)]
         public string DisplayName
         {
             get { return Get(() => DisplayName, () => this.Name); }
             set { Set(() => DisplayName, value); }
         }
 
-        [ConfigReadOnly(DisplayName = "Name", SortIndex= -600)]
+        [ReadOnly(true)]
+        [Display(Name = "Name", Order= -600)]
         public abstract string Name { get; }
 
-        [ConfigReadOnly(DisplayName = "Author", SortIndex = -500, Description = "These two guys started the Afterglow project")]
+        [ReadOnly(true)]
+        [Display(Name = "Author", Order = -500)]
         public abstract string Author { get; }
 
-        [ConfigReadOnly(DisplayName = "Description", SortIndex = -400)]
+        [ReadOnly(true)]
+        [Display(Name = "Description", Order = -400)]
         public abstract string Description { get; }
 
-        [ConfigReadOnly(DisplayName = "Website", SortIndex = -300, IsHyperlink = true)]
+        [ReadOnly(true)]
+        [Display(Name = "Website", Order = -300)]
+        [DataType(DataType.Url)]
         public abstract string Website { get; }
 
-        [ConfigReadOnly(DisplayName = "Version", SortIndex = -200)]
+        [ReadOnly(true)]
+        [Display(Name = "Version", Order = -200)]
         public abstract Version Version { get; }
-
-        /// <summary>
-        /// The logger for this plugin.
-        /// </summary>
-        new Afterglow.Core.Log.ILogger Logger { get; set; }
-
+        
         public abstract void Start();
 
         public abstract void Stop();

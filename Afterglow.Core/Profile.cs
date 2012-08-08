@@ -6,182 +6,189 @@ using System.Linq.Expressions;
 using System.Text;
 using Afterglow.Core.Extensions;
 using Afterglow.Core.Configuration;
-using System.Reflection;
 using Afterglow.Core.Plugins;
-using Afterglow.Core.Storage;
 using Afterglow.Core.Log;
 using System.Collections.ObjectModel;
+using System.Xml.Serialization;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Afterglow.Core
 {
-    public class Profile : BaseRecord
+    public class Profile : BaseModel
     {
-
-        public Profile(ITable table, ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
+        private AfterglowSetup _setup;
+        [XmlIgnore]
+        public AfterglowSetup Setup
         {
+            get
+            {
+                return _setup;
+            }
+            set
+            {
+                this._setup = value;
+            }
         }
 
-        [ConfigString(DisplayName = "Name", SortIndex = 100)]
+        [Required]
+        [Display(Name = "Name", Order = 100)]
         public string Name
         {
             get { return Get(() => Name, "Default Profile"); }
             set { Set(() => Name, value); }
         }
 
-        [ConfigString(DisplayName = "Description", SortIndex = 200)]
+        [Required]
+        [Display(Name = "Description", Order = 200)]
         public string Description
         {
             get { return Get(() => Description); }
             set { Set(() => Description, value); }
         }
-        
-        #region Light Setup Plugins
-        [ConfigTable(DisplayName = "Light Setup Plugin", IsHidden = true, RetrieveValuesFrom ="GetLightSetupPlugins")]
+
+        #region Selected Plugins
+        [Required]
+        public SerializableInterfaceList<ILightSetupPlugin> LightSetupPlugins
+        {
+            get { return Get(() => LightSetupPlugins, () => new SerializableInterfaceList<ILightSetupPlugin>()); }
+            set { Set(() => LightSetupPlugins, value); }
+        }
+        [XmlIgnore]
         public ILightSetupPlugin LightSetupPlugin
         {
-            get { return Get(() => LightSetupPlugin, () => DefaultLightSetupPlugin());}
-            set { Set(() => LightSetupPlugin, value); }
+            get
+            {
+                return LightSetupPlugins.FirstOrDefault();
+            }
         }
 
-        public ILightSetupPlugin SetLightSetupPlugin(Type pluginType)
+        [Required]
+        public SerializableInterfaceList<ICapturePlugin> CapturePlugins
         {
-            ILightSetupPlugin plugin = Activator.CreateInstance(pluginType, new object[] { Table.Database.AddTable(), Logger, Runtime }) as ILightSetupPlugin;
-            this.LightSetupPlugin = plugin;
-            SaveToStorage(() => this.LightSetupPlugin, this.LightSetupPlugin);
-            return plugin;
+            get { return Get(() => CapturePlugins, () => new SerializableInterfaceList<ICapturePlugin>()); }
+            set { Set(() => CapturePlugins, value); }
         }
-
-        public Type[] GetLightSetupPlugins()
-        {
-            //TODO log fatal error if there are no results found
-            return this.Runtime.Loader.GetPlugins(typeof(ILightSetupPlugin)); 
-        }
-
-        public ILightSetupPlugin DefaultLightSetupPlugin()
-        {
-            Type type = GetLightSetupPlugins().FirstOrDefault();
-            return SetLightSetupPlugin(type);
-        }
-
-        #endregion
-
-        #region Capture Plugins
-        [ConfigTable(DisplayName = "Capture Plugin", IsHidden = true, RetrieveValuesFrom = "GetCapturePlugins")]
+        [XmlIgnore]
         public ICapturePlugin CapturePlugin
         {
-            get { return Get(() => CapturePlugin, () => DefaultCapturePlugin()); }
-            set { Set(() => CapturePlugin, value); }
+            get
+            {
+                return CapturePlugins.FirstOrDefault();
+            }
         }
 
-        public ICapturePlugin SetCapturePlugin(Type pluginType)
+        [Required]
+        public SerializableInterfaceList<IColourExtractionPlugin> ColourExtractionPlugins
         {
-            ICapturePlugin plugin = Activator.CreateInstance(pluginType, new object[] { Table.Database.AddTable(), Logger, Runtime }) as ICapturePlugin;
-            this.CapturePlugin = plugin;
-            SaveToStorage(() => this.CapturePlugin, this.CapturePlugin);
-            return plugin;
+            get { return Get(() => ColourExtractionPlugins, () => new SerializableInterfaceList<IColourExtractionPlugin>()); }
+            set { Set(() => ColourExtractionPlugins, value); }
         }
-
-        public Type[] GetCapturePlugins()
-        {
-            //TODO log fatal error if there are no results found
-            return this.Runtime.Loader.GetPlugins(typeof(ICapturePlugin));
-        }
-
-        public ICapturePlugin DefaultCapturePlugin()
-        {
-            Type type = GetCapturePlugins().FirstOrDefault();
-            return SetCapturePlugin(type);
-        }
-
-        #endregion
-
-        #region Colour Extraction Plugins
-        [ConfigTable(DisplayName = "Colour Extraction Plugin", IsHidden = true, RetrieveValuesFrom = "GetColourExtractionPlugins")]
+        [XmlIgnore]
         public IColourExtractionPlugin ColourExtractionPlugin
         {
-            get { return Get(() => ColourExtractionPlugin, () => DefaultColourExtractionPlugin()); }
-            set { Set(() => ColourExtractionPlugin, value); }
+            get
+            {
+                return ColourExtractionPlugins.FirstOrDefault();
+            }
         }
 
-        public IColourExtractionPlugin SetColourExtractionPlugin(Type pluginType)
+        public SerializableInterfaceList<IPostProcessPlugin> PostProcessPlugins
         {
-            IColourExtractionPlugin plugin = Activator.CreateInstance(pluginType, new object[] { Table.Database.AddTable(), Logger, Runtime }) as IColourExtractionPlugin;
-            this.ColourExtractionPlugin = plugin;
-            SaveToStorage(() => this.ColourExtractionPlugin, this.ColourExtractionPlugin);
-            return plugin;
-        }
-
-        public Type[] GetColourExtractionPlugins()
-        {
-            //TODO log fatal error if there are no results found
-            return this.Runtime.Loader.GetPlugins(typeof(IColourExtractionPlugin));
-        }
-
-        public IColourExtractionPlugin DefaultColourExtractionPlugin()
-        {
-            Type type = GetColourExtractionPlugins().FirstOrDefault();
-            return SetColourExtractionPlugin(type);
-        }
-        #endregion
-
-        #region Post Process Plugins
-        [ConfigTable(DisplayName = "Post Process Plugins", IsHidden = true, RetrieveValuesFrom="GetPostProcessPlugins")]
-        public ObservableCollection<IPostProcessPlugin> PostProcessPlugins
-        {
-            get { return Get(() => PostProcessPlugins); }
+            get { return Get(() => PostProcessPlugins, () => new SerializableInterfaceList<IPostProcessPlugin>()); }
             set { Set(() => PostProcessPlugins, value); }
         }
 
-        public IPostProcessPlugin AddPostProcessPlugin(Type pluginType)
+        [Required]
+        public SerializableInterfaceList<IOutputPlugin> OutputPlugins
         {
-            IPostProcessPlugin plugin = Activator.CreateInstance(pluginType, new object[] { Table.Database.AddTable(), Logger, Runtime }) as IPostProcessPlugin;
-            this.PostProcessPlugins.Add(plugin);
-            SaveToStorage(() => this.PostProcessPlugins, this.PostProcessPlugins);
-            return plugin;
-        }
-
-        public void RemovePostProcessPlugin(IPostProcessPlugin plugin)
-        {
-            this.PostProcessPlugins.Remove(plugin);
-            SaveToStorage(() => this.PostProcessPlugins, this.PostProcessPlugins);
-        }
-
-        public Type[] GetPostProcessPlugins()
-        {
-            //TODO log fatal error if there are no results found
-            return this.Runtime.Loader.GetPlugins(typeof(IPostProcessPlugin));
-        }
-        #endregion
-
-        #region Output Plugins
-        [ConfigTable(DisplayName = "Output Plugins", IsHidden = true, RetrieveValuesFrom="GetOutputPlugins")]
-        public ObservableCollection<IOutputPlugin> OutputPlugins
-        {
-            get { return Get(() => OutputPlugins); }
+            get { return Get(() => OutputPlugins, new SerializableInterfaceList<IOutputPlugin>()); }
             set { Set(() => OutputPlugins, value); }
         }
 
-        public IOutputPlugin AddOutputPlugin(Type pluginType)
-        {
-            IOutputPlugin plugin = Activator.CreateInstance(pluginType, new object[]{ Table.Database.AddTable(),Logger,Runtime}) as IOutputPlugin;
-            this.OutputPlugins.Add(plugin);
-            SaveToStorage(() => this.OutputPlugins, this.OutputPlugins);
-            return plugin;
-        }
-
-        public void RemoveOutputPlugin(IOutputPlugin plugin)
-        {
-            this.OutputPlugins.Remove(plugin);
-            SaveToStorage(() => this.OutputPlugins, this.OutputPlugins);
-        }
-
-        public Type[] GetOutputPlugins()
-        {
-            //TODO log fatal error if there are no results found
-            return this.Runtime.Loader.GetPlugins(typeof(IOutputPlugin));
-        }
         #endregion
+        
+        //Rebuild Selected Plugins with objects from AfterglowSetup.Configured*Plugins
+        //So that object references are all correct
+        //Will also use less RAM
+        public void OnDeserialized()
+        {
+            SerializableInterfaceList<ILightSetupPlugin> lightSetupPlugins = new SerializableInterfaceList<ILightSetupPlugin>();
+            foreach (ILightSetupPlugin lightSetupPlugin in LightSetupPlugins)
+            {
+                ILightSetupPlugin existingPlugin = this.Setup.ConfiguredLightSetupPlugins.Single(p => p.Id == lightSetupPlugin.Id);
+
+                //Add to configured list if not found
+                if (existingPlugin == null)
+                {
+                    existingPlugin = lightSetupPlugin;
+                    existingPlugin.Id = this.Setup.GetPluginId<ILightSetupPlugin>();
+                    this.Setup.ConfiguredLightSetupPlugins.Add(existingPlugin);
+                }
+                lightSetupPlugins.Add(existingPlugin);
+            }
+            this.LightSetupPlugins = lightSetupPlugins;
+
+            SerializableInterfaceList<ICapturePlugin> capturePlugins = new SerializableInterfaceList<ICapturePlugin>();
+            foreach (ICapturePlugin capturePlugin in CapturePlugins)
+            {
+                ICapturePlugin existingPlugin = this.Setup.ConfiguredCapturePlugins.Single(p => p.Id == capturePlugin.Id);
+                //Add to configured list if not found
+                if (existingPlugin == null)
+                {
+                    existingPlugin = capturePlugin;
+                    existingPlugin.Id = this.Setup.GetPluginId<ICapturePlugin>();
+                    this.Setup.ConfiguredCapturePlugins.Add(existingPlugin);
+                }
+                capturePlugins.Add(existingPlugin);
+            }
+            this.CapturePlugins = capturePlugins;
+
+            SerializableInterfaceList<IColourExtractionPlugin> colourExtractionPlugins = new SerializableInterfaceList<IColourExtractionPlugin>();
+            foreach (IColourExtractionPlugin colourExtractionPlugin in ColourExtractionPlugins)
+            {
+                IColourExtractionPlugin existingPlugin = this.Setup.ConfiguredColourExtractionPlugins.Single(p => p.Id == colourExtractionPlugin.Id);
+                //Add to configured list if not found
+                if (existingPlugin == null)
+                {
+                    existingPlugin = colourExtractionPlugin;
+                    existingPlugin.Id = this.Setup.GetPluginId<IColourExtractionPlugin>();
+                    this.Setup.ConfiguredColourExtractionPlugins.Add(existingPlugin);
+                }
+                colourExtractionPlugins.Add(existingPlugin);
+            }
+            this.ColourExtractionPlugins = colourExtractionPlugins;
+
+            SerializableInterfaceList<IPostProcessPlugin> postProcessPlugins = new SerializableInterfaceList<IPostProcessPlugin>();
+            foreach (IPostProcessPlugin postProcessPlugin in PostProcessPlugins)
+            {
+                IPostProcessPlugin existingPlugin = this.Setup.ConfiguredPostProcessPlugins.Single(p => p.Id == postProcessPlugin.Id);
+                //Add to configured list if not found
+                if (existingPlugin == null)
+                {
+                    existingPlugin = postProcessPlugin;
+                    existingPlugin.Id = this.Setup.GetPluginId<IPostProcessPlugin>();
+                    this.Setup.ConfiguredPostProcessPlugins.Add(existingPlugin);
+                }
+                postProcessPlugins.Add(existingPlugin);
+            }
+            this.PostProcessPlugins = postProcessPlugins;
+
+            SerializableInterfaceList<IOutputPlugin> outputPlugins = new SerializableInterfaceList<IOutputPlugin>();
+            foreach (IOutputPlugin outputPlugin in OutputPlugins)
+            {
+                IOutputPlugin existingPlugin = this.Setup.ConfiguredOutputPlugins.FirstOrDefault(p => p.Id == outputPlugin.Id);
+                //Add to configured list if not found
+                if (existingPlugin == null)
+                {
+                    existingPlugin = outputPlugin;
+                    existingPlugin.Id = this.Setup.GetPluginId<IOutputPlugin>();
+                    this.Setup.ConfiguredOutputPlugins.Add(existingPlugin);
+                }
+                outputPlugins.Add(existingPlugin);
+            }
+            this.OutputPlugins = outputPlugins;
+        }
 
         public void Validate()
         {

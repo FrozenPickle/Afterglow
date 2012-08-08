@@ -5,19 +5,21 @@ using System.Linq;
 using System.Text;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;
-using Afterglow.Core.Storage;
 using Afterglow.Core.Configuration;
 using System.Timers;
 using System.Collections.ObjectModel;
+using System.Xml.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Plugins.Capture
 {
+    //[XmlType("Afterglow.Plugins.Capture.CopyScreenCapture")]
     public class CopyScreenCapture : BasePlugin, ICapturePlugin
     {
-        
-        Graphics _graphics;
+
+        private Graphics _graphics;
         private FastBitmap _fastBitmap;
-        Bitmap _img;
+        private Bitmap _img;
         private Rectangle _dispBounds;
         private Timer _captureCorrectionTimer;
         private bool _captureCorrectionTimeElapsed = false;
@@ -27,14 +29,8 @@ namespace Afterglow.Plugins.Capture
             SetupCaptureCorrectionTypes();
         }
 
-        public CopyScreenCapture(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-            SetupCaptureCorrectionTypes();
-        }
-
         #region Read Only Properties
-        
+
         public override string Name
         {
             get { return ".Net CopyScreen"; }
@@ -62,7 +58,9 @@ namespace Afterglow.Plugins.Capture
         #endregion
 
         #region Screen Selection Properties
-        [ConfigLookup(DisplayName = "Screen", RetrieveValuesFrom = "Screens", SortIndex = 100)]
+        [Required]
+        [Display(Name = "Screen", Order = 100)]
+        [ConfigLookup(RetrieveValuesFrom = "Screens")]
         public string Screen
         {
             get { return Get(() => Screen, () => Screens[0]); }
@@ -83,6 +81,7 @@ namespace Afterglow.Plugins.Capture
         #region Capture Correction Properties
 
         #region Capture Correction Types
+        [XmlIgnore]
         public ObservableCollection<string> CaptureCorrectionTypes;
         public const int CAPTURE_CORRECTION_TYPE_NONE = 0;
         public const int CAPTURE_CORRECTION_TYPE_TOP_BOTTOM = 1;
@@ -99,11 +98,13 @@ namespace Afterglow.Plugins.Capture
         }
         #endregion
 
-        [ConfigLookup(DisplayName = "Capture Correction", RetrieveValuesFrom = "CaptureCorrectionTypes", SortIndex = 100)]
-        public int? CaptureCorrection
+        [Required]
+        [Display(Name = "Screen", Order = 100)]
+        [ConfigLookup(RetrieveValuesFrom = "CaptureCorrectionTypes")]
+        public int CaptureCorrection
         {
             get { return Get(() => CaptureCorrection, () => CAPTURE_CORRECTION_TYPE_ALL); }
-            set { Set(() => CaptureCorrection, value);}
+            set { Set(() => CaptureCorrection, value); }
         }
 
         public enum CaptureCorrectionIntervalTypeEnum
@@ -112,36 +113,41 @@ namespace Afterglow.Plugins.Capture
             Minutes
         }
 
-        [ConfigLookup(DisplayName = "Capture Correction Interval Type", SortIndex = 200)]
+        [Required]
+        [Display(Name = "Capture Correction Interval Type", Order = 200)]
         public CaptureCorrectionIntervalTypeEnum CaptureCorrectionIntervalType
         {
             get { return Get(() => CaptureCorrectionIntervalType, () => CaptureCorrectionIntervalTypeEnum.Minutes); }
             set { Set(() => CaptureCorrectionIntervalType, value); }
         }
 
-        [ConfigNumber(DisplayName = "Capture Correction Interval", Min = 0, Max = 10000, SortIndex = 300)]
+        [Display(Name= "Capture Correction Interval", Order=300)]
+        [Range(0, 10000)]
         public int? CaptureCorrectionInterval
         {
             get { return Get(() => CaptureCorrectionInterval, () => 1); }
             set { Set(() => CaptureCorrectionInterval, value); }
         }
 
-        [ConfigNumber(DisplayName = "Black Segment - Pixels to skip", Min = 0, Max = 999,
-            Description = "Increasing this value speeds up the process but decreases the accuracy of the black.", SortIndex= 400)]
-        public int? PixelSkip
+        [Required]
+        [Display(Name = "Black Segment - Pixels to skip", Description = "Increasing this value speeds up the process but decreases the accuracy of the black.", Order = 400)]
+        [Range(0, 999)]
+        public int PixelSkip
         {
             get { return Get(() => PixelSkip, () => 20); }
             set { Set(() => PixelSkip, value); }
         }
 
-        [ConfigNumber(DisplayName = "Black Segment - Height %", Min = 0, Max = 100, SortIndex = 500)]
+        [Display(Name = "Black Segment - Height %",Order = 500)]
+        [Range(0, 100)]
         public int? BlackSegmentHeight
         {
             get { return Get(() => BlackSegmentHeight, () => 1); }
             set { Set(() => BlackSegmentHeight, value); }
         }
 
-        [ConfigNumber(DisplayName = "Darkness Threshold", Min = 0, Max = 50, SortIndex = 600)]
+        [Display(Name = "Darkness Threshold", Order= 600)]
+        [Range(0, 50)]
         public int? DarknessThreshold
         {
             get { return Get(() => DarknessThreshold, () => 5); }
@@ -193,7 +199,7 @@ namespace Afterglow.Plugins.Capture
 
 
             GetCaptureSize();
-                        
+
             IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
             foreach (Light light in lightSetup.GetLightsForBounds(_captureWidth, _captureHeight, _leftOffset, _topOffset))
             {
@@ -209,7 +215,7 @@ namespace Afterglow.Plugins.Capture
                 this._captureCorrectionTimeElapsed &&
                 this.BlackSegmentHeight != null &&
                 this.BlackSegmentHeight.Value != 100 &&
-                this.DarknessThreshold != null && 
+                this.DarknessThreshold != null &&
                 this.DarknessThreshold.Value <= 50)
             {
                 this._captureCorrectionTimeElapsed = false;
@@ -232,7 +238,7 @@ namespace Afterglow.Plugins.Capture
                         break;
 
                     case CAPTURE_CORRECTION_TYPE_ALL:
-                        
+
                         topOffset = GetTopBandingHeight();
                         leftOffset = GetLeftBandingWidth();
                         break;
@@ -280,7 +286,7 @@ namespace Afterglow.Plugins.Capture
 
                 // Average the pixels
                 int r = 0, g = 0, b = 0, pixelCount = 0;
-                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip.Value))
+                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip))
                 {
                     r += pixel.R;
                     g += pixel.G;
@@ -327,7 +333,7 @@ namespace Afterglow.Plugins.Capture
 
                 // Average the pixels
                 int r = 0, g = 0, b = 0, pixelCount = 0;
-                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip.Value))
+                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip))
                 {
                     r += pixel.R;
                     g += pixel.G;

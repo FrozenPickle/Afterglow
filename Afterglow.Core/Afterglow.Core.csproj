@@ -33,7 +33,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -44,20 +49,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AfterglowRuntime.cs" />
+    <Compile Include="AfterglowSetup.cs" />
+    <Compile Include="BaseModel.cs" />
     <Compile Include="Configuration\ConfigAttribute.cs" />
     <Compile Include="Configuration\ConfigCustomAttribute.cs" />
-    <Compile Include="Configuration\ConfigTableAttribute.cs" />
     <Compile Include="Configuration\ConfigLookupAttribute.cs" />
-    <Compile Include="Configuration\ConfigNumberAttribute.cs" />
-    <Compile Include="Configuration\ConfigStringAttribute.cs" />
-    <Compile Include="Configuration\ConfigReadOnlyAttribute.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FastBitmap.cs" />
     <Compile Include="Load\ILoader.cs" />
+    <Compile Include="Load\PluginLoader.cs" />
     <Compile Include="Log\ILogger.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="Log\Log4netProxy.cs" />
     <Compile Include="PixelReader.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="SerializableInterfaceList.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
     <Compile Include="Plugins\IAfterglowPlugin.cs" />
     <Compile Include="Plugins\ICapturePlugin.cs" />
@@ -67,12 +74,7 @@
     <Compile Include="Plugins\IPostProcessPlugin.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Storage\BaseRecord.cs" />
-    <Compile Include="Storage\IDatabase.cs" />
-    <Compile Include="Storage\ITable.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

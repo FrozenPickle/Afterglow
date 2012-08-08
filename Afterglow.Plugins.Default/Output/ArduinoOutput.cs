@@ -8,9 +8,9 @@ using Afterglow.Core.Plugins;
 using System.IO.Ports;
 using Afterglow.Core.Configuration;
 using System.Reflection;
-using Afterglow.Core.Storage;
 using Afterglow.Core;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Plugins.Output
 {
@@ -18,16 +18,7 @@ namespace Afterglow.Plugins.Output
     {
         SerialPort _port;
         byte[] _serialData;
-
-        public ArduinoOutput()
-        {
-        }
-
-        public ArduinoOutput(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
+        
         #region Read Only Properties
         public override string Name
         {
@@ -55,7 +46,9 @@ namespace Afterglow.Plugins.Output
         }
         #endregion
 
-        [ConfigLookup(DisplayName = "Serial Port", RetrieveValuesFrom = "Ports")]
+        [Required]
+        [Display(Name = "Serial Port", Order = 200)]
+        [ConfigLookup(RetrieveValuesFrom = "Ports")]
         public string Port
         {
             get { return Get(() => Port, () => Ports[0]); }
@@ -67,14 +60,18 @@ namespace Afterglow.Plugins.Output
             get { return SerialPort.GetPortNames(); }
         }
 
-        [ConfigNumber(DisplayName = "Baud Rate", Min = 0, Max = 999999)]
-        public int? BaudRate
+        [Required]
+        [Display(Name = "Baud Rate")]
+        [Range(0, 999999)]
+        public int BaudRate
         {
             get { return Get(() => BaudRate, () => 115200); }
             set { Set(() => BaudRate, value); }
         }
 
-        [ConfigString(DisplayName = "Magic Word", MaxLength = 3, Description = "This is a special value used to communicate with the arduino")]
+        [Required]
+        [Display(Name = "Magic Word", Description = "This is a special value used to communicate with the arduino")]
+        [StringLength(3)]
         public string MagicWord
         {
             get { return Get(() => MagicWord, () => "Glo"); }
@@ -87,19 +84,19 @@ namespace Afterglow.Plugins.Output
             //TODO lots of work here
             if (Ports.Length == 0)
             {
-                Logger.Warn("No serial ports found");
+                //Logger.Warn("No serial ports found");
             }
             else
             {
-                _port = new SerialPort(Port, BaudRate.Value);
+                _port = new SerialPort(Port, BaudRate);
                 _port.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorReceived);
                 try
                 {
                     _port.Open();
                 }
-                catch (IOException ex)
+                catch (IOException)
                 {
-                    Logger.Error(ex, "Arduino not found");
+                    //Logger.Error(ex, "Arduino not found");
                 }
             }
         }
@@ -141,7 +138,7 @@ namespace Afterglow.Plugins.Output
                 }
                 catch (Exception)
                 {
-                    Logger.Warn("Adruino not found");
+                    //Logger.Warn("Adruino not found");
                 }
             }
             else

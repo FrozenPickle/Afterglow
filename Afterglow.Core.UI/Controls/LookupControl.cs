@@ -44,7 +44,7 @@ namespace Afterglow.Core.UI.Controls
             }
             else
             {
-                plugin.Logger.Error("{0} could not be set as no lookup values could not be loaded", prop.Name);
+                //plugin.Logger.Error("{0} could not be set as no lookup values could not be loaded", prop.Name);
             }
             this.Controls.Add(_valueComboBox);
 
@@ -72,7 +72,7 @@ namespace Afterglow.Core.UI.Controls
             }
             else
             {
-                _plugin.Logger.Error("{0} could not be set as no lookup values could not be loaded", _plugin.Name);
+                //_plugin.Logger.Error("{0} could not be set as no lookup values could not be loaded", _plugin.Name);
             }
 
 

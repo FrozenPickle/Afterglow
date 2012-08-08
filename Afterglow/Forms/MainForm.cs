@@ -18,7 +18,6 @@ namespace Afterglow.Forms
     public partial class MainForm : Form
     {
         private AfterglowRuntime _runtime;
-        private SettingsForm _settingsForm;
 
         public MainForm()
         {
@@ -72,11 +71,11 @@ namespace Afterglow.Forms
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            if (_settingsForm == null)
-            {
-                _settingsForm = new SettingsForm(_runtime, this);
-            }
-            _settingsForm.ShowDialog(this);
+            //if (_settingsForm == null)
+            //{
+            //    _settingsForm = new SettingsForm(_runtime, this);
+            //}
+            //_settingsForm.ShowDialog(this);
         }
 
         private void lbProfiles_SelectedIndexChanged(object sender, EventArgs e)

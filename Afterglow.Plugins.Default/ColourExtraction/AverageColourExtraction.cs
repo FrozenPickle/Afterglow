@@ -6,21 +6,12 @@ using System.Text;
 using Afterglow.Core.Plugins;
 using Afterglow.Core.Configuration;
 using Afterglow.Core;
-using Afterglow.Core.Storage;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Plugins.ColourExtraction
 {
     public class AverageColourExtraction : BasePlugin, IColourExtractionPlugin
     {
-        public AverageColourExtraction()
-        {
-        }
-
-        public AverageColourExtraction(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
         #region Read Only Properties
         public override string Name
         {
@@ -48,9 +39,10 @@ namespace Afterglow.Plugins.ColourExtraction
         }
         #endregion
 
-        [ConfigNumber(DisplayName = "Number of Pixels to skip", Min = 0, Max = 999,
-            Description = "Increasing this value speeds up the capture but decreases the accuracy of the colour.")]
-        public int? PixelSkip
+        [Required]
+        [Display(Name = "Number of Pixels to skip", Description = "Increasing this value speeds up the capture but decreases the accuracy of the colour.")]
+        [Range(0, 999)]
+        public int PixelSkip
         {
             get { return Get(() => PixelSkip, () => 3); }
             set { Set(() => PixelSkip, value); }
@@ -67,7 +59,7 @@ namespace Afterglow.Plugins.ColourExtraction
             {
                 // Average the pixels
                 int r = 0, g = 0, b = 0, pixelCount = 0;
-                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip.Value))
+                foreach (var pixel in pixelReader.GetEveryNthPixel(this.PixelSkip))
                 {
                     r += pixel.R;
                     g += pixel.G;

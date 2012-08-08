@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Afterglow.Log
 {
-    internal class Log4NetProxy: Afterglow.Core.Log.ILogger
+    internal class Log4NetProxy : Afterglow.Core.Log.ILogger
     {
         public Log4NetProxy(log4net.ILog logger)
         {

@@ -103,71 +103,10 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Loader\PluginLoader.cs" />
-    <Compile Include="Log\Log4netProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\SettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SettingsForm.Designer.cs">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Storage\NiniDatabase.cs" />
-    <Compile Include="Storage\NiniTable.cs" />
-    <Compile Include="UserControls\AfterglowSettingsUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AfterglowSettingsUserControl.Designer.cs">
-      <DependentUpon>AfterglowSettingsUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\AutoGenPluginUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\AutoGenPluginUserControl.Designer.cs">
-      <DependentUpon>AutoGenPluginUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\CapturePluginSelectUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\CapturePluginSelectUserControl.Designer.cs">
-      <DependentUpon>CapturePluginSelectUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\ColourExtractionPluginSelectUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\ColourExtractionPluginSelectUserControl.Designer.cs">
-      <DependentUpon>ColourExtractionPluginSelectUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\LightSetupPluginSelectUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\LightSetupPluginSelectUserControl.Designer.cs">
-      <DependentUpon>LightSetupPluginSelectUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\OutputPluginSelectUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\OutputPluginSelectUserControl.Designer.cs">
-      <DependentUpon>OutputPluginSelectUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\PostProcessPluginSelectUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\PostProcessPluginSelectUserControl.Designer.cs">
-      <DependentUpon>PostProcessPluginSelectUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControls\ProfileSettingsUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\ProfileSettingsUserControl.Designer.cs">
-      <DependentUpon>ProfileSettingsUserControl.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SettingsForm.resx">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -178,30 +117,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UserControls\AfterglowSettingsUserControl.resx">
-      <DependentUpon>AfterglowSettingsUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\AutoGenPluginUserControl.resx">
-      <DependentUpon>AutoGenPluginUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\CapturePluginSelectUserControl.resx">
-      <DependentUpon>CapturePluginSelectUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ColourExtractionPluginSelectUserControl.resx">
-      <DependentUpon>ColourExtractionPluginSelectUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\LightSetupPluginSelectUserControl.resx">
-      <DependentUpon>LightSetupPluginSelectUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\OutputPluginSelectUserControl.resx">
-      <DependentUpon>OutputPluginSelectUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\PostProcessPluginSelectUserControl.resx">
-      <DependentUpon>PostProcessPluginSelectUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\ProfileSettingsUserControl.resx">
-      <DependentUpon>ProfileSettingsUserControl.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -214,10 +129,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Afterglow.Core.UI\Afterglow.Core.UI.csproj">
-      <Project>{D6D27730-4ED5-4CAE-AC03-862EDDD27577}</Project>
-      <Name>Afterglow.Core.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Afterglow.Core\Afterglow.Core.csproj">
       <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
       <Name>Afterglow.Core</Name>

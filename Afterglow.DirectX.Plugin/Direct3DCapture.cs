@@ -14,22 +14,12 @@ using System.Drawing;
 using Afterglow.Core;
 using Afterglow.DirectX.ScreenshotInterface;
 using Afterglow.Core.Configuration;
-using Afterglow.Core.Storage;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.DirectX.Plugin
 {
     public class Direct3DCapture : BasePlugin, ICapturePlugin
     {
-        public Direct3DCapture()
-        {
-
-        }
-
-        public Direct3DCapture(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
         public override string Name
         {
             get { return "Direct3D Capture"; }
@@ -55,7 +45,7 @@ namespace Afterglow.DirectX.Plugin
             get { return new Version(1, 0, 0); }
         }
 
-        [ConfigString(DisplayName = "Target application executable name", IsHidden = false)]
+        [Display(Name = "Target application executable name")]
         public string Target
         {
             get { return Get(() => Target); }
@@ -82,7 +72,7 @@ namespace Afterglow.DirectX.Plugin
 
             if (String.IsNullOrEmpty(this.TargetProcess))
             {
-                Logger.Warn("Configuration: No executable name has been provided to capture");
+                //Logger.Warn("Configuration: No executable name has been provided to capture");
                 return;
             }
 

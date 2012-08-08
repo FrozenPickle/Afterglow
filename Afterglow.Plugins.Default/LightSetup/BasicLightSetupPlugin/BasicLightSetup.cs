@@ -3,25 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Afterglow.Core.Plugins;
-using Afterglow.Core.Storage;
 using Afterglow.Core;
 using System.Collections.ObjectModel;
 using Afterglow.Core.Configuration;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 {
+    //This Class requires a custom UI
     [ConfigCustom(CustomControlName = "Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl")]
-    public class BasicLightSetup :BasePlugin, ILightSetupPlugin
+    public class BasicLightSetup : BasePlugin, ILightSetupPlugin
     {
-        public BasicLightSetup()
-        {
-        }
-
-         public BasicLightSetup(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
         #region Read Only Properties
         public override string Name
         {
@@ -49,42 +41,30 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         }
         #endregion
 
-        [ConfigNumber(DisplayName = "Number Of Lights High", Min = 1, Max = 999999, IsHidden = true)]
-        public int? NumberOfLightsHigh
+        [Required]
+        [Display(Name = "Number Of Lights High")]
+        [Range(1, 999999)]
+        public int NumberOfLightsHigh
         {
             get { return Get(() => NumberOfLightsHigh, () => 1); }
             set { Set(() => NumberOfLightsHigh, value); }
         }
 
-        [ConfigNumber(DisplayName = "Number Of Lights Wide", Min = 1, Max = 999999, IsHidden = true)]
-        public int? NumberOfLightsWide
+        [Required]
+        [Display(Name = "Number Of Lights Wide")]
+        [Range(1, 999999)]
+        public int NumberOfLightsWide
         {
             get { return Get(() => NumberOfLightsWide, () => 1); }
             set { Set(() => NumberOfLightsWide, value); }
         }
 
-        #region Lights
-        [ConfigTable(DisplayName = "Lights", IsHidden = true)]
-        public ObservableCollection<Core.Light> Lights
+        [Display(Name = "Lights", AutoGenerateField=false)]
+        public List<Core.Light> Lights
         {
             get { return Get(() => Lights); }
             set { Set(() => Lights, value); }
         }
-
-        public Light AddLight()
-        {
-            Light light = new Light(Table.Database.AddTable(), this.Logger, this.Runtime);
-            this.Lights.Add(light);
-            SaveToStorage(() => this.Lights, this.Lights);
-            return light;
-        }
-
-        public void RemoveLight(Light light)
-        {
-            this.Lights.Remove(light);
-            SaveToStorage(() => this.Lights, this.Lights);
-        }
-        #endregion
 
 
         public override void Start()
@@ -107,8 +87,8 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
                 _width = CaptureWidth;
                 _height = CaptureHeight;
 
-                int segmentWidth = CaptureWidth / NumberOfLightsWide.Value;
-                int segmentHight = CaptureHeight / NumberOfLightsHigh.Value;
+                int segmentWidth = CaptureWidth / NumberOfLightsWide;
+                int segmentHight = CaptureHeight / NumberOfLightsHigh;
                 
                 foreach (Light light in this.Lights)
                 {

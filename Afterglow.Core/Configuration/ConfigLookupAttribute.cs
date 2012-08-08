@@ -9,7 +9,7 @@ namespace Afterglow.Core.Configuration
     /// <summary>
     /// Currently supported datatypes are string[] and Enum
     /// </summary>
-    public class ConfigLookupAttribute: ConfigAttribute
+    public class ConfigLookupAttribute : ConfigAttribute
     {
         /// <summary>
         /// A property or parameterless function that returns an <see cref="IEnumerable{Object}" />. Note: the return object must be assignable to the property.

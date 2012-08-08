@@ -17,10 +17,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Afterglow.Web\bin\Debug\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,9 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,12 +47,6 @@
     <Compile Include="Capture\CopyScreenCapture.cs" />
     <Compile Include="ColourExtraction\AverageColourExtraction.cs" />
     <Compile Include="LightSetup\BasicLightSetupPlugin\BasicLightSetup.cs" />
-    <Compile Include="LightSetup\BasicLightSetupPlugin\BasicLightSetupUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="LightSetup\BasicLightSetupPlugin\BasicLightSetupUserControl.Designer.cs">
-      <DependentUpon>BasicLightSetupUserControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Output\ArduinoOutput.cs" />
     <Compile Include="Output\DebugOutput.cs" />
     <Compile Include="Output\PreviewOutput.cs" />
@@ -58,20 +54,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Afterglow.Core.UI\Afterglow.Core.UI.csproj">
-      <Project>{D6D27730-4ED5-4CAE-AC03-862EDDD27577}</Project>
-      <Name>Afterglow.Core.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Afterglow.Core\Afterglow.Core.csproj">
       <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
       <Name>Afterglow.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <EmbeddedResource Include="LightSetup\BasicLightSetupPlugin\BasicLightSetupUserControl.resx">
-      <DependentUpon>BasicLightSetupUserControl.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

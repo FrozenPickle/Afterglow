@@ -5,7 +5,6 @@ using System.Text;
 using Afterglow.Core.Plugins;
 using System.Windows.Forms;
 using Afterglow.Core;
-using Afterglow.Core.Storage;
 using System.Threading.Tasks;
 using Afterglow.Plugins.LightSetup.BasicLightSetupPlugin;
 
@@ -13,15 +12,6 @@ namespace Afterglow.Plugins.Output
 {
     public class PreviewOutput: BasePlugin, IOutputPlugin
     {
-        public PreviewOutput()
-        {
-        }
-
-        public PreviewOutput(ITable table, Afterglow.Core.Log.ILogger logger, AfterglowRuntime runtime)
-            : base(table, logger, runtime)
-        {
-        }
-
         #region Read-only properties
         public override string Name
         {
@@ -50,7 +40,6 @@ namespace Afterglow.Plugins.Output
         #endregion
 
         Form _previewForm;
-        BasicLightSetupUserControl _lightControlDisplay;
         
         public override void Start()
         {
@@ -59,9 +48,9 @@ namespace Afterglow.Plugins.Output
                 _previewForm = new Form();
                 _previewForm.Width = 1024;
                 _previewForm.Height = 768;
-                _lightControlDisplay = new BasicLightSetupUserControl(this.Runtime.CurrentProfile.LightSetupPlugin) { Top = 0, Left = 0, Width = 1020, Height = 768, Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left };
+                //_lightControlDisplay = new BasicLightSetupUserControl(this.Runtime.CurrentProfile.OLDLightSetupPlugin) { Top = 0, Left = 0, Width = 1020, Height = 768, Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left };
 
-                _previewForm.Controls.Add(_lightControlDisplay);
+                //_previewForm.Controls.Add(_lightControlDisplay);
                 
                 Application.Run(_previewForm);
             });
@@ -91,7 +80,7 @@ namespace Afterglow.Plugins.Output
                     {
                         try
                         {
-                            _lightControlDisplay.SetCellColours(lights);
+                            //_lightControlDisplay.SetCellColours(lights);
                         }
                         catch
                         {
