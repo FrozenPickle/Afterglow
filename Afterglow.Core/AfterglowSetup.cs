@@ -237,7 +237,7 @@ namespace Afterglow.Core
         #endregion
 
         //Actions to perform when this object has loaded from XML
-        public void OnDeserialized()
+        internal void OnDeserialized()
         {
             //Set the parents
             foreach (Profile profile in this.Profiles)

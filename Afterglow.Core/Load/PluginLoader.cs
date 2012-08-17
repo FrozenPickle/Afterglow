@@ -17,38 +17,43 @@ namespace Afterglow.Core.Load
 
     public class DynamicPluginLoader
     {
+
+        static List<Type> _types = null;
+
         //Help found at http://blogs.msdn.com/b/abhinaba/archive/2005/11/14/492458.aspx
         public Type[] GetObjectsTypes<T>(string folder)
         {
             string[] files = Directory.GetFiles(folder, "*.dll");
 
-            List<Type> types = new System.Collections.Generic.List<Type>();
-
-            foreach (string file in files)
+            if (_types == null)
             {
-                try
+                _types = new System.Collections.Generic.List<Type>();
+
+                foreach (string file in files)
                 {
-                    Assembly assembly = Assembly.LoadFile(file);
-
-                    var assemblyTypes = (from assemblyType in assembly.GetTypes()
-                                where assemblyType.IsClass && assemblyType.IsPublic &&
-                                    (from i in assemblyType.GetInterfaces()
-                                        where i == typeof(T)
-                                            select i).Any()
-                                select assemblyType).ToArray();
-
-                    if (assemblyTypes != null && assemblyTypes.Any())
+                    try
                     {
-                        types.AddRange(assemblyTypes);
+                        Assembly assembly = Assembly.LoadFile(file);
+
+                        var assemblyTypes = (from assemblyType in assembly.GetTypes()
+                                             where assemblyType.IsClass && assemblyType.IsPublic &&
+                                                 (from i in assemblyType.GetInterfaces()
+                                                  where i == typeof(T)
+                                                  select i).Any()
+                                             select assemblyType).ToArray();
+
+                        if (assemblyTypes != null && assemblyTypes.Any())
+                        {
+                            _types.AddRange(assemblyTypes);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        //LogError(ex);
                     }
                 }
-                catch (Exception)
-                {
-                    //LogError(ex);
-                }
             }
-
-            return types.ToArray();
+            return _types.ToArray();
         }
 
         public Type GetObjectType(string typeName)

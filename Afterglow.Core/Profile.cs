@@ -111,7 +111,7 @@ namespace Afterglow.Core
         //Rebuild Selected Plugins with objects from AfterglowSetup.Configured*Plugins
         //So that object references are all correct
         //Will also use less RAM
-        public void OnDeserialized()
+        internal void OnDeserialized()
         {
             SerializableInterfaceList<ILightSetupPlugin> lightSetupPlugins = new SerializableInterfaceList<ILightSetupPlugin>();
             foreach (ILightSetupPlugin lightSetupPlugin in LightSetupPlugins)
