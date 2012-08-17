@@ -28,7 +28,12 @@ namespace Afterglow.Core
         
         private string _setupFileName;
 
-        public AfterglowRuntime(string SetupFileName = "AfterglowSetup.xml")
+        public AfterglowRuntime()
+            : this("AfterglowSetup.xml")
+        {
+        }
+        
+        public AfterglowRuntime(string SetupFileName)
         {
             this._setupFileName = SetupFileName;
 

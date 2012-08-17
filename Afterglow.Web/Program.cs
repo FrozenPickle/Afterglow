@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Afterglow.Core;
+using Griffin.Networking.Http;
+using Griffin.Networking.Pipelines;
+using Griffin.Networking.Http.Handlers;
+using Griffin.Networking.Http.Implementation;
+using Griffin.Networking.Http.Services.Errors;
+using Griffin.Networking.Http.Services.BodyDecoders;
+using System.Net;
 
 namespace Afterglow.Web
 {
@@ -13,7 +20,24 @@ namespace Afterglow.Web
         {
 
 
-            _runtime = new AfterglowRuntime();
+            //_runtime = new AfterglowRuntime();
+
+            var factory = new DelegatePipelineFactory();
+            //factory.AddDownstreamHandler(authHandler);
+            factory.AddDownstreamHandler(() => new ResponseEncoder());
+
+            factory.AddUpstreamHandler(() => new HeaderDecoder(new HttpParser()));
+            factory.AddUpstreamHandler(new HttpErrorHandler(new SimpleErrorFormatter()));
+            //factory.AddUpstreamHandler(authHandler);
+            factory.AddUpstreamHandler(() => new BodyDecoder(new CompositeBodyDecoder(), 65535, 6000000));
+            //factory.AddUpstreamHandler(() => new FileHandler());
+            factory.AddUpstreamHandler(() => new MessageHandler());
+            //factory.AddUpstreamHandler(new PipelineFailureHandler());
+
+            Griffin.Networking.Http.HttpListener listener = new Griffin.Networking.Http.HttpListener(factory);
+            listener.Start(new IPEndPoint(IPAddress.Any, 8080));
+
+            Console.ReadLine();
 
             //_runtime.Setup = new AfterglowSetup();
             //Profile p = new Profile();

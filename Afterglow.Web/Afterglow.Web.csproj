@@ -42,6 +42,9 @@
     <Reference Include="Griffin.Networking">
       <HintPath>..\packages\Griffin.Networking.0.1.1\lib\net40\Griffin.Networking.dll</HintPath>
     </Reference>
+    <Reference Include="Griffin.Networking.Http">
+      <HintPath>..\External\Griffin.Networking\Griffin.Networking.Http.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Security" />
@@ -52,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

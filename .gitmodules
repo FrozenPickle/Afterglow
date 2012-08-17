@@ -1,0 +1,6 @@
+[submodule "External/griffin.networking"]
+	path = External/griffin.networking
+	url = https://github.com/jgauffin/griffin.networking.git
+[submodule "submodules/griffin.networking"]
+	path = submodules/griffin.networking
+	url = https://github.com/jgauffin/griffin.networking.git
