@@ -13,16 +13,23 @@ namespace Afterglow.Plugins.PostProcess
     public class ColourCorrectionPostProcess : BasePlugin, IPostProcessPlugin
     {
         #region Read Only Properties
+        /// <summary>
+        /// The name of the current plugin
+        /// </summary>
         public override string Name
         {
             get { return "Colour Correction Plugin"; }
         }
-
+        /// <summary>
+        /// A description of this plugin
+        /// </summary>
         public override string Description
         {
             get { return "Adjust the colours to your room"; }
         }
-
+        /// <summary>
+        /// The author of this plugin
+        /// </summary>
         public override string Author
         {
             get { return "Jono C."; }
@@ -86,9 +93,9 @@ namespace Afterglow.Plugins.PostProcess
     
         public void Process(Core.Light led)
         {
-            double red = led.LEDColour.R;
-            double green = led.LEDColour.G;
-            double blue = led.LEDColour.B;
+            double red = led.LightColour.R;
+            double green = led.LightColour.G;
+            double blue = led.LightColour.B;
 
             bool coloursChanged = false;
 
@@ -130,15 +137,15 @@ namespace Afterglow.Plugins.PostProcess
 
             if (coloursChanged)
             {
-                int resultRed = led.LEDColour.R;
-                int resultGreen = led.LEDColour.G;
-                int resultBlue = led.LEDColour.B;
+                int resultRed = led.LightColour.R;
+                int resultGreen = led.LightColour.G;
+                int resultBlue = led.LightColour.B;
 
                 resultRed = Convert.ToInt32(red);
                 resultGreen = Convert.ToInt32(green);
                 resultBlue = Convert.ToInt32(blue);
 
-                led.LEDColour = Color.FromArgb(resultRed, resultGreen, resultBlue);
+                led.LightColour = Color.FromArgb(resultRed, resultGreen, resultBlue);
             }
 
         }

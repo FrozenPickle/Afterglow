@@ -14,40 +14,54 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Plugins.Output
 {
+    /// <summary>
+    /// Arduino Output
+    /// </summary>
     public class ArduinoOutput: BasePlugin, IOutputPlugin
     {
-        SerialPort _port;
-        byte[] _serialData;
+        private SerialPort _port;
+        private byte[] _serialData;
         
         #region Read Only Properties
+        /// <summary>
+        /// The name of the current plugin
+        /// </summary>
         public override string Name
         {
             get { return "Arduino Output"; }
         }
-
+        /// <summary>
+        /// A description of this plugin
+        /// </summary>
         public override string Description
         {
             get { return "Output to the Afterglow Arduino 1.0 application"; }
         }
-
+        /// <summary>
+        /// The author of this plugin
+        /// </summary>
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
-
+        /// <summary>
+        /// A website for further information
+        /// </summary>
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
-
+        /// <summary>
+        /// The version of this plugin
+        /// </summary>
         public override Version Version
         {
-            get { return new Version(1, 0, 0); }
+            get { return new Version(1, 0, 1); }
         }
         #endregion
 
         [Required]
-        [Display(Name = "Serial Port", Order = 200)]
+        [Display(Name = "Serial Port", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "Ports")]
         public string Port
         {
@@ -55,13 +69,20 @@ namespace Afterglow.Plugins.Output
             set { Set(() => Port, value); }
         }
 
+        /// <summary>
+        /// Gets the available Serial/USB ports that
+        /// If none are found it is possible the driver is not installed
+        /// </summary>
         public string[] Ports
         {
-            get { return SerialPort.GetPortNames(); }
+            get
+            {
+                return SerialPort.GetPortNames();
+            }
         }
 
         [Required]
-        [Display(Name = "Baud Rate")]
+        [Display(Name = "Baud Rate", Order = 200)]
         [Range(0, 999999)]
         public int BaudRate
         {
@@ -70,7 +91,9 @@ namespace Afterglow.Plugins.Output
         }
 
         [Required]
-        [Display(Name = "Magic Word", Description = "This is a special value used to communicate with the arduino")]
+        [Display(Name = "Magic Word", 
+            Description = "This is a special value used to communicate with the arduino",
+            Order = 300)]
         [StringLength(3)]
         public string MagicWord
         {
@@ -78,13 +101,17 @@ namespace Afterglow.Plugins.Output
             set { Set(() => MagicWord, value); }
         }
 
+        /// <summary>
+        /// Start this Plugin
+        /// </summary>
         public override void Start()
         {
             //TODO: error checking and configuration of port
-            //TODO lots of work here
+            //TODO: possibly check device manager and see if Arduino is founds just not installed
             if (Ports.Length == 0)
             {
                 //Logger.Warn("No serial ports found");
+                throw new Exception("No serial ports found");
             }
             else
             {
@@ -94,8 +121,13 @@ namespace Afterglow.Plugins.Output
                 {
                     _port.Open();
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
+                    //TODO: try and reset the serial connection so the user does not need to disconnect and reattach the cable
+                    string message = "Please un plug and re attach the cable";
+                    
+                    throw new Exception(message, e);
+                    
                     //Logger.Error(ex, "Arduino not found");
                 }
             }
@@ -107,28 +139,32 @@ namespace Afterglow.Plugins.Output
             Start();
         }
 
-        public void Output(List<Core.Light> leds)
+        /// <summary>
+        /// Send the light information to the arduino
+        /// </summary>
+        /// <param name="lights"></param>
+        public void Output(List<Core.Light> lights)
         {
             if (_port != null && _port.IsOpen)
             {
-                if (_serialData == null || _serialData.Length != leds.Count)
+                if (_serialData == null || _serialData.Length != lights.Count)
                 {
-                    _serialData = new byte[6 + leds.Count * 3];
+                    _serialData = new byte[6 + lights.Count * 3];
 
                     _serialData[0] = Convert.ToByte(this.MagicWord.ToCharArray(0, 1)[0]); // Magic word
                     _serialData[1] = Convert.ToByte(this.MagicWord.ToCharArray(1, 1)[0]);
                     _serialData[2] = Convert.ToByte(this.MagicWord.ToCharArray(2, 1)[0]);
-                    _serialData[3] = (byte)((leds.Count) >> 8); // LED count high byte
-                    _serialData[4] = (byte)((leds.Count) & 0xff); // LED count low byte
+                    _serialData[3] = (byte)((lights.Count) >> 8); // LED count high byte
+                    _serialData[4] = (byte)((lights.Count) & 0xff); // LED count low byte
                     _serialData[5] = (byte)(_serialData[3] ^ _serialData[4] ^ 0x55); // Checksum
                 }
 
                 int serialDataPos = 6;
-                foreach (var led in leds.OrderBy(l => l.Index))
+                foreach (var led in lights.OrderBy(l => l.Index))
                 {
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LEDColour.R);
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LEDColour.G);
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LEDColour.B);
+                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.R);
+                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.G);
+                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.B);
                 }
 
                 // Issue data to Arduino
@@ -148,6 +184,9 @@ namespace Afterglow.Plugins.Output
             }
         }
 
+        /// <summary>
+        /// Stop this Plugin
+        /// </summary>
         public override void Stop()
         {
             if (_port != null)

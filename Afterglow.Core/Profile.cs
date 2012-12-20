@@ -15,9 +15,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Core
 {
+    /// <summary>
+    /// A collection of plugins and settings needed to run afterglow
+    /// </summary>
     public class Profile : BaseModel
     {
         private AfterglowSetup _setup;
+        /// <summary>
+        /// A reference to the Setup object
+        /// </summary>
+        /// <remarks>AfterglowSetup is saved but not from here this object reference is set else where</remarks>
         [XmlIgnore]
         public AfterglowSetup Setup
         {
@@ -31,29 +38,69 @@ namespace Afterglow.Core
             }
         }
 
+        ///<summary>
+        /// General settings applied to the whole profile
+        ///</summary>
+        #region General Settings
+        /// <summary>
+        /// The display name of this Profile
+        /// </summary>
         [Required]
-        [Display(Name = "Name", Order = 100)]
+        [Display(Name = "Name", Order = 100, GroupName = "General Settings")]
         public string Name
         {
             get { return Get(() => Name, "Default Profile"); }
             set { Set(() => Name, value); }
         }
 
+        /// <summary>
+        /// A discription of how/what this Profile does differently to others
+        /// </summary>
         [Required]
-        [Display(Name = "Description", Order = 200)]
+        [Display(Name = "Description", Order = 200, GroupName = "General Settings")]
         public string Description
         {
             get { return Get(() => Description); }
             set { Set(() => Description, value); }
         }
+        
+        /// <summary>
+        /// This sets the minimum time that the program will take to complete each loop
+        /// Frame Rate = Frame Rate Limiter + Execution time of program
+        /// Default - 1 Millisecond
+        /// </summary>
+        [Required]
+        [Display(Name = "Frame Rate Limiter", 
+            Order = 300, 
+            Description = "This sets the minimum time that the program will take to complete each loop. Frame Rate = Frame Rate Limiter + Execution time of program", 
+            GroupName = "General Settings")]
+        public TimeSpan FrameRateLimiter
+        {
+            get { return Get(() => FrameRateLimiter, new TimeSpan(0, 0, 0, 0, 1)); }
+            set { Set(() => FrameRateLimiter, value); }
+        }
+        #endregion
 
+        ///<summary>
+        /// References to selected plugins
+        /// Changing the configuration of one plugin applies to the configuration of that plugin for all the profiles it is used in
+        /// SerializableInterfaceList has been used to store all plugins so that the adding/removing/saving/loading between all plugins works the same
+        ///</summary>
         #region Selected Plugins
+        /// <summary>
+        /// Selected Light Setup Plugin
+        /// <strong>Only one item should be stored in this collection</strong>
+        /// </summary>
         [Required]
         public SerializableInterfaceList<ILightSetupPlugin> LightSetupPlugins
         {
             get { return Get(() => LightSetupPlugins, () => new SerializableInterfaceList<ILightSetupPlugin>()); }
             set { Set(() => LightSetupPlugins, value); }
         }
+
+        /// <summary>
+        /// Gets the configured Light Setup Plugin
+        /// </summary>
         [XmlIgnore]
         public ILightSetupPlugin LightSetupPlugin
         {
@@ -62,13 +109,19 @@ namespace Afterglow.Core
                 return LightSetupPlugins.FirstOrDefault();
             }
         }
-
+        /// <summary>
+        /// Selected Capture Plugin
+        /// <strong>Only one item should be stored in this collection</strong>
+        /// </summary>
         [Required]
         public SerializableInterfaceList<ICapturePlugin> CapturePlugins
         {
             get { return Get(() => CapturePlugins, () => new SerializableInterfaceList<ICapturePlugin>()); }
             set { Set(() => CapturePlugins, value); }
         }
+        /// <summary>
+        /// Gets the configured Capture Plugin
+        /// </summary>
         [XmlIgnore]
         public ICapturePlugin CapturePlugin
         {
@@ -78,12 +131,19 @@ namespace Afterglow.Core
             }
         }
 
+        /// <summary>
+        /// Selected Colour Extraction Plugin
+        /// <strong>Only one item should be stored in this collection</strong>
+        /// </summary>
         [Required]
         public SerializableInterfaceList<IColourExtractionPlugin> ColourExtractionPlugins
         {
             get { return Get(() => ColourExtractionPlugins, () => new SerializableInterfaceList<IColourExtractionPlugin>()); }
             set { Set(() => ColourExtractionPlugins, value); }
         }
+        /// <summary>
+        /// Gets the configured Colour Extraction Plugin
+        /// </summary>
         [XmlIgnore]
         public IColourExtractionPlugin ColourExtractionPlugin
         {
@@ -93,12 +153,20 @@ namespace Afterglow.Core
             }
         }
 
+        /// <summary>
+        /// Selected Post Process Plugins
+        /// Optional - may contain zero or more plugins
+        /// </summary>
         public SerializableInterfaceList<IPostProcessPlugin> PostProcessPlugins
         {
             get { return Get(() => PostProcessPlugins, () => new SerializableInterfaceList<IPostProcessPlugin>()); }
             set { Set(() => PostProcessPlugins, value); }
         }
 
+        /// <summary>
+        /// Selected Output Plugins
+        /// Must contain at least one plugin
+        /// </summary>
         [Required]
         public SerializableInterfaceList<IOutputPlugin> OutputPlugins
         {
@@ -108,9 +176,10 @@ namespace Afterglow.Core
 
         #endregion
         
-        //Rebuild Selected Plugins with objects from AfterglowSetup.Configured*Plugins
-        //So that object references are all correct
-        //Will also use less RAM
+        /// <summary>
+        /// This rebuilds Selected Plugins with objects from AfterglowSetup.Configured*Plugins
+        /// So that object references are re-used therefore will also use less RAM
+        /// </summary>
         internal void OnDeserialized()
         {
             SerializableInterfaceList<ILightSetupPlugin> lightSetupPlugins = new SerializableInterfaceList<ILightSetupPlugin>();
@@ -122,7 +191,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = lightSetupPlugin;
-                    existingPlugin.Id = this.Setup.GetPluginId<ILightSetupPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewPluginId<ILightSetupPlugin>();
                     this.Setup.ConfiguredLightSetupPlugins.Add(existingPlugin);
                 }
                 lightSetupPlugins.Add(existingPlugin);
@@ -137,7 +206,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = capturePlugin;
-                    existingPlugin.Id = this.Setup.GetPluginId<ICapturePlugin>();
+                    existingPlugin.Id = this.Setup.GetNewPluginId<ICapturePlugin>();
                     this.Setup.ConfiguredCapturePlugins.Add(existingPlugin);
                 }
                 capturePlugins.Add(existingPlugin);
@@ -152,7 +221,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = colourExtractionPlugin;
-                    existingPlugin.Id = this.Setup.GetPluginId<IColourExtractionPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewPluginId<IColourExtractionPlugin>();
                     this.Setup.ConfiguredColourExtractionPlugins.Add(existingPlugin);
                 }
                 colourExtractionPlugins.Add(existingPlugin);
@@ -167,7 +236,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = postProcessPlugin;
-                    existingPlugin.Id = this.Setup.GetPluginId<IPostProcessPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewPluginId<IPostProcessPlugin>();
                     this.Setup.ConfiguredPostProcessPlugins.Add(existingPlugin);
                 }
                 postProcessPlugins.Add(existingPlugin);
@@ -182,7 +251,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = outputPlugin;
-                    existingPlugin.Id = this.Setup.GetPluginId<IOutputPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewPluginId<IOutputPlugin>();
                     this.Setup.ConfiguredOutputPlugins.Add(existingPlugin);
                 }
                 outputPlugins.Add(existingPlugin);
@@ -190,18 +259,43 @@ namespace Afterglow.Core
             this.OutputPlugins = outputPlugins;
         }
 
+        /// <summary>
+        /// Extra validation
+        /// </summary>
         public void Validate()
         {
-            if (LightSetupPlugin == null)
-                throw new InvalidOperationException("LightSetupPlugin is not set");
-            if (CapturePlugin == null)
-                throw new InvalidOperationException("CapturePlugin is not set");
-            if (ColourExtractionPlugin == null)
-                throw new InvalidOperationException("ColourExtractionPlugin is not set");
+            #region LightSetupPlugin Validation
+            if (LightSetupPlugins == null)
+                throw new ValidationException("Light Setup Plugins cannot be null");
+            if (LightSetupPlugins.Count != 1)
+                throw new ValidationException("Only 1 Light Setup Plugin can be set");
+            #endregion
+
+            #region CapturePlugin Validation
+            if (CapturePlugins == null)
+                throw new ValidationException("Capture Plugins cannot be null");
+            if (CapturePlugins.Count != 1)
+                throw new ValidationException("Only 1 Capture Plugin can be set");
+            #endregion
+
+            #region ColourExtractionPlugin Validation
+            if (ColourExtractionPlugins == null)
+                throw new ValidationException("Colour Extraction Plugins cannot be null");
+            if (ColourExtractionPlugins.Count != 1)
+                throw new ValidationException("Only 1 Colour Extraction Plugin can be set");
+            #endregion
+
+            #region PostProcessPlugin Validation
             if (PostProcessPlugins == null)
-                throw new InvalidOperationException("PostProcessPlugins is not set");
+                throw new ValidationException("Post Process Plugins cannot be null");
+            #endregion
+
+            #region OutputPlugin Validation
             if (OutputPlugins == null)
-                throw new InvalidOperationException("OutputPlugins is not set");
+                throw new ValidationException("Output Plugins cannot be null");
+            if (ColourExtractionPlugins.Count <= 0)
+                throw new ValidationException("At least 1 Output Plugin must be set");
+            #endregion
         }
     }
 }

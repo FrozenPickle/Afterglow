@@ -20,16 +20,23 @@ namespace Afterglow.DirectX.Plugin
 {
     public class Direct3DCapture : BasePlugin, ICapturePlugin
     {
+        /// <summary>
+        /// The name of the current plugin
+        /// </summary>
         public override string Name
         {
             get { return "Direct3D Capture"; }
         }
-
+        /// <summary>
+        /// The author of this plugin
+        /// </summary>
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
-
+        /// <summary>
+        /// A description of this plugin
+        /// </summary>
         public override string Description
         {
             get { return "An Afterglow capture plugin for Direct3D 9/10/11 applications"; }
@@ -81,19 +88,19 @@ namespace Afterglow.DirectX.Plugin
             Inject();
             _stopped = false;
             _screenshotPump = new Task(() =>
-                                           {
-                                               _startTime = DateTime.Now;
-                                               while(!_stopped)
-                                               {
-                                                   var response = ScreenshotManager.GetScreenshotSynchronous(_processId,
-                                                                                              new ScreenshotRequest(
-                                                                                                  Rectangle.Empty));
-                                                   if (response != null)
-                                                       Interlocked.Increment(ref _captures);
-                                                   Interlocked.Exchange(ref _currentResponse, response);
-                                                   Thread.Sleep(5);
-                                               }
-                                           }, TaskCreationOptions.LongRunning);
+                {
+                    _startTime = DateTime.Now;
+                    while(!_stopped)
+                    {
+                        var response = ScreenshotManager.GetScreenshotSynchronous(_processId,
+                                                                    new ScreenshotRequest(
+                                                                        Rectangle.Empty));
+                        if (response != null)
+                            Interlocked.Increment(ref _captures);
+                        Interlocked.Exchange(ref _currentResponse, response);
+                        Thread.Sleep(5);
+                    }
+                }, TaskCreationOptions.LongRunning);
             _screenshotPump.Start();
         }
 

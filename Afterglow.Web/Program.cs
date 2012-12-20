@@ -20,7 +20,7 @@ namespace Afterglow.Web
         {
 
 
-            //_runtime = new AfterglowRuntime();
+            _runtime = new AfterglowRuntime();
 
             var factory = new DelegatePipelineFactory();
             //factory.AddDownstreamHandler(authHandler);
@@ -35,8 +35,9 @@ namespace Afterglow.Web
             //factory.AddUpstreamHandler(new PipelineFailureHandler());
 
             Griffin.Networking.Http.HttpListener listener = new Griffin.Networking.Http.HttpListener(factory);
-            listener.Start(new IPEndPoint(IPAddress.Any, 8080));
+            listener.Start(new IPEndPoint(IPAddress.Any, _runtime.Setup.Port));
 
+            _runtime.Start();
             Console.ReadLine();
 
             //_runtime.Setup = new AfterglowSetup();

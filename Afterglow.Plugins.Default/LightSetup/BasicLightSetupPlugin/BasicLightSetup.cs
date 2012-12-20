@@ -15,26 +15,37 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
     public class BasicLightSetup : BasePlugin, ILightSetupPlugin
     {
         #region Read Only Properties
+        /// <summary>
+        /// The name of the current plugin
+        /// </summary>
         public override string Name
         {
             get { return "Basic Light Region Setup"; }
         }
-
+        /// <summary>
+        /// A description of this plugin
+        /// </summary>
         public override string Description
         {
             get { return "Setup the capture image location that is converted into light"; }
         }
-
+        /// <summary>
+        /// The author of this plugin
+        /// </summary>
         public override string Author
         {
             get { return "Jono C"; }
         }
-
+        /// <summary>
+        /// A website for further information
+        /// </summary>
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
-
+        /// <summary>
+        /// The version of this plugin
+        /// </summary>
         public override Version Version
         {
             get { return new Version(1, 0, 0); }
@@ -66,11 +77,16 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
             set { Set(() => Lights, value); }
         }
 
-
+        /// <summary>
+        /// Not used for this plugin
+        /// </summary>
         public override void Start()
         {
 
         }
+        /// <summary>
+        /// Not used for this plugin
+        /// </summary>
         public override void Stop()
         {
 

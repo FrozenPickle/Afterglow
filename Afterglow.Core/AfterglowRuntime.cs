@@ -17,45 +17,54 @@ using System.Text.RegularExpressions;
 
 namespace Afterglow.Core
 {
+    /// <summary>
+    /// The core Afterglow functionality
+    /// </summary>
     public sealed class AfterglowRuntime
     {
-        public DynamicPluginLoader Loader;
-
-        public bool ShowPreview { get; set; }
-
+        /// <summary>
+        /// The main loop task
+        /// </summary>
         private Task _mainLoopTask;
+        /// <summary>
+        /// Setting this to false will stop the main loop
+        /// </summary>
         private bool _active;
         
+        /// <summary>
+        /// File location of the setup xml file
+        /// </summary>
         private string _setupFileName;
 
+        /// <summary>
+        /// Creates an instance of the Afterglow Runtime using the current execution path to save/load the configuration
+        /// </summary>
         public AfterglowRuntime()
             : this("AfterglowSetup.xml")
         {
         }
         
+        /// <summary>
+        /// Creates an instance of the Afterglow Runtime using the supplied configuration file
+        /// </summary>
+        /// <param name="SetupFileName">File path of xml configuration</param>
         public AfterglowRuntime(string SetupFileName)
         {
             this._setupFileName = SetupFileName;
 
-            this.Loader = new DynamicPluginLoader();
-
-            PluginLoader.Loader = this.Loader;
-
-
+            //If nothing could be loaded create a new setup file in the location specified
             if (!this.Load())
             {
                 this.Setup = new AfterglowSetup();
-
             }
 
             CurrentProfile = this.Setup.Profiles.First();
-            this.Start();
-            Console.Read();
-            //this.Setup.ConfiguredCapturePlugins = this.Setup.DefaultCapturePlugins();
-            //this.Save();
         }
 
         private AfterglowSetup _setup;
+        /// <summary>
+        /// The current setup
+        /// </summary>
         public AfterglowSetup Setup
         {
             get
@@ -72,13 +81,13 @@ namespace Afterglow.Core
             }
         }
 
+        private Profile _currentProfile;
         /// <summary>
         /// Current profile contains a copied object of the original
         /// copying is done so that changes to settings can be made 
         /// without affecting the currently running profile
         /// copying is done using XML as this has been setup already
         /// </summary>
-        private Profile _currentProfile;
         public Profile CurrentProfile 
         {
             get
@@ -113,18 +122,24 @@ namespace Afterglow.Core
             }
         }
 
-        public bool Save()
+        /// <summary>
+        /// Save the current setup
+        /// </summary>
+        /// <param name="filePath">Optional - by default saving is done to path specfied on object creation, otherwise to the locaiton specified</param>
+        /// <returns>Save success or failure</returns>
+        public bool Save(string filePath = null)
         {
             if (this.Setup != null)
             {
+                string saveFilePath = (filePath ?? _setupFileName);
                 try
                 {
-                    Type[] extraTypes = this.Loader.GetPlugins<IAfterglowPlugin>();
-                    // use reflection to look at all assemblies
-
-                    XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup),extraTypes);
+                    //Gets all possibly used IAfterglowPlugins
+                    Type[] extraTypes = PluginLoader.Loader.GetPlugins<IAfterglowPlugin>();
                     
-                    StreamWriter writer = new StreamWriter(_setupFileName);
+                    XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
+
+                    StreamWriter writer = new StreamWriter(saveFilePath);
                     serializer.Serialize(writer.BaseStream, this.Setup);
                     writer.Dispose();
                     return true;
@@ -142,20 +157,17 @@ namespace Afterglow.Core
             }
         }
         
-        void serializer_UnknownNode(object sender, XmlNodeEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Load Configuration from XML
+        /// </summary>
+        /// <returns>true - successfull or false - unsucessfull load</returns>
         public bool Load()
         {
-            
-            //this.Save();
             if (File.Exists(_setupFileName))
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup));
 
-                //Good for debug
+                //Good for debugging
                 //serializer.UnknownNode += new XmlNodeEventHandler(serializer_UnknownNode);
 
                 StreamReader reader = new StreamReader(_setupFileName);
@@ -189,6 +201,9 @@ namespace Afterglow.Core
         //    }
         //}
 
+        /// <summary>
+        /// Start running the current profile
+        /// </summary>
         public void Start()
         {
             if (CurrentProfile == null)
@@ -204,6 +219,9 @@ namespace Afterglow.Core
             }
         }
 
+        /// <summary>
+        /// Stop running the current profile
+        /// </summary>
         public void Stop()
         {
             if (_active)
@@ -217,6 +235,9 @@ namespace Afterglow.Core
             }
         }
 
+        /// <summary>
+        /// The main Afterglow Loop
+        /// </summary>
         private void MainLoop()
         {
 
@@ -226,7 +247,7 @@ namespace Afterglow.Core
             3. Perform post processing
             4. Cleanup Captured Regions
             5. Perform Output(s)
-            6. Perform timing waits / whatever
+            6. Perform timing waits
             7. Check for messages (stop etc)
              * */
 
@@ -235,38 +256,43 @@ namespace Afterglow.Core
             CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Start());
             CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Start());
 
-            // TODO: until Logging is complete assign a default logger
-
             try
             {
                 //int cycles = 0;
                 while (_active)
                 {
+                    //Get Light Setup Plugin
                     ILightSetupPlugin lightSetupPlugin = CurrentProfile.LightSetupPlugin;
 
+                    //Set previous light colour
                     foreach (var light in lightSetupPlugin.Lights)
                     {
-                        light.OldLEDColour = light.LEDColour;
+                        light.OldLightColour = light.LightColour;
                         light.OldSourceColour = light.SourceColour;
                     }
 
+                    //Get screen segments
                     IDictionary<Light, PixelReader> ledSources = CurrentProfile.CapturePlugin.Capture(lightSetupPlugin);
                     try
                     {
+                        //Extract Colours from segments
                         foreach (var keyValue in ledSources)
                         {
                             keyValue.Key.SourceColour = CurrentProfile.ColourExtractionPlugin.Extract(keyValue.Key, keyValue.Value);
-                            keyValue.Key.LEDColour = keyValue.Key.SourceColour;
+                            keyValue.Key.LightColour = keyValue.Key.SourceColour;
                         }
                     }
                     finally
                     {
+                        //Dispose of screen segments
                         foreach (var keyValue in ledSources)
                             keyValue.Value.Dispose();
 
+                        //Dispose of whole screen
                         CurrentProfile.CapturePlugin.ReleaseCapture();
                     }
 
+                    //Run any Post Process Plugins
                     foreach (var postProcessPlugin in CurrentProfile.PostProcessPlugins)
                     {
                         foreach (var led in lightSetupPlugin.Lights)
@@ -275,9 +301,11 @@ namespace Afterglow.Core
                         }
                     }
 
+                    //Run Output Plugin
                     CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(lightSetupPlugin.Lights.ToList()));
 
-                    // TODO: implement timing logic
+                    //Frame Rate Limiter
+                    Thread.Sleep(CurrentProfile.FrameRateLimiter);
 
                     //TODO implement debug logging
                     //cycles++;
@@ -287,16 +315,14 @@ namespace Afterglow.Core
                     //}
                 }
 
-
                 // Set all to black
-                Thread.Sleep(50);
-
-                CurrentProfile.LightSetupPlugin.Lights.ToList().ForEach(led => led.LEDColour = Color.Black);
+                CurrentProfile.LightSetupPlugin.Lights.ToList().ForEach(led => led.LightColour = Color.Black);
                 CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(CurrentProfile.LightSetupPlugin.Lights.ToList()));
 
             }
             finally
             {
+                //Dispose of anything remaining
                 CurrentProfile.CapturePlugin.Stop();
                 CurrentProfile.ColourExtractionPlugin.Stop();
                 CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Stop());

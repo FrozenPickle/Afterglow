@@ -6,6 +6,9 @@ using System.Collections.ObjectModel;
 
 namespace Afterglow.Core.Plugins
 {
+    /// <summary>
+    /// A plugin that describe the positioning of the lights and usualy directly correlates to the screen capture positions
+    /// </summary>
     public interface ILightSetupPlugin : IAfterglowPlugin
     {
         List<Light> Lights { get; set; }

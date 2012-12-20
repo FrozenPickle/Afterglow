@@ -7,6 +7,7 @@ namespace Afterglow.Core
 {
     /// <summary>
     /// Provides fast access to the memory of a bitmap object
+    /// Using an <strong>unsafe</strong> class, unsafe needs to be allowed in the project for this to work
     /// </summary>
     public unsafe class FastBitmap: IDisposable
     {

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Afterglow.Core.Plugins
 {
+    /// <summary>
+    /// A Plugin that converts Light objects created by the Light Setup Plugin into Screen regions
+    /// </summary>
     public interface ICapturePlugin : IAfterglowPlugin
     {
         /// <summary>

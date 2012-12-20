@@ -7,6 +7,9 @@ using System.Xml.Serialization;
 
 namespace Afterglow.Core.Plugins
 {
+    /// <summary>
+    /// All Plugin types decend from this interface
+    /// </summary>
     public interface IAfterglowPlugin : INotifyPropertyChanged
     {
         /// <summary>
@@ -51,8 +54,14 @@ namespace Afterglow.Core.Plugins
         [XmlIgnore]
         Afterglow.Core.AfterglowRuntime Runtime { get; set; }
 
+        /// <summary>
+        /// Start this Plugin
+        /// </summary>
         void Start();
 
+        /// <summary>
+        /// Stop this Plugin
+        /// </summary>
         void Stop();
     }
 }

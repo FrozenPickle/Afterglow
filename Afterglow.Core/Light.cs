@@ -9,8 +9,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Core
 {
+    /// <summary>
+    /// Describes the Position of a light
+    /// </summary>
     public class Light : BaseModel
     {
+        /// <summary>
+        /// Index is order lights are processed
+        /// </summary>
         [Required]
         [Display(Name="Index")]
         [Range(0,999)]
@@ -20,6 +26,9 @@ namespace Afterglow.Core
             set { Set(() => this.Index, value); }
         }
 
+        /// <summary>
+        /// How many positions from the left
+        /// </summary>
         [Required]
         [Display(Name = "Left")]
         [Range(0, 999)]
@@ -29,6 +38,9 @@ namespace Afterglow.Core
             set { Set(() => this.Left, value); }
         }
 
+        /// <summary>
+        /// How many positions from the top
+        /// </summary>
         [Required]
         [Display(Name = "Top")]
         [Range(0, 999)]
@@ -38,6 +50,9 @@ namespace Afterglow.Core
             set { Set(() => this.Top, value); }
         }
 
+        /// <summary>
+        /// How many positions wide
+        /// </summary>
         [Required]
         [Display(Name = "Width")]
         [Range(1, 999)]
@@ -47,6 +62,9 @@ namespace Afterglow.Core
             set { Set(() => this.Width, value); }
         }
 
+        /// <summary>
+        /// How many positions high
+        /// </summary>
         [Required]
         [Display(Name = "Height")]
         [Range(1, 999)]
@@ -55,18 +73,40 @@ namespace Afterglow.Core
             get { return Get(() => this.Height, () => 1); }
             set { Set(() => this.Height, value); }
         }
-
+        /// <summary>
+        /// The previous pre processed colour of the light
+        /// </summary>
         [XmlIgnore]
         public Color OldSourceColour { get; set; }
+        /// <summary>
+        /// The current pre processed colour of the light
+        /// </summary>
         [XmlIgnore]
         public Color SourceColour { get; set; }
+        /// <summary>
+        /// The previous processed colour of the light
+        /// </summary>
         [XmlIgnore]
-        public Color OldLEDColour { get; set; }
+        public Color OldLightColour { get; set; }
+        /// <summary>
+        /// The current processed colour of the light
+        /// </summary>
         [XmlIgnore]
-        public Color LEDColour { get; set; }
+        public Color LightColour { get; set; }
+
+        /// <summary>
+        /// The region used to capture the screen that this light will correspond to
+        /// </summary>
         [XmlIgnore]
         public Rectangle Region { get; set; }
 
+        /// <summary>
+        /// Populates the Region property
+        /// </summary>
+        /// <param name="SegmentWidth">The screen capture segment width that this light will capture from</param>
+        /// <param name="SegmentHight">The screen capture segment height that this light will capture from</param>
+        /// <param name="LeftOffset">How many positions from the left of the screen capture segment will capture from</param>
+        /// <param name="TopOffset">How many positions from the top of the screen capture segment will capture from</param>
         public void CalculateRegion(int SegmentWidth, int SegmentHight, int LeftOffset = 0, int TopOffset = 0)
         {
             int left = 0;

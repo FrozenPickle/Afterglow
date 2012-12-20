@@ -11,9 +11,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Core
 {
+    /// <summary>
+    /// All objects that are saved in Afterglow decend from this, provides reference to the AfterglowRuntime and simple property creation
+    /// </summary>
     public abstract class BaseModel : INotifyPropertyChanged, INotifyCollectionChanged
     {
-        [Display(Name = "Index")]
+        /// <summary>
+        /// An Identifier
+        /// </summary>
+        [Display(Name = "Identifier")]
         [Key]
         public int Id
         {
@@ -21,7 +27,9 @@ namespace Afterglow.Core
             set { Set(() => Id, value); }
         }
 
-        //A reference to the object that created this one
+        /// <summary>
+        /// A reference to the AfterglowRuntime
+        /// </summary>
         [XmlIgnore]
         public AfterglowRuntime Runtime
         {
@@ -30,6 +38,9 @@ namespace Afterglow.Core
         }
 
         private IDictionary<string, object> _propertyMap;
+        /// <summary>
+        /// Stores the property name and it's value
+        /// </summary>
         protected IDictionary<string, object> PropertyMap
         {
             get
@@ -42,16 +53,34 @@ namespace Afterglow.Core
             }
         }
 
+        /// <summary>
+        /// Creates a generic get property
+        /// </summary>
+        /// <example>get { return Get(() => Runtime); }</example>
+        /// <param name="property">A delegate to the property</param>
+        /// <returns>The properties value</returns>
         public T Get<T>(Expression<Func<T>> property)
         {
             return Get(property, default(T));
         }
-
+        /// <summary>
+        /// Creates a generic get property, with a static default value
+        /// </summary>
+        /// <example>get { return Get(() => Runtime, new AfterglowRuntime()); }</example>
+        /// <param name="property">A delegate to the property</param>
+        /// <param name="defaultValue">A default value</param>
+        /// <returns>The properties value</returns>
         public T Get<T>(Expression<Func<T>> property, T defaultValue)
         {
             return Get(property, () => defaultValue);
         }
-
+        /// <summary>
+        /// Creates a generic get for a property
+        /// </summary>
+        /// <example>get { return Get(() => DisplayName, () => this.Name); }</example>
+        /// <param name="property">A delegate to the property</param>
+        /// <param name="defaultValue">A delegate to the default value</param>
+        /// <returns>The properties value</returns>
         public T Get<T>(Expression<Func<T>> property, Func<T> defaultValue)
         {
             T result = default(T);
@@ -69,7 +98,6 @@ namespace Afterglow.Core
             }
             else
             {
-
                 //get default value
                 if (defaultValue != null)
                 {
@@ -93,6 +121,13 @@ namespace Afterglow.Core
             return result;
         }
 
+        /// <summary>
+        /// Creates a generic set for a property
+        /// </summary>
+        /// <example>set { Set(() => Runtime, value); }</example>
+        /// <param name="property">A delegate to the property</param>
+        /// <param name="value">Always use 'value'</param>
+        /// <returns>Always returns true</returns>
         public bool Set<T>(Expression<Func<T>> property, T value)
         {
             if (property == null)
@@ -126,10 +161,20 @@ namespace Afterglow.Core
             return true;
         }
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
+        /// <summary>
+        /// Occurs when the collection changes.
+        /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged = (sender, e) => { };
 
+        /// <summary>
+        /// Notify Property Changed is used for responsive UI
+        /// </summary>
+        /// <param name="propertyName">The name of the property</param>
         public void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -137,7 +182,10 @@ namespace Afterglow.Core
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
+        /// <summary>
+        /// Notify Property Changed is used for responsive UI
+        /// </summary>
+        /// <param name="property">A delegate to the property</param>
         public void NotifyPropertyChanged<T>(Expression<Func<T>> property)
         {
             NotifyPropertyChanged(property.PropertyName());
