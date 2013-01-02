@@ -7,32 +7,39 @@ using System.Windows.Forms;
 using Afterglow.Core;
 using System.Threading.Tasks;
 using Afterglow.Plugins.LightSetup.BasicLightSetupPlugin;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.Output
 {
+    [DataContract]
     public class PreviewOutput: BasePlugin, IOutputPlugin
     {
         #region Read-only properties
+        [DataMember]
         public override string Name
         {
             get { return "Light Preview Output"; }
         }
 
+        [DataMember]
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
 
+        [DataMember]
         public override string Description
         {
             get { return "Displays light colours on a form for previewing output"; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }

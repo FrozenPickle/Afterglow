@@ -7,15 +7,18 @@ using Afterglow.Core;
 using Afterglow.Core.Configuration;
 using System.Drawing;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.PostProcess
 {
+    [DataContract]
     public class ColourCorrectionPostProcess : BasePlugin, IPostProcessPlugin
     {
         #region Read Only Properties
         /// <summary>
         /// The name of the current plugin
         /// </summary>
+        [DataMember]
         public override string Name
         {
             get { return "Colour Correction Plugin"; }
@@ -23,6 +26,7 @@ namespace Afterglow.Plugins.PostProcess
         /// <summary>
         /// A description of this plugin
         /// </summary>
+        [DataMember]
         public override string Description
         {
             get { return "Adjust the colours to your room"; }
@@ -30,22 +34,26 @@ namespace Afterglow.Plugins.PostProcess
         /// <summary>
         /// The author of this plugin
         /// </summary>
+        [DataMember]
         public override string Author
         {
             get { return "Jono C."; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }
         }
         #endregion
 
+        [DataMember]
         [Required]
         [Display(Name = "Brightness", Description = "Changes how bright the lights are")]
         [Range(0, 100)]
@@ -55,6 +63,7 @@ namespace Afterglow.Plugins.PostProcess
             set { Set(() => Brightness, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Red Saturation")]
         [Range(0, 100)]
@@ -64,6 +73,7 @@ namespace Afterglow.Plugins.PostProcess
             set { Set(() => RedSaturation, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Green Saturation", Description = "Changes how bright the lights are")]
         [Range(0, 100)]
@@ -73,6 +83,7 @@ namespace Afterglow.Plugins.PostProcess
             set { Set(() => GreenSaturation, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Blue Saturation")]
         [Range(0, 100)]

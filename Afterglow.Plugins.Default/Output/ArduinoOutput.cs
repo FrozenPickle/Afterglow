@@ -11,12 +11,14 @@ using System.Reflection;
 using Afterglow.Core;
 using System.IO;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.Output
 {
     /// <summary>
     /// Arduino Output
     /// </summary>
+    [DataContract]
     public class ArduinoOutput: BasePlugin, IOutputPlugin
     {
         private SerialPort _port;
@@ -26,6 +28,7 @@ namespace Afterglow.Plugins.Output
         /// <summary>
         /// The name of the current plugin
         /// </summary>
+        [DataMember]
         public override string Name
         {
             get { return "Arduino Output"; }
@@ -33,6 +36,7 @@ namespace Afterglow.Plugins.Output
         /// <summary>
         /// A description of this plugin
         /// </summary>
+        [DataMember]
         public override string Description
         {
             get { return "Output to the Afterglow Arduino 1.0 application"; }
@@ -40,6 +44,7 @@ namespace Afterglow.Plugins.Output
         /// <summary>
         /// The author of this plugin
         /// </summary>
+        [DataMember]
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
@@ -47,6 +52,7 @@ namespace Afterglow.Plugins.Output
         /// <summary>
         /// A website for further information
         /// </summary>
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
@@ -54,12 +60,14 @@ namespace Afterglow.Plugins.Output
         /// <summary>
         /// The version of this plugin
         /// </summary>
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 1); }
         }
         #endregion
 
+        [DataMember]
         [Required]
         [Display(Name = "Serial Port", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "Ports")]
@@ -73,6 +81,7 @@ namespace Afterglow.Plugins.Output
         /// Gets the available Serial/USB ports that
         /// If none are found it is possible the driver is not installed
         /// </summary>
+        [DataMember]
         public string[] Ports
         {
             get
@@ -81,6 +90,7 @@ namespace Afterglow.Plugins.Output
             }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Baud Rate", Order = 200)]
         [Range(0, 999999)]
@@ -90,6 +100,7 @@ namespace Afterglow.Plugins.Output
             set { Set(() => BaudRate, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Magic Word", 
             Description = "This is a special value used to communicate with the arduino",

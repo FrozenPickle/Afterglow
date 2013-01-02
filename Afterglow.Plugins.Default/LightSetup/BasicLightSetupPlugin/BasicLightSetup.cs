@@ -7,10 +7,12 @@ using Afterglow.Core;
 using System.Collections.ObjectModel;
 using Afterglow.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 {
     //This Class requires a custom UI
+    [DataContract]
     [ConfigCustom(CustomControlName = "Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl")]
     public class BasicLightSetup : BasePlugin, ILightSetupPlugin
     {
@@ -18,6 +20,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         /// <summary>
         /// The name of the current plugin
         /// </summary>
+        [DataMember]
         public override string Name
         {
             get { return "Basic Light Region Setup"; }
@@ -25,6 +28,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         /// <summary>
         /// A description of this plugin
         /// </summary>
+        [DataMember]
         public override string Description
         {
             get { return "Setup the capture image location that is converted into light"; }
@@ -32,6 +36,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         /// <summary>
         /// The author of this plugin
         /// </summary>
+        [DataMember]
         public override string Author
         {
             get { return "Jono C"; }
@@ -39,6 +44,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         /// <summary>
         /// A website for further information
         /// </summary>
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
@@ -46,12 +52,14 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         /// <summary>
         /// The version of this plugin
         /// </summary>
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }
         }
         #endregion
 
+        [DataMember]
         [Required]
         [Display(Name = "Number Of Lights High")]
         [Range(1, 999999)]
@@ -61,6 +69,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
             set { Set(() => NumberOfLightsHigh, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Number Of Lights Wide")]
         [Range(1, 999999)]
@@ -70,7 +79,8 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
             set { Set(() => NumberOfLightsWide, value); }
         }
 
-        [Display(Name = "Lights", AutoGenerateField=false)]
+        [DataMember]
+        [Display(Name = "Lights", AutoGenerateField = false)]
         public List<Core.Light> Lights
         {
             get { return Get(() => Lights); }

@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using Afterglow.Core.Plugins;
 using Afterglow.Core.Load;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Core
 {
@@ -13,6 +14,7 @@ namespace Afterglow.Core
     /// Contains the setup required to run Afterglow
     /// This is the root node in the XML saved document
     /// </summary>
+    [DataContract]
     public class AfterglowSetup : BaseModel
     {
 
@@ -27,6 +29,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A list of configured Capture Plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<ICapturePlugin> ConfiguredCapturePlugins
         {
             get { return Get(() => ConfiguredCapturePlugins, new SerializableInterfaceList<ICapturePlugin>()); }
@@ -35,6 +38,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A list of configured Colour Extraction Plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<IColourExtractionPlugin> ConfiguredColourExtractionPlugins
         {
             get { return Get(() => ConfiguredColourExtractionPlugins, new SerializableInterfaceList<IColourExtractionPlugin>()); }
@@ -43,6 +47,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A list of configured Light Setup Plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<ILightSetupPlugin> ConfiguredLightSetupPlugins
         {
             get { return Get(() => ConfiguredLightSetupPlugins, new SerializableInterfaceList<ILightSetupPlugin>()); }
@@ -51,6 +56,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A list of configured Post Process Plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<IPostProcessPlugin> ConfiguredPostProcessPlugins
         {
             get { return Get(() => ConfiguredPostProcessPlugins, new SerializableInterfaceList<IPostProcessPlugin>()); }
@@ -59,6 +65,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A list of configured Output Plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<IOutputPlugin> ConfiguredOutputPlugins
         {
             get { return Get(() => ConfiguredOutputPlugins, new SerializableInterfaceList<IOutputPlugin>()); }
@@ -105,6 +112,7 @@ namespace Afterglow.Core
         /// <remarks>
         /// Loaded Second by the XML Deserilization, to re-using Configured Afterglow Plugins objects to ensure referential integrity
         /// </remarks>
+        [DataMember]
         public List<Profile> Profiles
         {
             get { return Get(() => Profiles, new List<Profile>()); }
@@ -114,6 +122,7 @@ namespace Afterglow.Core
         /// <summary>
         /// The Current Profile Id
         /// </summary>
+        [DataMember]
         [Required]
         public int CurrentProfileId
         {
@@ -131,6 +140,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Available Light Setup Plugin Types
         /// </summary>
+        [DataMember]
         [XmlIgnore]
         public Type[] AvailableLightSetupPlugins
         {
@@ -139,6 +149,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Available Capture Plugin Types
         /// </summary>
+        [DataMember]
         [XmlIgnore]
         public Type[] AvailableCapturePlugins
         {
@@ -147,6 +158,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Available Colour Extraction Plugin Types
         /// </summary>
+        [DataMember]
         [XmlIgnore]
         public Type[] AvailableColourExtractionPlugins
         {
@@ -155,6 +167,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Available Post Process Plugin Types
         /// </summary>
+        [DataMember]
         [XmlIgnore]
         public Type[] AvailablePostProcessPlugins
         {
@@ -163,6 +176,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Available Available Output Plugin Types
         /// </summary>
+        [DataMember]
         [XmlIgnore]
         public Type[] AvailableOutputPlugins
         {
@@ -315,6 +329,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Gets and Sets the Port for the web interface, default is 8080
         /// </summary>
+        [DataMember]
         [Required]
         public int Port
         {
@@ -324,6 +339,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Gets and Sets the UserName for the web interface, default is Afterglow
         /// </summary>
+        [DataMember]
         [Required]
         public string UserName
         {
@@ -333,6 +349,7 @@ namespace Afterglow.Core
         /// <summary>
         /// Gets and Sets the Password for the web interface
         /// </summary>
+        [DataMember]
         public string Password
         {
             get { return Get(() => Password); }

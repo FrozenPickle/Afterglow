@@ -7,38 +7,46 @@ using Afterglow.Core.Plugins;
 using Afterglow.Core.Configuration;
 using Afterglow.Core;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.ColourExtraction
 {
+    [DataContract]
     public class AverageColourExtraction : BasePlugin, IColourExtractionPlugin
     {
         #region Read Only Properties
+        [DataMember]
         public override string Name
         {
             get { return "Average Colour Extraction"; }
         }
 
+        [DataMember]
         public override string Description
         {
             get { return "Average Colour Extraction applied to the raw input"; }
         }
 
+        [DataMember]
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }
         }
         #endregion
 
+        [DataMember]
         [Required]
         [Display(Name = "Number of Pixels to skip", Description = "Increasing this value speeds up the capture but decreases the accuracy of the colour.")]
         [Range(0, 999)]

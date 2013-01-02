@@ -5,32 +5,39 @@ using System.Text;
 using Afterglow.Core.Plugins;
 using System.Diagnostics;
 using Afterglow.Core;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.Output
 {
+    [DataContract]
     public class DebugOutput : BasePlugin, IOutputPlugin
     {
         #region Read Only Properties
+        [DataMember]
         public override string Name
         {
             get { return "Debug Output Plugin"; }
         }
 
+        [DataMember]
         public override string Description
         {
             get { return "A Debugging Plugin"; }
         }
 
+        [DataMember]
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }

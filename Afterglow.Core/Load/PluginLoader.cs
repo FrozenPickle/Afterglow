@@ -62,6 +62,9 @@ namespace Afterglow.Core.Load
                 {
                     try
                     {
+                        // Make sure we don't load Afterglow.Core again as it can cause issues if loaded more than once
+                        if (file.ToLower().EndsWith("Afterglow.Core.dll".ToLower()))
+                            continue;
                         Assembly assembly = Assembly.LoadFile(file);
 
                         var assemblyTypes = (from assemblyType in assembly.GetTypes()

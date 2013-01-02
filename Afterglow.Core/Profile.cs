@@ -11,6 +11,7 @@ using Afterglow.Core.Log;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 
 namespace Afterglow.Core
@@ -18,6 +19,7 @@ namespace Afterglow.Core
     /// <summary>
     /// A collection of plugins and settings needed to run afterglow
     /// </summary>
+    [DataContract]
     public class Profile : BaseModel
     {
         private AfterglowSetup _setup;
@@ -45,6 +47,7 @@ namespace Afterglow.Core
         /// <summary>
         /// The display name of this Profile
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Name", Order = 100, GroupName = "General Settings")]
         public string Name
@@ -56,6 +59,7 @@ namespace Afterglow.Core
         /// <summary>
         /// A discription of how/what this Profile does differently to others
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Description", Order = 200, GroupName = "General Settings")]
         public string Description
@@ -69,6 +73,7 @@ namespace Afterglow.Core
         /// Frame Rate = Frame Rate Limiter + Execution time of program
         /// Default - 1 Millisecond
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Frame Rate Limiter", 
             Order = 300, 
@@ -91,6 +96,7 @@ namespace Afterglow.Core
         /// Selected Light Setup Plugin
         /// <strong>Only one item should be stored in this collection</strong>
         /// </summary>
+        [DataMember]
         [Required]
         public SerializableInterfaceList<ILightSetupPlugin> LightSetupPlugins
         {
@@ -113,6 +119,7 @@ namespace Afterglow.Core
         /// Selected Capture Plugin
         /// <strong>Only one item should be stored in this collection</strong>
         /// </summary>
+        [DataMember]
         [Required]
         public SerializableInterfaceList<ICapturePlugin> CapturePlugins
         {
@@ -135,6 +142,7 @@ namespace Afterglow.Core
         /// Selected Colour Extraction Plugin
         /// <strong>Only one item should be stored in this collection</strong>
         /// </summary>
+        [DataMember]
         [Required]
         public SerializableInterfaceList<IColourExtractionPlugin> ColourExtractionPlugins
         {
@@ -157,6 +165,7 @@ namespace Afterglow.Core
         /// Selected Post Process Plugins
         /// Optional - may contain zero or more plugins
         /// </summary>
+        [DataMember]
         public SerializableInterfaceList<IPostProcessPlugin> PostProcessPlugins
         {
             get { return Get(() => PostProcessPlugins, () => new SerializableInterfaceList<IPostProcessPlugin>()); }
@@ -167,6 +176,7 @@ namespace Afterglow.Core
         /// Selected Output Plugins
         /// Must contain at least one plugin
         /// </summary>
+        [DataMember]
         [Required]
         public SerializableInterfaceList<IOutputPlugin> OutputPlugins
         {

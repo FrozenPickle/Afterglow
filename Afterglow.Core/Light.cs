@@ -6,17 +6,20 @@ using System.Text;
 using Afterglow.Core.Configuration;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Core
 {
     /// <summary>
     /// Describes the Position of a light
     /// </summary>
+    [DataContract]
     public class Light : BaseModel
     {
         /// <summary>
         /// Index is order lights are processed
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name="Index")]
         [Range(0,999)]
@@ -29,6 +32,7 @@ namespace Afterglow.Core
         /// <summary>
         /// How many positions from the left
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Left")]
         [Range(0, 999)]
@@ -41,6 +45,7 @@ namespace Afterglow.Core
         /// <summary>
         /// How many positions from the top
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Top")]
         [Range(0, 999)]
@@ -53,6 +58,7 @@ namespace Afterglow.Core
         /// <summary>
         /// How many positions wide
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Width")]
         [Range(1, 999)]
@@ -65,6 +71,7 @@ namespace Afterglow.Core
         /// <summary>
         /// How many positions high
         /// </summary>
+        [DataMember]
         [Required]
         [Display(Name = "Height")]
         [Range(1, 999)]

@@ -10,10 +10,11 @@ using System.Timers;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Plugins.Capture
 {
-    //[XmlType("Afterglow.Plugins.Capture.CopyScreenCapture")]
+    [DataContract]
     public class CopyScreenCapture : BasePlugin, ICapturePlugin
     {
 
@@ -31,26 +32,31 @@ namespace Afterglow.Plugins.Capture
 
         #region Read Only Properties
 
+        [DataMember]
         public override string Name
         {
             get { return ".Net CopyScreen"; }
         }
 
+        [DataMember]
         public override string Author
         {
             get { return "Jono C. and Justin S."; }
         }
 
+        [DataMember]
         public override string Description
         {
             get { return "A plugin from the Afterglow default plugins"; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 1); }
@@ -58,6 +64,7 @@ namespace Afterglow.Plugins.Capture
         #endregion
 
         #region Screen Selection Properties
+        [DataMember]
         [Required]
         [Display(Name = "Screen", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "Screens")]
@@ -66,6 +73,8 @@ namespace Afterglow.Plugins.Capture
             get { return Get(() => Screen, () => Screens[0]); }
             set { Set(() => Screen, value); }
         }
+
+        [DataMember]
         public string[] Screens
         {
             get
@@ -98,6 +107,7 @@ namespace Afterglow.Plugins.Capture
         }
         #endregion
 
+        [DataMember]
         [Required]
         [Display(Name = "Screen", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "CaptureCorrectionTypes")]
@@ -113,6 +123,7 @@ namespace Afterglow.Plugins.Capture
             Minutes
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Capture Correction Interval Type", Order = 200)]
         public CaptureCorrectionIntervalTypeEnum CaptureCorrectionIntervalType
@@ -121,7 +132,8 @@ namespace Afterglow.Plugins.Capture
             set { Set(() => CaptureCorrectionIntervalType, value); }
         }
 
-        [Display(Name= "Capture Correction Interval", Order=300)]
+        [DataMember]
+        [Display(Name = "Capture Correction Interval", Order = 300)]
         [Range(0, 10000)]
         public int? CaptureCorrectionInterval
         {
@@ -129,6 +141,7 @@ namespace Afterglow.Plugins.Capture
             set { Set(() => CaptureCorrectionInterval, value); }
         }
 
+        [DataMember]
         [Required]
         [Display(Name = "Black Segment - Pixels to skip", Description = "Increasing this value speeds up the process but decreases the accuracy of the black.", Order = 400)]
         [Range(0, 999)]
@@ -138,7 +151,8 @@ namespace Afterglow.Plugins.Capture
             set { Set(() => PixelSkip, value); }
         }
 
-        [Display(Name = "Black Segment - Height %",Order = 500)]
+        [DataMember]
+        [Display(Name = "Black Segment - Height %", Order = 500)]
         [Range(0, 100)]
         public int? BlackSegmentHeight
         {
@@ -146,7 +160,8 @@ namespace Afterglow.Plugins.Capture
             set { Set(() => BlackSegmentHeight, value); }
         }
 
-        [Display(Name = "Darkness Threshold", Order= 600)]
+        [DataMember]
+        [Display(Name = "Darkness Threshold", Order = 600)]
         [Range(0, 50)]
         public int? DarknessThreshold
         {

@@ -8,17 +8,20 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Core
 {
     /// <summary>
-    /// All objects that are saved in Afterglow decend from this, provides reference to the AfterglowRuntime and simple property creation
+    /// All objects that are saved in Afterglow descend from this, provides reference to the AfterglowRuntime and simple property creation
     /// </summary>
+    [DataContract]
     public abstract class BaseModel : INotifyPropertyChanged, INotifyCollectionChanged
     {
         /// <summary>
         /// An Identifier
         /// </summary>
+        [DataMember]
         [Display(Name = "Identifier")]
         [Key]
         public int Id
