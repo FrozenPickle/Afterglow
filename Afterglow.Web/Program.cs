@@ -3,42 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Afterglow.Core;
-using Griffin.Networking.Http;
-using Griffin.Networking.Pipelines;
-using Griffin.Networking.Http.Handlers;
-using Griffin.Networking.Http.Implementation;
-using Griffin.Networking.Http.Services.Errors;
-using Griffin.Networking.Http.Services.BodyDecoders;
 using System.Net;
+using ServiceStack.Logging;
+using ServiceStack.Logging.Support.Logging;
 
 namespace Afterglow.Web
 {
     class Program
     {
+        public static AfterglowRuntime Runtime
+        {
+            get
+            {
+                return _runtime;
+            }
+        }
         private static AfterglowRuntime _runtime;
+        public static bool Active = false;
+        
         static void Main(string[] args)
         {
 
 
             _runtime = new AfterglowRuntime();
+            
+            LogManager.LogFactory = new ConsoleLogFactory();
 
-            var factory = new DelegatePipelineFactory();
-            //factory.AddDownstreamHandler(authHandler);
-            factory.AddDownstreamHandler(() => new ResponseEncoder());
+            using (var appHost = new AppHost())
+            {
+                Console.WriteLine("Starting Afterglow runtime...");
+                //_runtime.Start();
 
-            factory.AddUpstreamHandler(() => new HeaderDecoder(new HttpParser()));
-            factory.AddUpstreamHandler(new HttpErrorHandler(new SimpleErrorFormatter()));
-            //factory.AddUpstreamHandler(authHandler);
-            factory.AddUpstreamHandler(() => new BodyDecoder(new CompositeBodyDecoder(), 65535, 6000000));
-            //factory.AddUpstreamHandler(() => new FileHandler());
-            factory.AddUpstreamHandler(() => new MessageHandler());
-            //factory.AddUpstreamHandler(new PipelineFailureHandler());
+                Console.WriteLine("Afterglow runtime started.");
 
-            Griffin.Networking.Http.HttpListener listener = new Griffin.Networking.Http.HttpListener(factory);
-            listener.Start(new IPEndPoint(IPAddress.Any, _runtime.Setup.Port));
+                appHost.Init();
+                appHost.Start(String.Format("http://localhost:{0}/", _runtime.Setup.Port));
 
-            _runtime.Start();
-            Console.ReadLine();
+                Console.WriteLine("Listening on http://localhost:{0}/", _runtime.Setup.Port);
+                
+                Console.WriteLine("Press <enter> to exit.");
+                Console.ReadLine();
+                appHost.Stop();
+
+            }
+
 
             //_runtime.Setup = new AfterglowSetup();
             //Profile p = new Profile();
@@ -60,6 +68,20 @@ namespace Afterglow.Web
             //_runtime.Setup.Profiles.Add(profile);
             //_runtime.Setup.ConfiguredLightSetupPlugins.Add(.FirstOrDefault().OLDPostProcessPlugins.FirstOrDefault());
             //_runtime.Save();
+        }
+
+        internal static void ToggleActive()
+        {
+            if (Active)
+            {
+                Runtime.Stop();
+                Active = false;
+            }
+            else
+            {
+                Runtime.Start();
+                Active = true;
+            }
         }
     }
 }
