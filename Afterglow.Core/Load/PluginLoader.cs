@@ -85,7 +85,8 @@ namespace Afterglow.Core.Load
                     }
                 }
             }
-            return _types.ToArray();
+            // Only return types that can be assigned to T
+            return _types.Where(t => typeof(T).IsAssignableFrom(t)).Select(t => t).ToArray();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <AfterglowSetup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Id>1</Id>
   <ConfiguredCapturePlugins>
@@ -511,12 +511,9 @@
   </ConfiguredLightSetupPlugins>
   <ConfiguredPostProcessPlugins />
   <ConfiguredOutputPlugins>
-    <ArduinoOutput>
+    <DebugOutput>
       <Id>1</Id>
-      <Port>COM3</Port>
-      <BaudRate>115200</BaudRate>
-      <MagicWord>Glo</MagicWord>
-    </ArduinoOutput>
+    </DebugOutput>
   </ConfiguredOutputPlugins>
   <Profiles>
     <Profile>
@@ -1012,4 +1009,5 @@
   </Profiles>
   <Port>8888</Port>
   <UserName>Afterglow</UserName>
+  <Password>Afterglow</Password>
 </AfterglowSetup>

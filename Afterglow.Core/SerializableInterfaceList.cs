@@ -91,7 +91,8 @@ namespace Afterglow.Core
                 //Add new serializer to the serializers list by
                 //passing the class name 
                 //Ignore if already added
-                GetSerializerByTypeName(_interfaceList[index].GetType().FullName);
+                if (_interfaceList[index] != null)
+                    GetSerializerByTypeName(_interfaceList[index].GetType().FullName);
             }
         }
 
@@ -104,7 +105,8 @@ namespace Afterglow.Core
             for (int index = 0; index < _interfaceList.Count; index++)
             {
                 //Get appropriate serializer
-
+                if (_interfaceList[index] == null)
+                    continue;
                 GetSerializerByTypeName(
                                        _interfaceList[index].GetType().FullName).Serialize
                 (outputStream, _interfaceList[index]);

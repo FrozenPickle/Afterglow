@@ -6,6 +6,7 @@ using Afterglow.Core;
 using System.Net;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Support.Logging;
+using Afterglow.Web.Host;
 
 namespace Afterglow.Web
 {

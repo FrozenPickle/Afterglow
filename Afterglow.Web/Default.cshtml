@@ -1,0 +1,167 @@
+﻿@inherits ViewPage
+
+@{
+    Layout = "SimpleLayout";
+    ViewBag.Title = "Afterglow";
+    var session = Request.GetSession();
+}
+<script type="text/javascript">
+    var agSessionId = null;
+</script>
+@if (session != null && session.IsAuthenticated)
+{
+<script type="text/javascript">
+    agSessionId = @session.Id;
+</script>
+}
+
+<script type="text/javascript">
+    // Apply UI
+    $(function () {
+
+        $("#startStopBtn").button();
+        $("#logoutBtn").button();
+        $('#previewAndSettings').accordion();
+    });
+    
+    
+    
+    $(function () {
+        if (agSessionId) {
+            $('#logout').show();
+        } else {
+            $('#login').show();
+        }
+    });
+
+    var logTemplate = {};
+    $(function () {
+        logTemplate = _.template($('#logTemplate').html());
+        $(document).ajaxError(function (event, jqXHR, settings, thrownError) {
+            var response = $.parseJSON(jqXHR.responseText);
+            var msg = "Ajax error";
+            if (response && response.ResponseStatus) {
+                msg = "<pre>" + response.ResponseStatus.Message + "\r\n" + response.ResponseStatus.StackTrace + "</pre>";
+            } else if (thrownError) {
+                msg = thrownError;
+            }
+            $("#log").html(logTemplate({ title: "Error", message: msg }));
+        });
+    });
+
+    function DoLogin() {
+        var req = $.post('/auth/credentials?format=json', $('#login').serialize(),
+        function (data, textStatus, jqXHR) {
+            agSessionId = data.SessionId;
+            $('#login').hide();
+            $('#loggedIn').show();
+            LoadSetup();
+        }, 'json');
+    }
+
+    function DoLogout() {
+        $.get('/auth/logout?format=json', null, function (data, textStatus, jqXHR) {
+            $('#login').show();
+            $('#loggedIn').hide();
+            agSessionId = null;
+            if (timer)
+                clearInterval(timer);
+        }, 'json');
+    }
+    
+    var timer = null;
+
+    function DoStartStop() {
+        $.post('/runtime?format=json', {},
+        function (data, textStatus, jqXHR) {
+            afterglowRuntime = data;
+            $('#startStopBtn').html(afterglowRuntime.Active ? 'Stop' : 'Start');
+
+            if (afterglowRuntime.Active) {
+                timer = setInterval(getPreview, 100);
+            } else {
+                clearInterval(timer);
+                timer = null;
+            }
+        }, 'json');
+    }
+    
+    var firstPreview = true;
+    function getPreview() {
+
+        $.get("/preview?format=json", {}, function (data, status, xhr) {
+            clearInterval(timer);
+            timer = null;
+            if (firstPreview) {
+                var lights = "";
+                $(data.Lights).each(function (index, item) {
+                    $("#previewScreen").append(lightPreviewTemplate({ index: item.Index, colour: "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16) }));
+                });
+                //$("#previewScreen").html();
+                firstPreview = false;
+            }
+            else {
+                $(data.Lights).each(function (index, item) {
+                    $("#lightPreview" + item.Index).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
+                });
+            }
+            timer = setInterval(getPreview, 100);
+        });
+        
+    }
+
+    var lightPreviewTemplate = {};
+    $(function () {
+        lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
+    });
+
+    var afterglowSetup = {};
+    var afterglowRuntime = {};
+    function LoadSetup() {
+        $.get('/setup?format=json', null, function (data, status, xhr) {
+            afterglowSetup = data;
+        }, 'json');
+        $.get('/runtime?format=json', null, function (data, status, xhr) {
+            afterglowRuntime = data;
+        }, 'json');
+    }
+
+</script>
+
+    <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
+    <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
+    <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
+    @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
+    <input type="submit" value="Login" onclick="DoLogin(); return false;" />
+    </form>
+    <div id="loggedIn" style="display:none">
+        <div id="StartStop">
+            <button onclick="DoStartStop();" id="startStopBtn" style="width:100%">Start</button>
+        </div>
+        <div id="previewAndSettings">
+            <h3>Preview</h3>
+            <div>
+                <div id="previewScreen">
+                    
+                </div>
+            </div>
+            <h3>Settings</h3>
+            <div>Todo: Settings</div>
+        </div>
+        <div id="logout">
+            <button onclick="DoLogout();" id="logoutBtn" style="width:100%">Logout</button>
+        </div>
+    </div>
+
+<div id="log"></div>
+
+<script id="logTemplate" type="text/template">
+	<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+		<strong><%= title %>:</strong> <%= message %></p>
+	</div>
+</script>
+
+<script id="lightPreviewTemplate" type="text/template">
+    <span id="lightPreview<%= index %>" style="float: left; display: block;background-color: <%= colour %>; width:10px; height:10px"></span>
+</script>
