@@ -84,6 +84,8 @@ namespace Afterglow.Web
         public List<Afterglow.Core.Profile> Results { get; set; }
     }
 
+
+
     public class AfterglowService : Service
     {
         public object Get(Runtime request)

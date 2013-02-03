@@ -16,27 +16,41 @@
 }
 
 <script type="text/javascript">
+    angular.module('jqmDirectives', [])
+    .directive('refreshList', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                $(element).closest(':jqmData(role=listview)').listview('refresh');
+            }
+        };
+    });
+    var logTemplate = {};
+    var installedPluginTemplate = {};
+    var lightPreviewTemplate = {};
+
     // Apply UI
     $(function () {
 
         $("#startStopBtn").button();
         $("#logoutBtn").button();
-        $('#previewAndSettings').accordion();
-    });
-    
-    
-    
-    $(function () {
+//        $('#previewAndSettings').accordion();
+//        $("#previewAndSettings").accordion({
+//            'fillSpace': true,
+//            'clearStyle': true
+//        });
+        
+        //Get Templates
+        logTemplate = _.template($('#logTemplate').html());
+        installedPluginTemplate = _.template($('#installedPluginTemplate').html());
+        lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
+
         if (agSessionId) {
             $('#logout').show();
         } else {
             $('#login').show();
         }
-    });
 
-    var logTemplate = {};
-    $(function () {
-        logTemplate = _.template($('#logTemplate').html());
         $(document).ajaxError(function (event, jqXHR, settings, thrownError) {
             var response = $.parseJSON(jqXHR.responseText);
             var msg = "Ajax error";
@@ -47,22 +61,26 @@
             }
             $("#log").html(logTemplate({ title: "Error", message: msg }));
         });
+
+        
+
+
+
     });
 
     function DoLogin() {
         var req = $.post('/auth/credentials?format=json', $('#login').serialize(),
         function (data, textStatus, jqXHR) {
             agSessionId = data.SessionId;
-            $('#login').hide();
-            $('#loggedIn').show();
-            LoadSetup();
+            //$('#login').hide();
+            //$('#loggedIn').show();
         }, 'json');
     }
 
     function DoLogout() {
         $.get('/auth/logout?format=json', null, function (data, textStatus, jqXHR) {
-            $('#login').show();
-            $('#loggedIn').hide();
+            //$('#login').show();
+            //$('#loggedIn').hide();
             agSessionId = null;
             if (timer)
                 clearInterval(timer);
@@ -110,48 +128,191 @@
         
     }
 
-    var lightPreviewTemplate = {};
-    $(function () {
-        lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
-    });
+    function AfterglowCtrl($scope, $http) {
+        $http.get('/setup?format=json').success(function (data) {
+            $scope.afterglowSetup = data;
+        });
+        $http.get('/runtime?format=json').success(function (data) {
+            $scope.afterglowRuntime = data;
+        });
 
-    var afterglowSetup = {};
-    var afterglowRuntime = {};
-    function LoadSetup() {
-        $.get('/setup?format=json', null, function (data, status, xhr) {
-            afterglowSetup = data;
-        }, 'json');
-        $.get('/runtime?format=json', null, function (data, status, xhr) {
-            afterglowRuntime = data;
-        }, 'json');
     }
 
+
+
+//    function InstalledPluginsCtrl($scope) {
+//        $scope.lightSetupPlugins = [];
+
+//        if (afterglowSetup && afterglowSetup.Setup) {
+//            $(afterglowSetup.Setup.ConfiguredCapturePlugins).each(function (index, item) {
+//                $scope.lightSetupPlugins[$scope.lightSetupPlugins.length] = { text: item.FullName };
+//            });
+//        }
+//        $scope.todos = [{ text: 'learn angular', done: true },
+//                        { text: 'build an angular app', done: false}];
+
+//    }
 </script>
 
-    <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
-    <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
-    <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
-    @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
-    <input type="submit" value="Login" onclick="DoLogin(); return false;" />
-    </form>
-    <div id="loggedIn" style="display:none">
-        <div id="StartStop">
-            <button onclick="DoStartStop();" id="startStopBtn" style="width:100%">Start</button>
-        </div>
-        <div id="previewAndSettings">
-            <h3>Preview</h3>
-            <div>
+
+<div data-role="page" class="type-interior">
+    <div data-role="content" ng-controller="AfterglowCtrl">
+		<div class="content-primary">
+
+            <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
+                <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
+                <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
+                @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
+            <input type="submit" value="Login" onclick="DoLogin(); return false;" />
+            </form>
+            <div id="loggedIn" >
+                <div id="StartStop">
+                    <button onclick="DoStartStop();" id="startStopBtn" style="width:100%">Start</button>
+                </div>
+                <div id="logout">
+                    <button onclick="DoLogout();" id="logoutBtn" style="width:100%">Logout</button>
+                </div>
+            </div>
+
+
+        <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
+            <div data-role="collapsible" data-collapsed="true">
+                <h3 class="ui-collapsible-heading">
+                    Preview
+                </h3>
                 <div id="previewScreen">
                     
                 </div>
             </div>
-            <h3>Settings</h3>
-            <div>Todo: Settings</div>
-        </div>
-        <div id="logout">
-            <button onclick="DoLogout();" id="logoutBtn" style="width:100%">Logout</button>
+            <div data-role="collapsible" data-collapsed="false">
+                <h3 class="ui-collapsible-heading">
+                    Settings
+                </h3>
+                <div id="settings">
+                    <h2>Installed Plugin Types</h2>
+                    <div id="installedPlugins" >
+                        <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
+                            <div data-role="collapsible" data-collapsed="true" id="installedLightSetupPlugins">
+                                <h3 class="ui-collapsible-heading">
+                                    Light Setup Plugins
+                                </h3>
+                                <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableLightSetupPlugins">
+                                    {{plugin}}
+                                </div>
+                            </div>
+                            <div data-role="collapsible" data-collapsed="true" id="installedCapturePlugins">
+                            <h3 class="ui-collapsible-heading">
+                                Capture Plugins
+                            </h3>
+                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableCapturePlugins">
+                                {{plugin}}
+                            </div>
+                        </div>
+                        <div data-role="collapsible" data-collapsed="true" id="installedPostProcessPlugins">
+                            <h3 class="ui-collapsible-heading">
+                                Post Process Plugins
+                            </h3>
+                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailablePostProcessPlugins">
+                                {{plugin}}
+                            </div>
+                        </div>
+                        <div data-role="collapsible" data-collapsed="true" id="installedOutputPlugins">
+                            <h3 class="ui-collapsible-heading">
+                                Output Plugins
+                            </h3>
+                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableOutputPlugins">
+                                {{plugin}}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <h2>Configured Plugins</h2>
+                    <div id="configuredPlugins">
+                        <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
+                            <div data-role="collapsible" id="configuredLightSetupPlugins">
+                                <h3>
+                                    Light Setup Plugins
+                                </h3>
+                                <ul data-role="listview">
+                                    <li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>
+                                    <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                </ul>
+                            </div>
+                            <div data-role="collapsible" id="configuredCapturePlugins">
+                                <h3>
+                                    Capture Plugins
+                                </h3>
+                                <ul data-role="listview">
+                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                </ul>
+                            </div>
+                            <div data-role="collapsible" id="configuredPostProcessPlugins">
+                                <h3>
+                                    Post Process Plugins
+                                </h3>
+                                <ul data-role="listview">
+                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                </ul>
+                            </div>
+                            <div data-role="collapsible" id="configuredOutputPlugins">
+                                <h3>
+                                    Output Plugins
+                                </h3>
+                                <ul data-role="listview">
+                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Profiles</h2>
+                    <div id="profiles">
+                        <div data-role="collapsible-set" data-theme="b" data-content-theme="d" ng-repeat="profile in afterglowSetup.Setup.Profiles">
+                            <div data-role="collapsible" id="{{'profile' + profile.Id }}">
+                                <h3>
+                                    {{profile.Name}}
+                                </h3>
+                                <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
+                                    <div data-role="collapsible" >
+                                        <h3>
+                                            Light Setup
+                                        </h3>
+                                        <ul data-role="listview">
+                                            <li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true"  >Add</button></li>
+                                        </ul>
+                                    </div>
+                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'CapturePlugins'}}">
+                                        <h3>
+                                            Capture Plugins
+                                        </h3>
+                                        <ul data-role="listview">
+                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                        </ul>
+                                    </div>
+                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'PostProcessPlugins'}}">
+                                        <h3>
+                                            Post Process Plugins
+                                        </h3>
+                                        <ul data-role="listview">
+                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                        </ul>
+                                    </div>
+                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'OutputPlugins'}}">
+                                        <h3>
+                                            Output Plugins
+                                        </h3>
+                                        <ul data-role="listview">
+                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
 <div id="log"></div>
 

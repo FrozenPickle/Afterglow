@@ -8,12 +8,13 @@ using Afterglow.Core.Extensions;
 using Afterglow.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace Afterglow.Core.Plugins
 {
+    [DataContract]
     public abstract class BasePlugin: BaseModel, IAfterglowPlugin
     {
-
         public override string ToString()
         {
             if (this.Name == this.DisplayName)
@@ -29,6 +30,7 @@ namespace Afterglow.Core.Plugins
         /// <summary>
         /// A Display Name for this Plugin 
         /// </summary>
+        [DataMember]
         [Display(Name = "Display Name", Order = -100)]
         public string DisplayName
         {
@@ -41,12 +43,14 @@ namespace Afterglow.Core.Plugins
         /// </summary>
         [ReadOnly(true)]
         [Display(Name = "Name", Order= -600)]
+        [DataMember]
         public abstract string Name { get; }
         /// <summary>
         /// The author of this plugin
         /// </summary>
         [ReadOnly(true)]
         [Display(Name = "Author", Order = -500)]
+        [DataMember]
         public abstract string Author { get; }
 
         /// <summary>
@@ -54,6 +58,7 @@ namespace Afterglow.Core.Plugins
         /// </summary>
         [ReadOnly(true)]
         [Display(Name = "Description", Order = -400)]
+        [DataMember]
         public abstract string Description { get; }
         /// <summary>
         /// A website for further information
@@ -61,12 +66,14 @@ namespace Afterglow.Core.Plugins
         [ReadOnly(true)]
         [Display(Name = "Website", Order = -300)]
         [DataType(DataType.Url)]
+        [DataMember]
         public abstract string Website { get; }
         /// <summary>
         /// The version of this plugin
         /// </summary>
         [ReadOnly(true)]
         [Display(Name = "Version", Order = -200)]
+        [DataMember]
         public abstract Version Version { get; }
         
         /// <summary>

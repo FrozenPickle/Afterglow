@@ -22,26 +22,26 @@ namespace Afterglow.Web.Host
         {
             Plugins.Add(new RazorFormat());
 
-            Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[] {
-                new AfterglowCredentialsAuthProvider()
-            }));
+            //Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[] {
+            //    new AfterglowCredentialsAuthProvider()
+            //}));
 
 
             // The cache the host will use (in memory in this instance - but could be a distributed memory cache / disk etc...)
             container.Register<ICacheClient>(new MemoryCacheClient());
 
-            RequestFilters.Add((req, resp, dto) =>
-                {
-                    if (req.OperationName != "Auth")
-                    {
-                        var sessionId = req.GetSession();
-                        if (!sessionId.IsAuthenticated)
-                        {
-                            new AuthenticateAttribute()
-                                .Execute(req, resp, dto);
-                        }
-                    }
-                });
+            //RequestFilters.Add((req, resp, dto) =>
+            //    {
+            //        if (req.OperationName != "Auth")
+            //        {
+            //            var sessionId = req.GetSession();
+            //            if (!sessionId.IsAuthenticated)
+            //            {
+            //                new AuthenticateAttribute()
+            //                    .Execute(req, resp, dto);
+            //            }
+            //        }
+            //    });
 
         }
     }

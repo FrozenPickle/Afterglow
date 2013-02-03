@@ -73,6 +73,76 @@ namespace Afterglow.Core
         }
         #endregion
 
+        //[XmlIgnore]
+        //[DataMember]
+        //public List<PluginCategory> PluginCategories
+        //{
+        //    get
+        //    {
+        //        var result = new List<PluginCategory>();
+
+        //        PluginCategory lightSetupPlugins = new PluginCategory();
+        //        lightSetupPlugins.Name = "Light Setup Plugins";
+        //        lightSetupPlugins.InstalledPlugins =
+        //            (from available in this.AvailableLightSetupPlugins
+        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
+        //            ).ToList();
+        //        result.Add(lightSetupPlugins);
+
+
+        //        PluginCategory capturePlugins = new PluginCategory();
+        //        capturePlugins.Name = "Capture Plugins";
+        //        capturePlugins.InstalledPlugins =
+        //            (from available in this.AvailableCapturePlugins
+        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
+        //            ).ToList();
+        //        result.Add(capturePlugins);
+
+
+        //        PluginCategory colourExtractionPlugins = new PluginCategory();
+        //        colourExtractionPlugins.Name = "Colour Extraction Plugins";
+        //        colourExtractionPlugins.InstalledPlugins =
+        //            (from available in this.AvailableColourExtractionPlugins
+        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
+        //            ).ToList();
+        //        result.Add(colourExtractionPlugins);
+
+
+        //        PluginCategory postProcessPlugins = new PluginCategory();
+        //        postProcessPlugins.Name = "Post Process Plugins";
+        //        postProcessPlugins.InstalledPlugins =
+        //            (from available in this.AvailablePostProcessPlugins
+        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
+        //            ).ToList();
+        //        result.Add(postProcessPlugins);
+
+
+        //        PluginCategory outputPlugins = new PluginCategory();
+        //        outputPlugins.Name = "Output Plugins";
+        //        outputPlugins.InstalledPlugins =
+        //            (from available in this.AvailableOutputPlugins
+        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
+        //            ).ToList();
+        //        result.Add(outputPlugins);
+                
+        //        return result;
+        //    }
+        //}
+
+        //public class PluginCategory
+        //{
+        //    public string Name { get; set; }
+
+        //    public List<InstalledPlugin> InstalledPlugins { get; set; }
+        //}
+
+        //public class InstalledPlugin
+        //{
+        //    public Type PluginType { get; set; }
+        //    public string Name { get; set; }
+
+        //}
+
         /// <summary>
         /// A Generic function to aid in the creation of IPlugin identifers
         /// </summary>
