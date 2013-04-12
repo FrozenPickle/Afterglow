@@ -12,9 +12,9 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using Afterglow.Core;
-using Afterglow.DirectX.ScreenshotInterface;
 using Afterglow.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
+using Capture;
 
 namespace Afterglow.DirectX.Plugin
 {
@@ -60,19 +60,19 @@ namespace Afterglow.DirectX.Plugin
         }
 
         private String _channelName = null;
-        private IpcServerChannel _screenshotServer;
-
+        private Capture.Interface.CaptureInterface _captureInterface;
+        private CaptureProcess _capturedProcess;
         public string TargetProcess { get; set;  }
         private Task _screenshotPump = null;
         private volatile bool _stopped = false;
-        private ScreenshotResponse _currentResponse;
+        private global::Capture.Interface.Screenshot _currentResponse;
         private DateTime _startTime;
         private int _captures;
+        
         public override void Start()
         {
-            _screenshotServer = RemoteHooking.IpcCreateServer<ScreenshotInterface.ScreenshotInterface>(
-                ref _channelName,
-                WellKnownObjectMode.Singleton);
+            _captureInterface = new Capture.Interface.CaptureInterface();
+            _captureInterface.RemoteMessage += (message) => Debug.WriteLine(message.ToString());
 
             // Inject to process
             this.TargetProcess = this.Target;
@@ -83,8 +83,6 @@ namespace Afterglow.DirectX.Plugin
                 return;
             }
 
-            ScreenshotManager.OnScreenshotDebugMessage += (pid, message) => Debug.WriteLine("{0}: {1}", pid, message);
-
             Inject();
             _stopped = false;
             _screenshotPump = new Task(() =>
@@ -92,9 +90,11 @@ namespace Afterglow.DirectX.Plugin
                     _startTime = DateTime.Now;
                     while(!_stopped)
                     {
-                        var response = ScreenshotManager.GetScreenshotSynchronous(_processId,
-                                                                    new ScreenshotRequest(
-                                                                        Rectangle.Empty));
+
+                        var response = _capturedProcess.CaptureInterface.GetScreenshot();
+                        //var response = ScreenshotManager.GetScreenshotSynchronous(_processId,
+                        //                                            new ScreenshotRequest(
+                        //                                                Rectangle.Empty));
                         if (response != null)
                             Interlocked.Increment(ref _captures);
                         Interlocked.Exchange(ref _currentResponse, response);
@@ -126,30 +126,14 @@ namespace Afterglow.DirectX.Plugin
                     }
 
                     // Keep track of hooked processes in case more than one need to be hooked
-                    HookManager.AddHookedProcess(process.Id);
+                    //HookManager.AddHookedProcess(process.Id);
 
                     _processId = process.Id;
                     _process = process;
 
-                    // Ensure the target process is in the foreground,
-                    // this prevents an issue where the target app appears to be in 
-                    // the foreground but does not receive any user inputs.
-                    // Note: the first Alt+Tab out of the target application after injection
-                    //       may still be an issue - switching between windowed and 
-                    //       fullscreen fixes the issue however (see ScreenshotInjection.cs for another option)
-                    BringProcessWindowToFront(process);
-                    
-                    // Inject DLL into target process
-                    RemoteHooking.Inject(
-                        process.Id,
-                        InjectionOptions.Default,
-                        typeof(ScreenshotInjection).Assembly.Location, // 32-bit version (the same because AnyCPU) could use different assembly that links to 32-bit C++ helper dll
-                        typeof(ScreenshotInjection).Assembly.Location, // 64-bit version (the same because AnyCPU) could use different assembly that links to 64-bit C++ helper dll
-                        // the optional parameter list...
-                        _channelName // The name of the IPC channel for the injected assembly to connect to
-                        , "AutoDetect"
-                        , false
-                        );
+                    _capturedProcess = new CaptureProcess(process, new Capture.Interface.CaptureConfig{
+                        ShowOverlay = false, Direct3DVersion = global::Capture.Interface.Direct3DVersion.AutoDetect
+                    }, _captureInterface);
 
                     newInstanceFound = true;
                     break;
@@ -157,65 +141,17 @@ namespace Afterglow.DirectX.Plugin
                 Thread.Sleep(10);
             }
         }
-
-        /// <summary>
-        /// Bring the target window to the front and wait for it to be visible
-        /// </summary>
-        /// <remarks>If the window does not come to the front within approx. 30 seconds an exception is raised</remarks>
-        private void BringProcessWindowToFront(Process process)
-        {
-            if (process == null)
-                return;
-            IntPtr handle = process.MainWindowHandle;
-            int i = 0;
-
-            while (!NativeMethods.IsWindowInForeground(handle))
-            {
-                if (i == 0)
-                {
-                    // Initial sleep if target window is not in foreground - just to let things settle
-                    Thread.Sleep(250);
-                }
-
-                if (NativeMethods.IsIconic(handle))
-                {
-                    // Minimized so send restore
-                    NativeMethods.ShowWindow(handle, NativeMethods.WindowShowStyle.Restore);
-                }
-                else
-                {
-                    // Already Maximized or Restored so just bring to front
-                    NativeMethods.SetForegroundWindow(handle);
-                }
-                Thread.Sleep(250);
-
-                // Check if the target process main window is now in the foreground
-                if (NativeMethods.IsWindowInForeground(handle))
-                {
-                    // Leave enough time for screen to redraw
-                    Thread.Sleep(1000);
-                    return;
-                }
-
-                // Prevent an infinite loop
-                if (i > 120) // about 30secs
-                {
-                    throw new Exception("Could not set process window to the foreground");
-                }
-                i++;
-            }
-        }
+        
         #endregion
 
         public override void Stop()
         {
             _stopped = true;
-            if (_screenshotServer != null)
+            if (_capturedProcess != null)
             {
-                _screenshotServer.StopListening(null);
-                _screenshotServer = null;
+                _capturedProcess.CaptureInterface.Disconnect();
+                _capturedProcess.Dispose();
             }
-            _channelName = null;
         }
 
         private FastBitmap _fastBitmap;
@@ -225,8 +161,9 @@ namespace Afterglow.DirectX.Plugin
             IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
 
             if (_currentResponse != null)
-            {                
-                _capturedImage = _currentResponse.CapturedBitmapAsImage;
+            {    
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream(_currentResponse.CapturedBitmap))
+                    _capturedImage = new Bitmap(ms);
                 _fastBitmap = new FastBitmap(_capturedImage);
 
                 foreach (var light in lightSetup.GetLightsForBounds(_capturedImage.Width, _capturedImage.Height, 0, 0))

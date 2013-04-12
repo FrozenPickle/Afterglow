@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Afterglow.DirectX">
+    <Reference Include="Afterglow.DirectX, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1e778b75dfdbd36f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\bin\Afterglow.DirectX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
