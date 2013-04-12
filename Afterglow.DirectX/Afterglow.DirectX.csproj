@@ -143,7 +143,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)External\ILMerge\ILMerge.exe /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 /keyfile:$(ProjectDir)keyfile.snk /out:$(SolutionDir)bin\$(TargetFileName) $(TargetPath) $(ProjectDir)EasyHookBin\EasyHook.dll $(TargetDir)SharpDX.dll $(TargetDir)SharpDX.D3DCompiler.dll $(TargetDir)SharpDX.Direct3D10.dll $(TargetDir)SharpDX.DXGI.dll $(TargetDir)SharpDX.Direct3D9.dll $(TargetDir)SharpDX.Direct3D11.dll</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)External\ILMerge\ILMerge.exe /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 /keyfile:$(ProjectDir)keyfile.snk /out:$(TargetDir)..\$(TargetFileName) $(TargetPath) $(ProjectDir)EasyHookBin\EasyHook.dll $(TargetDir)SharpDX.dll $(TargetDir)SharpDX.D3DCompiler.dll $(TargetDir)SharpDX.Direct3D10.dll $(TargetDir)SharpDX.DXGI.dll $(TargetDir)SharpDX.Direct3D9.dll $(TargetDir)SharpDX.Direct3D11.dll</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
