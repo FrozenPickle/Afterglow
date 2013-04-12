@@ -42,13 +42,14 @@
         
         //Get Templates
         logTemplate = _.template($('#logTemplate').html());
-        installedPluginTemplate = _.template($('#installedPluginTemplate').html());
+        //installedPluginTemplate = _.template($('#installedPluginTemplate').html());
         lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
 
         if (agSessionId) {
             $('#logout').show();
         } else {
-            $('#login').show();
+			// Temporarily disabled login
+            //$('#login').show();
         }
 
         $(document).ajaxError(function (event, jqXHR, settings, thrownError) {
@@ -111,6 +112,7 @@
             clearInterval(timer);
             timer = null;
             if (firstPreview) {
+				lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
                 var lights = "";
                 $(data.Lights).each(function (index, item) {
                     $("#previewScreen").append(lightPreviewTemplate({ index: item.Index, colour: "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16) }));
