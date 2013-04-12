@@ -37,7 +37,7 @@ namespace Afterglow.Forms
 
         private void LoadListBox()
         {
-            lbProfiles.DataSource = _runtime.Settings.Profiles;
+            lbProfiles.DataSource = _runtime.Setup.Profiles;
             lbProfiles.DisplayMember = "Name";
             lbProfiles.SelectedIndex = 0;
         }
@@ -66,7 +66,7 @@ namespace Afterglow.Forms
 
         private void chkShowPreview_CheckedChanged(object sender, EventArgs e)
         {
-            this.Height = (_runtime.ShowPreview ? 400 : 123);
+            //this.Height = (_runtime..ShowPreview ? 400 : 123);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)

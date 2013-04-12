@@ -9,7 +9,6 @@ using Afterglow.Plugins.ColourExtraction;
 using Afterglow.Core.Plugins;
 using Afterglow.Plugins.Output;
 using System.Drawing;
-using Afterglow.Storage;
 using Nini.Config;
 using System.IO;
 using Afterglow.Plugins.PostProcess;
@@ -31,9 +30,9 @@ namespace Afterglow
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Afterglow.Log.Log4NetProxy logger = new Log4NetProxy(log4net.LogManager.GetLogger("LoggingSystem"));
 
-            _runtime = new AfterglowRuntime(logger);
+
+            _runtime = new AfterglowRuntime();
 
             //_runtime.Setup = new AfterglowSetup();
             //Profile p = new Profile();
