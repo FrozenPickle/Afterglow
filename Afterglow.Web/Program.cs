@@ -38,9 +38,13 @@ namespace Afterglow.Web
                 Console.WriteLine("Afterglow runtime started.");
 
                 appHost.Init();
-                appHost.Start(String.Format("http://localhost:{0}/", _runtime.Setup.Port));
+                string host = String.Format("http://localhost:{0}/", _runtime.Setup.Port);
+                if (args.Length > 0)
+                    host = String.Format("http://{0}:{1}/", args[0], _runtime.Setup.Port);
+                
+                appHost.Start(host);
 
-                Console.WriteLine("Listening on http://localhost:{0}/", _runtime.Setup.Port);
+                Console.WriteLine(host);
                 
                 Console.WriteLine("Press <enter> to exit.");
                 Console.ReadLine();
