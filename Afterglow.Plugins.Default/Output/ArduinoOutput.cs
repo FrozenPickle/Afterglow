@@ -122,7 +122,8 @@ namespace Afterglow.Plugins.Output
             if (Ports.Length == 0)
             {
                 //Logger.Warn("No serial ports found");
-                throw new Exception("No serial ports found");
+                _port = null;
+                //throw new Exception("No serial ports found");
             }
             else
             {

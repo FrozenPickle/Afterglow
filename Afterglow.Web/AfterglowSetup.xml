@@ -511,8 +511,14 @@
   </ConfiguredLightSetupPlugins>
   <ConfiguredPostProcessPlugins />
   <ConfiguredOutputPlugins>
-    <DebugOutput>
+    <ArduinoOutput>
       <Id>1</Id>
+      <Port>COM3</Port>
+      <BaudRate>115200</BaudRate>
+      <MagicWord>Glo</MagicWord>
+    </ArduinoOutput>
+    <DebugOutput>
+      <Id>2</Id>
     </DebugOutput>
   </ConfiguredOutputPlugins>
   <Profiles>
