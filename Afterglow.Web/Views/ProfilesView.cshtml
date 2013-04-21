@@ -11,8 +11,18 @@
                         Light Setup
                     </h3>
                     <ul data-role="listview">
-                        <li><a ng-click="selectProfile(profile, 'lightSetup')" href="#changeLightSetupPluginOnProfile" data-rel="dialog" data-transition="pop" >Change</a></li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.LightSetupPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+                        <li>
+                            <div data-role="controlgroup" data-type="horizontal">
+                                <a ng-click="selectProfile(profile, 'lightSetup')" href="#changeLightSetupPluginOnProfile" data-rel="dialog" data-transition="pop" data-role="button">Change</a>
+                                <!--<a href="#" data-role="button">Import</a>-->
+                            </div>
+                        </li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.LightSetupPlugins" data-refresh-list>
+                            <a href="#index">
+                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
+                            <p>{{plugin.Description}}</p></a>
+                            <!--<a href="#" data-role="button">Export</a>-->
+                        </li>
                     </ul>
                 </div>
                 <div data-role="collapsible" data-theme="b" data-content-theme="d">
@@ -20,8 +30,18 @@
                         Capture Plugins
                     </h3>
                     <ul data-role="listview">
-                        <li><a ng-click="selectProfile(profile, 'capture')" href="#changeCapturePluginOnProfile" data-rel="dialog" data-transition="pop" >Change</a></li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                        <li>
+                            <div data-role="controlgroup" data-type="horizontal">
+                                <a ng-click="selectProfile(profile, 'capture')" href="#changeCapturePluginOnProfile" data-rel="dialog" data-transition="pop" data-role="button">Change</a>
+                                <!--<a href="#" data-role="button">Import</a>-->
+                            </div>
+                        </li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list>
+                            <a href="#index">
+                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
+                            <p>{{plugin.Description}}</p></a>
+                            <!--<a href="#" data-role="button">Export</a>-->
+                        </li>
                     </ul>
                 </div>
                 <div data-role="collapsible" data-theme="b" data-content-theme="d">
@@ -29,8 +49,19 @@
                         Post Process Plugins
                     </h3>
                     <ul data-role="listview">
-                        <li><a ng-click="selectProfile(profile, 'postProcess')" href="#addPostProcessPluginToProfile" data-rel="dialog" data-transition="pop" >Add</a></li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                        <li>
+                            <div data-role="controlgroup" data-type="horizontal">
+                                <a ng-click="selectProfile(profile, 'postProcess')" href="#addPostProcessPluginToProfile" data-rel="dialog" data-transition="pop" data-role="button">Add</a>
+                                <!--<a href="#" data-role="button">Import</a>-->
+                            </div>
+                        </li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list>
+                            <a href="#index">
+                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
+                            <p>{{plugin.Description}}</p></a>
+                            <a ng-click="removePluginFromProfile(profile, 'postProcess', plugin)" href="#index" data-icon="delete" data-rel="popup" data-position-to="window">Delete</a>
+                            <!--<a href="#" data-role="button">Export</a>-->
+                        </li>
                     </ul>
                 </div>
                 <div data-role="collapsible" data-theme="b" data-content-theme="d">
@@ -38,8 +69,19 @@
                         Output Plugins
                     </h3>
                     <ul data-role="listview">
-                        <li><a ng-click="selectProfile(profile, 'outputPlugin')" href="#addOutputPluginToProfile" data-rel="dialog" data-transition="pop" >Add</a></li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                        <li>
+                            <div data-role="controlgroup" data-type="horizontal">
+                                <a ng-click="selectProfile(profile, 'output')" href="#addOutputPluginToProfile" data-rel="dialog" data-transition="pop" data-role="button">Add</a>
+                                <!--<a href="#" data-role="button">Import</a>-->
+                            </div>
+                        </li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list>
+                            <a href="#index">
+                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
+                            <p>{{plugin.Description}}</p></a>
+                            <a ng-click="removePluginFromProfile(profile, 'output', plugin)" href="#index" data-icon="delete" data-rel="popup" data-position-to="window">Delete</a>
+                            <!--<a href="#" data-role="button">Export</a>-->
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -153,13 +153,22 @@
             $scope.pluginType = pluginType;
         }
 
-        $scope.updateProfile = function (plugin)
-        {
+        $scope.updateProfile = function (plugin){
             if ($scope.currentProfile == null || plugin == null) {
                 return;
             }
             
-            var data = {ProfileId: $scope.currentProfile.Id, PluginId: plugin.Id, PluginType: $scope.pluginType};
+            var data = {profileId: $scope.currentProfile.Id, pluginId: plugin.Id, pluginType: $scope.pluginType, actionType: 'add'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.removePluginFromProfile = function (profile, pluginType, plugin){
+            if (profile == null || plugin == null) {
+                return;
+            }
+            var data = {profileId: profile.Id, pluginId: plugin.Id, pluginType: pluginType, actionType: 'remove'};
             $http.post('/updateProfile?format=json', data).success( function( data){
                 $scope.afterglowSetup = data;
             });

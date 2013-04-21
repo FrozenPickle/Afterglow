@@ -36,10 +36,10 @@ namespace Afterglow.Web
     [Route("/updateProfile")]
     public class UpdateProfile
     {
-        public int ProfileId { get; set; }
-        public int PluginId { get; set; }
-        public string PluginType { get; set; }
-        public string ActionType { get; set; }
+        public int profileId { get; set; }
+        public int pluginId { get; set; }
+        public string pluginType { get; set; }
+        public string actionType { get; set; }
 
         public const string ActionType_Add = "add";
         public const string ActionType_Remove = "remove";
@@ -139,23 +139,25 @@ namespace Afterglow.Web
 
         public object Post(UpdateProfile updateProfile)
         {
-            if (updateProfile != null && updateProfile.ProfileId != 0)
+            if (updateProfile != null && updateProfile.profileId != 0)
             {
 
                 Profile profile = (from p in Program.Runtime.Setup.Profiles
-                                   where p.Id == updateProfile.ProfileId
+                                   where p.Id == updateProfile.profileId
                                    select p).FirstOrDefault();
                 
                 if (profile == null) return "Fail";
 
-                if (updateProfile.PluginType == UpdateProfile.PluginType_LightSetup)
+                if (updateProfile.pluginType == UpdateProfile.PluginType_LightSetup)
                 {
+                    if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Light Setup Plugins";
+
                     ILightSetupPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredLightSetupPlugins
-                                                where pl.Id == updateProfile.PluginId
+                                                where pl.Id == updateProfile.pluginId
                                                 select pl).FirstOrDefault();
 
                     //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && profile.LightSetupPlugin.Id != updateProfile.PluginId)
+                    if (plugin != null && profile.LightSetupPlugin.Id != updateProfile.pluginId)
                     {
                         profile.LightSetupPlugins.Clear();
                         profile.LightSetupPlugins.Add(plugin);
@@ -163,14 +165,16 @@ namespace Afterglow.Web
                         Program.Runtime.Save();
                     }
                 }
-                else if (updateProfile.PluginType == UpdateProfile.PluginType_Capture)
+                else if (updateProfile.pluginType == UpdateProfile.PluginType_Capture)
                 {
+                    if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Capture Plugins";
+
                     ICapturePlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredCapturePlugins
-                                                where pl.Id == updateProfile.PluginId
+                                                where pl.Id == updateProfile.pluginId
                                                 select pl).FirstOrDefault();
 
                     //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && profile.CapturePlugin.Id != updateProfile.PluginId)
+                    if (plugin != null && profile.CapturePlugin.Id != updateProfile.pluginId)
                     {
                         profile.CapturePlugins.Clear();
                         profile.CapturePlugins.Add(plugin);
@@ -178,34 +182,62 @@ namespace Afterglow.Web
                         Program.Runtime.Save();
                     }
                 }
-                else if (updateProfile.PluginType == UpdateProfile.PluginType_PostProcess)
+                else if (updateProfile.pluginType == UpdateProfile.PluginType_PostProcess)
                 {
                     IPostProcessPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredPostProcessPlugins
-                                                where pl.Id == updateProfile.PluginId
+                                                where pl.Id == updateProfile.pluginId
                                                 select pl).FirstOrDefault();
 
-                    //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && !(from pp in profile.PostProcessPlugins
-                                            where pp.Id == updateProfile.PluginId
-                                            select pp).Any())
+                    if (updateProfile.actionType == UpdateProfile.ActionType_Add)
                     {
-                        profile.PostProcessPlugins.Add(plugin);
-                        Program.Runtime.Save();
+                        //Ensure that the profile does not already use the selected plugin
+                        if (plugin != null && !(from pp in profile.PostProcessPlugins
+                                                where pp.Id == updateProfile.pluginId
+                                                select pp).Any())
+                        {
+                            profile.PostProcessPlugins.Add(plugin);
+                            Program.Runtime.Save();
+                        }
+                    }
+                    else if (updateProfile.actionType == UpdateProfile.ActionType_Remove)
+                    {
+                        //Ensure that the profile does already use the selected plugin
+                        if (plugin != null && (from pp in profile.PostProcessPlugins
+                                                where pp.Id == updateProfile.pluginId
+                                                select pp).Any())
+                        {
+                            profile.PostProcessPlugins.Remove(plugin);
+                            Program.Runtime.Save();
+                        }
                     }
                 }
-                else if (updateProfile.PluginType == UpdateProfile.PluginType_Output)
+                else if (updateProfile.pluginType == UpdateProfile.PluginType_Output)
                 {
                     IOutputPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredOutputPlugins
-                                                where pl.Id == updateProfile.PluginId
+                                                where pl.Id == updateProfile.pluginId
                                                 select pl).FirstOrDefault();
-
-                    //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && !(from op in profile.OutputPlugins
-                                             where op.Id == updateProfile.PluginId
-                                             select op).Any())
+                    
+                    if (updateProfile.actionType == UpdateProfile.ActionType_Add)
                     {
-                        profile.OutputPlugins.Add(plugin);
-                        Program.Runtime.Save();
+                        //Ensure that the profile does not already use the selected plugin
+                        if (plugin != null && !(from op in profile.OutputPlugins
+                                                 where op.Id == updateProfile.pluginId
+                                                 select op).Any())
+                        {
+                            profile.OutputPlugins.Add(plugin);
+                            Program.Runtime.Save();
+                        }
+                    }
+                    else if (updateProfile.actionType == UpdateProfile.ActionType_Remove)
+                    {
+                        //Ensure that the profile does already use the selected plugin
+                        if (plugin != null && (from op in profile.OutputPlugins
+                                                where op.Id == updateProfile.pluginId
+                                                select op).Any())
+                        {
+                            profile.OutputPlugins.Remove(plugin);
+                            Program.Runtime.Save();
+                        }
                     }
                 }
 
@@ -213,7 +245,6 @@ namespace Afterglow.Web
             }
             return "Fail";
         }
-
 
         public object Get(Setup request)
         {

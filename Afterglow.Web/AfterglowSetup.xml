@@ -5,6 +5,7 @@
     <CopyScreenCapture>
       <Id>1</Id>
       <Screen>Screen 1</Screen>
+      <DisplayName>Copy Screen Setup 1</DisplayName>
       <CaptureCorrection>3</CaptureCorrection>
       <CaptureCorrectionIntervalType>Seconds</CaptureCorrectionIntervalType>
       <CaptureCorrectionInterval>1</CaptureCorrectionInterval>
