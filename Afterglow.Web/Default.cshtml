@@ -42,7 +42,7 @@
         
         //Get Templates
         logTemplate = _.template($('#logTemplate').html());
-        //installedPluginTemplate = _.template($('#installedPluginTemplate').html());
+      //  installedPluginTemplate = _.template($('#installedPluginTemplate').html());
         lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
 
         if (agSessionId) {
@@ -131,34 +131,58 @@
     }
 
     function AfterglowCtrl($scope, $http) {
+        $scope.afterglowSetup = null;
+        $scope.currentProfile = null;
+        $scope.pluginType = null;
+
         $http.get('/setup?format=json').success(function (data) {
             $scope.afterglowSetup = data;
         });
         $http.get('/runtime?format=json').success(function (data) {
             $scope.afterglowRuntime = data;
         });
+        
+        $scope.save = function () {
+            $http.post('/setup?format=json', $scope.afterglowSetup).success(function (data) {
+                $scope.afterglowSetup = data;
+            });
+        }
 
+        $scope.selectProfile= function(profile, pluginType){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+        }
+
+        $scope.updateProfile = function (plugin)
+        {
+            if ($scope.currentProfile == null || plugin == null) {
+                return;
+            }
+            
+            var data = {ProfileId: $scope.currentProfile.Id, PluginId: plugin.Id, PluginType: $scope.pluginType};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+    }
+    //look at this http://stackoverflow.com/questions/13836765/angular-scope-inside-script
+    var currentProfile = null;
+    function TrySetLightSetupPlugin(plugin) {
+        if (currentProfile == null || plugin == null) {
+            return;
+        }
     }
 
-
-
-//    function InstalledPluginsCtrl($scope) {
-//        $scope.lightSetupPlugins = [];
-
-//        if (afterglowSetup && afterglowSetup.Setup) {
-//            $(afterglowSetup.Setup.ConfiguredCapturePlugins).each(function (index, item) {
-//                $scope.lightSetupPlugins[$scope.lightSetupPlugins.length] = { text: item.FullName };
-//            });
-//        }
-//        $scope.todos = [{ text: 'learn angular', done: true },
-//                        { text: 'build an angular app', done: false}];
-
-//    }
 </script>
 
+<div ng-controller="AfterglowCtrl">
+<div data-role="page" class="type-interior" id="mainContent">
 
-<div data-role="page" class="type-interior">
-    <div data-role="content" ng-controller="AfterglowCtrl">
+	<div data-role="header" data-theme="e">
+		<h1>Afterglow</h1>
+	</div><!-- /header -->
+
+    <div data-role="content" >
 		<div class="content-primary">
 
             <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
@@ -176,8 +200,7 @@
                 </div>
             </div>
 
-
-        <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
+            <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
             <div data-role="collapsible" data-collapsed="true">
                 <h3 class="ui-collapsible-heading">
                     Preview
@@ -266,57 +289,20 @@
                             </div>
                         </div>
                     </div>
-                    <h2>Profiles</h2>
-                    <div id="profiles">
-                        <div data-role="collapsible-set" data-theme="b" data-content-theme="d" ng-repeat="profile in afterglowSetup.Setup.Profiles">
-                            <div data-role="collapsible" id="{{'profile' + profile.Id }}">
-                                <h3>
-                                    {{profile.Name}}
-                                </h3>
-                                <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
-                                    <div data-role="collapsible" >
-                                        <h3>
-                                            Light Setup
-                                        </h3>
-                                        <ul data-role="listview">
-                                            <li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true"  >Add</button></li>
-                                        </ul>
-                                    </div>
-                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'CapturePlugins'}}">
-                                        <h3>
-                                            Capture Plugins
-                                        </h3>
-                                        <ul data-role="listview">
-                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'PostProcessPlugins'}}">
-                                        <h3>
-                                            Post Process Plugins
-                                        </h3>
-                                        <ul data-role="listview">
-                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                        </ul>
-                                    </div>
-                                    <div data-role="collapsible" id="{{'profile' + profile.Id + 'OutputPlugins'}}">
-                                        <h3>
-                                            Output Plugins
-                                        </h3>
-                                        <ul data-role="listview">
-                                            <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+                    @Html.Partial("ProfilesView")
                 </div>
             </div>
         </div>
-    </div>
+        </div>
+    </div><!-- /content -->
 </div>
+    
+@Html.Partial("ProfilesPopupsView")
 
 <div id="log"></div>
+
+</div> <!-- Controller Scope -->
 
 <script id="logTemplate" type="text/template">
 	<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">

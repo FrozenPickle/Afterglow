@@ -1,0 +1,80 @@
+﻿
+<!-- Start of Change Light Setup Plugin -->
+<div data-role="page" id="changeLightSetupPluginOnProfile">
+
+	<div data-role="header" data-theme="e">
+		<h1>Light Setup Plugins</h1>
+	</div>
+
+	<div data-role="content" data-theme="d">	
+		<h3>
+            Light Setup Plugins
+        </h3>
+        <ul data-role="listview">
+            <!--<li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>-->
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list>
+            <a ng-click="updateProfile(plugin)" href="#mainContent" data-rel="back">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+        </ul>
+		<p><a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back</a></p>	
+	</div>
+</div>
+    
+<!-- Start of Add Capture Plugin -->
+<div data-role="page" id="changeCapturePluginOnProfile">
+
+	<div data-role="header" data-theme="e">
+		<h1>Capture Plugins</h1>
+	</div>
+
+	<div data-role="content" data-theme="d">	
+		<h3>
+            Capture Plugins
+        </h3>
+        <ul data-role="listview">
+            <!--<li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>-->
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list>
+            <a ng-click="updateProfile(plugin)" href="#mainContent" data-rel="back">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+        </ul>
+		<p><a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back</a></p>	
+	</div>
+</div>
+    
+<!-- Start of Add Post Process Plugin -->
+<div data-role="page" id="addPostProcessPluginToProfile">
+
+	<div data-role="header" data-theme="e">
+		<h1>Post Process Plugins</h1>
+	</div>
+
+	<div data-role="content" data-theme="d">	
+		<h3>
+            Post Process Plugins
+        </h3>
+        <ul data-role="listview">
+            <!--<li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>-->
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list>
+            <a ng-click="updateProfile(plugin)" href="#mainContent" data-rel="back">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+        </ul>
+		<p><a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back</a></p>	
+	</div>
+</div>
+    
+<!-- Start of Add Output Plugin -->
+<div data-role="page" id="addOutputPluginToProfile">
+
+	<div data-role="header" data-theme="e">
+		<h1>Ouput Plugins</h1>
+	</div>
+
+	<div data-role="content" data-theme="d">	
+		<h3>
+            Ouput Plugins
+        </h3>
+        <ul data-role="listview">
+            <!--<li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>-->
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list>
+            <a ng-click="updateProfile(plugin)" href="#mainContent" data-rel="back">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+        </ul>
+		<p><a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back</a></p>	
+	</div>
+</div>

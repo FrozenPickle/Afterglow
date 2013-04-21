@@ -1,0 +1,48 @@
+﻿<h2>Profiles</h2>
+<div id="profiles">
+    <div ng-repeat="profile in afterglowSetup.Setup.Profiles" data-role="collapsible-set" data-theme="b" data-content-theme="d" data-refresh-list>
+        <div data-role="collapsible">
+            <h3>
+                {{profile.Name}}
+            </h3>
+            <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
+                <div data-role="collapsible" >
+                    <h3>
+                        Light Setup
+                    </h3>
+                    <ul data-role="listview">
+                        <li><a ng-click="selectProfile(profile, 'lightSetup')" href="#changeLightSetupPluginOnProfile" data-rel="dialog" data-transition="pop" >Change</a></li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.LightSetupPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+                    </ul>
+                </div>
+                <div data-role="collapsible" data-theme="b" data-content-theme="d">
+                    <h3>
+                        Capture Plugins
+                    </h3>
+                    <ul data-role="listview">
+                        <li><a ng-click="selectProfile(profile, 'capture')" href="#changeCapturePluginOnProfile" data-rel="dialog" data-transition="pop" >Change</a></li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                    </ul>
+                </div>
+                <div data-role="collapsible" data-theme="b" data-content-theme="d">
+                    <h3>
+                        Post Process Plugins
+                    </h3>
+                    <ul data-role="listview">
+                        <li><a ng-click="selectProfile(profile, 'postProcess')" href="#addPostProcessPluginToProfile" data-rel="dialog" data-transition="pop" >Add</a></li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                    </ul>
+                </div>
+                <div data-role="collapsible" data-theme="b" data-content-theme="d">
+                    <h3>
+                        Output Plugins
+                    </h3>
+                    <ul data-role="listview">
+                        <li><a ng-click="selectProfile(profile, 'outputPlugin')" href="#addOutputPluginToProfile" data-rel="dialog" data-transition="pop" >Add</a></li>
+                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list><a href="#index">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
