@@ -143,13 +143,20 @@ namespace Afterglow.Core
         /// <returns>A flat list of pixel colors</returns>
         public List<Color> GetPixels(int x, int y, int width, int height, int step)
         {
-            if (x * sizeof(PixelData) + width * sizeof(PixelData) > _subjectWidth)
-                throw new ArgumentOutOfRangeException("width", "x + width extends past the right edge of the image");
-            if (y + height > _subjectHeight)
-                throw new ArgumentOutOfRangeException("height", "y + height extends past the bottom of the image");
-            if (step < 1 || step > width * height)
-                throw new ArgumentOutOfRangeException("step", step, "step must be larger than 0 and less than width * height");
-            return PixelsAt(x, y, width, height, step);
+            try
+            {
+                if (x * sizeof(PixelData) + width * sizeof(PixelData) > _subjectWidth)
+                    throw new ArgumentOutOfRangeException("width", "x + width extends past the right edge of the image");
+                if (y + height > _subjectHeight)
+                    throw new ArgumentOutOfRangeException("height", "y + height extends past the bottom of the image");
+                if (step < 1 || step > width * height)
+                    throw new ArgumentOutOfRangeException("step", step, "step must be larger than 0 and less than width * height");
+                return PixelsAt(x, y, width, height, step);
+            }
+            catch (Exception)
+            {
+                return new List<Color>();
+            }
         }
 
 

@@ -75,13 +75,13 @@ namespace Afterglow.Core
         /// </summary>
         [DataMember]
         [Required]
-        [Display(Name = "Frame Rate Limiter", 
+        [Display(Name = "Frame Rate Limiter (Milliseconds)", 
             Order = 300, 
             Description = "This sets the minimum time that the program will take to complete each loop. Frame Rate = Frame Rate Limiter + Execution time of program", 
             GroupName = "General Settings")]
-        public TimeSpan FrameRateLimiter
+        public double FrameRateLimiter
         {
-            get { return Get(() => FrameRateLimiter, new TimeSpan(0, 0, 0, 0, 1)); }
+            get { return Get(() => FrameRateLimiter, 1.00); }
             set { Set(() => FrameRateLimiter, value); }
         }
         #endregion

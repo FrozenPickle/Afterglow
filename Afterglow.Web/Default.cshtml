@@ -164,6 +164,17 @@
             });
         }
 
+        $scope.updateProfileGeneralSettings = function(){
+            if ($scope.currentProfile == null) {
+                return;
+            }
+            
+            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: 'update'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
         $scope.removePluginFromProfile = function (profile, pluginType, plugin){
             if (profile == null || plugin == null) {
                 return;

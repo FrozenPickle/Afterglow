@@ -40,7 +40,13 @@ namespace Afterglow.Web
         public int pluginId { get; set; }
         public string pluginType { get; set; }
         public string actionType { get; set; }
+        
+        public string name { get; set; }
+        public string description { get; set; }
+        public long frameRateLimiter { get; set; }
 
+
+        public const string ActionType_Update = "update";
         public const string ActionType_Add = "add";
         public const string ActionType_Remove = "remove";
 
@@ -148,7 +154,15 @@ namespace Afterglow.Web
                 
                 if (profile == null) return "Fail";
 
-                if (updateProfile.pluginType == UpdateProfile.PluginType_LightSetup)
+                if (updateProfile.actionType == UpdateProfile.ActionType_Update)
+                {
+                    profile.Name = updateProfile.name;
+                    profile.Description = updateProfile.description;
+                    profile.FrameRateLimiter = updateProfile.frameRateLimiter;
+
+                    Program.Runtime.Save();
+                }
+                else if (updateProfile.pluginType == UpdateProfile.PluginType_LightSetup)
                 {
                     if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Light Setup Plugins";
 
@@ -241,7 +255,7 @@ namespace Afterglow.Web
                     }
                 }
 
-                return profile;
+                return Program.Runtime.Setup;
             }
             return "Fail";
         }

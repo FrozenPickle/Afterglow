@@ -305,7 +305,7 @@ namespace Afterglow.Core
                     CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(lightSetupPlugin.Lights.ToList()));
 
                     //Frame Rate Limiter
-                    Thread.Sleep(CurrentProfile.FrameRateLimiter);
+                    Thread.Sleep(TimeSpan.FromMilliseconds(CurrentProfile.FrameRateLimiter));
 
                     //TODO implement debug logging
                     //cycles++;

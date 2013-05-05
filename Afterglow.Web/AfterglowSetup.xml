@@ -526,6 +526,7 @@
     <Profile>
       <Id>1</Id>
       <Name>Default Profile</Name>
+      <FrameRateLimiter>20</FrameRateLimiter>
       <LightSetupPlugins>
         <BasicLightSetup>
           <Id>1</Id>

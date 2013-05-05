@@ -78,3 +78,45 @@
 		<p><a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back">Back</a></p>	
 	</div>
 </div>
+
+<div data-role="page" id="profileGeneralSettings" >
+	<div data-role="header" data-theme="e" >
+		<h1>{{currentProfile.Name}} - Profile General Settings</h1>
+	</div>
+
+	<div data-role="content" data-theme="d">	
+		<h3>
+            {{currentProfile.Name}} - Profile General Settings
+        </h3>
+        <div>
+            <ul data-role="listview" data-inset="true">
+                <li>
+                    <label for="profileNameInput">
+                        Name
+                    </label>
+                    <input id="profileNameInput" ng-model="currentProfile.Name" type="text">
+                </li>
+            
+                <li>
+                    <label for="profileDescription">
+                        Description
+                    </label>
+                    <textarea id="profileDescription" ng-model="currentProfile.Description"  ></textarea>
+            
+                </li>
+            
+                <li>
+                    <label for="profileFrameRateLimiter">
+                        Frame Rate Limit
+                    </label>
+                    <input id="profileFrameRateLimiter" type="number"
+                        ng-model="currentProfile.FrameRateLimiter" min="0" max="100"
+                        data-highlight="false" data-theme="b">
+                </li>
+            </ul>
+            <a href="#mainContent" data-rel="back" data-role="button" data-inline="true" data-icon="back" ng-click="updateProfileGeneralSettings()">
+                Save
+            </a>
+        </div>
+    </div>
+</div>
