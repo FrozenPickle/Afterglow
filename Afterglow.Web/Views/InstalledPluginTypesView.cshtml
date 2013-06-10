@@ -1,0 +1,43 @@
+﻿<div class="navbar">
+    <div class="navbar-inner">
+        <ul class="nav">
+            <li>
+                <a href="#">TODO: Upload New Plugin Type</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div>
+    <div id="installedLightSetupPlugins">
+        <h4>
+            Light Setup Plugins
+        </h4>
+        <div ng-repeat="plugin in afterglowSetup.Setup.AvailableLightSetupPlugins">
+            {{plugin}}
+        </div>
+    </div>
+    <div id="installedCapturePlugins">
+        <h4>
+            Capture Plugins
+        </h4>
+        <div ng-repeat="plugin in afterglowSetup.Setup.AvailableCapturePlugins">
+            {{plugin}}
+        </div>
+    </div>
+    <div id="installedPostProcessPlugins">
+        <h4>
+            Post Process Plugins
+        </h4>
+        <div ng-repeat="plugin in afterglowSetup.Setup.AvailablePostProcessPlugins">
+            {{plugin}}
+        </div>
+    </div>
+    <div id="installedOutputPlugins">
+        <h4>
+            Output Plugins
+        </h4>
+        <div ng-repeat="plugin in afterglowSetup.Setup.AvailableOutputPlugins">
+            {{plugin}}
+        </div>
+    </div>
+</div>

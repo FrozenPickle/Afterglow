@@ -8,15 +8,18 @@
 <script type="text/javascript">
     var agSessionId = null;
 </script>
+
 @if (session != null && session.IsAuthenticated)
 {
-<script type="text/javascript">
-    agSessionId = @session.Id;
-</script>
+    <script type="text/javascript">
+        agSessionId = @session.Id;
+    </script>
 }
-
 <script type="text/javascript">
-    angular.module('jqmDirectives', [])
+
+    angular.module('afterglow',['ui.bootstrap']);//,'ui.bootstrap.collapse','ui.bootstrap.accordion']);
+    //angular.bootstrap('afterglow',[]);
+  /*  angular.module('jqmDirectives', [])
     .directive('refreshList', function () {
         return {
             restrict: 'A',
@@ -24,7 +27,7 @@
                 $(element).closest(':jqmData(role=listview)').listview('refresh');
             }
         };
-    });
+    });*/
     var logTemplate = {};
     var installedPluginTemplate = {};
     var lightPreviewTemplate = {};
@@ -130,7 +133,17 @@
         
     }
 
-    function AfterglowCtrl($scope, $http) {
+    function AfterglowCtrl($scope, $http, $dialog) {
+        $scope.oneAtATime = true;
+
+        /*
+        http://angular-ui.github.io/bootstrap/
+        http://bootswatch.com/slate/#
+        http://mgcrea.github.io/angular-strap/#/modal
+        http://plnkr.co/edit/xKP5PW3Dco1CczmCuuVN?p=preview
+        https://github.com/angular-ui/bootstrap/tree/master/src/dialog
+        */
+
         $scope.afterglowSetup = null;
         $scope.currentProfile = null;
         $scope.pluginType = null;
@@ -184,141 +197,108 @@
                 $scope.afterglowSetup = data;
             });
         }
+
+        $scope.shouldBeOpen = {};
+
+        // Toggle modal
+        $scope.showPluginSelect = function(profile, pluginType){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+            
+            $scope.shouldBeOpen[pluginType] = true;
+        };
+
+        $scope.close = function () {
+            $scope.shouldBeOpen[$scope.pluginType] = false;
+        };
+
+        $scope.opts = {
+            backdropFade: true,
+            dialogFade:true
+        };
     }
     //look at this http://stackoverflow.com/questions/13836765/angular-scope-inside-script
-    var currentProfile = null;
-    function TrySetLightSetupPlugin(plugin) {
-        if (currentProfile == null || plugin == null) {
-            return;
-        }
-    }
 
 </script>
 
 <div ng-controller="AfterglowCtrl">
-<div data-role="page" class="type-interior" id="mainContent">
-
-	<div data-role="header" data-theme="e">
-		<h1>Afterglow</h1>
-	</div><!-- /header -->
-
-    <div data-role="content" >
-		<div class="content-primary">
-
-            <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
-                <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
-                <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
-                @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
-            <input type="submit" value="Login" onclick="DoLogin(); return false;" />
-            </form>
-            <div id="loggedIn" >
-                <div id="StartStop">
-                    <button onclick="DoStartStop();" id="startStopBtn" style="width:100%">Start</button>
-                </div>
-                <div id="logout">
-                    <button onclick="DoLogout();" id="logoutBtn" style="width:100%">Logout</button>
-                </div>
-            </div>
-
-            <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
-            <div data-role="collapsible" data-collapsed="true">
-                <h3 class="ui-collapsible-heading">
-                    Preview
-                </h3>
-                <div id="previewScreen">
-                    
-                </div>
-            </div>
-            <div data-role="collapsible" data-collapsed="false">
-                <h3 class="ui-collapsible-heading">
-                    Settings
-                </h3>
-                <div id="settings">
-                    <h2>Installed Plugin Types</h2>
-                    <div id="installedPlugins" >
-                        <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
-                            <div data-role="collapsible" data-collapsed="true" id="installedLightSetupPlugins">
-                                <h3 class="ui-collapsible-heading">
-                                    Light Setup Plugins
-                                </h3>
-                                <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableLightSetupPlugins">
-                                    {{plugin}}
-                                </div>
-                            </div>
-                            <div data-role="collapsible" data-collapsed="true" id="installedCapturePlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Capture Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableCapturePlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        <div data-role="collapsible" data-collapsed="true" id="installedPostProcessPlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Post Process Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailablePostProcessPlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        <div data-role="collapsible" data-collapsed="true" id="installedOutputPlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Output Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableOutputPlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <h2>Configured Plugins</h2>
-                    <div id="configuredPlugins">
-                        <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
-                            <div data-role="collapsible" id="configuredLightSetupPlugins">
-                                <h3>
-                                    Light Setup Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>
-                                    <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredCapturePlugins">
-                                <h3>
-                                    Capture Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredPostProcessPlugins">
-                                <h3>
-                                    Post Process Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredOutputPlugins">
-                                <h3>
-                                    Output Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    @Html.Partial("ProfilesView")
-                </div>
+	
+    <div id="mainContent">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" onclick="DoStartStop();">Start</a>
+                    </li>
+                    <li>
+                        <a href="#">TODO: Log In/Out</a>
+                    </li>
+                </ul>
             </div>
         </div>
+        <div>
+		    <div>
+
+                <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
+                    <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
+                    <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
+                    @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
+                <input type="submit" value="Login" onclick="DoLogin(); return false;" />
+                </form>
+                <!--<div id="loggedIn" >
+                    <div id="StartStop">
+                        <button onclick="DoStartStop();" id="startStopBtn" style="width:100%" type="button" class="btn">Start</button>
+                    </div>
+                    <div id="logout">
+                        <button onclick="DoLogout();" id="logoutBtn" style="width:100%" type="button" class="btn">Logout</button>
+                    </div>
+                </div>-->
+            </div>
+            
+        <accordion close-others="false">
+		    <accordion-group heading="Preview">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li>
+                                <a href="#">TODO: Preview On/Off</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                @Html.Partial("PreviewView")
+            </accordion-group>
+            <accordion-group heading="Settings">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li>
+                                <a href="#">TODO: General Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Import Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Export Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <accordion  id="settings">
+                    <accordion-group heading="Installed Plugin Types" id="installedPlugins" >
+                        @Html.Partial("InstalledPluginTypesView")
+                    </accordion-group>
+                    <accordion-group heading="Configured Plugins" id="configuredPlugins">
+                        @Html.Partial("ConfiguredPluginsView")
+                    </accordion-group>
+                    <accordion-group heading="Profiles">
+                        @Html.Partial("ProfilesView")
+                    </accordion-group>
+                </accordion-group>
+            </accordion>
         </div>
     </div><!-- /content -->
 </div>
-    
-@Html.Partial("ProfilesPopupsView")
 
 <div id="log"></div>
 

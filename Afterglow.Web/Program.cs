@@ -25,7 +25,6 @@ namespace Afterglow.Web
         static void Main(string[] args)
         {
 
-
             _runtime = new AfterglowRuntime();
             
             LogManager.LogFactory = new ConsoleLogFactory();

@@ -1,0 +1,50 @@
+﻿<accordion>
+    <accordion-group heading="Light Setup Plugins" id="configuredLightSetupPlugins">
+        <ol data-role="listview">
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list>
+                <p>
+                    <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                    <small>{{plugin.Description}}</small>
+                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-small" href="#" >TODO: Export Setting</a>
+                </p>
+            </li>
+        </ol>
+    </accordion-group>
+    <accordion-group id="configuredCapturePlugins" heading="Capture Plugins">
+        <ol data-role="listview">
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list>
+                <p>
+                    <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                    <small>{{plugin.Description}}</small>
+                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-small" href="#" >TODO: Export Setting</a>
+                </p>
+            </li>
+        </ol>
+    </accordion-group>
+    <accordion-group id="configuredPostProcessPlugins" heading="Post Process Plugins">
+        <ol data-role="listview">
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list>
+                <p>
+                    <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                    <small>{{plugin.Description}}</small>
+                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-small" href="#" >TODO: Export Setting</a>
+                </p>
+            </li>
+        </ol>
+    </accordion-group>
+    <accordion-group id="configuredOutputPlugins" heading="Output Plugins">
+        <ol data-role="listview">
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list>
+                <p>
+                    <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                    <small>{{plugin.Description}}</small>
+                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-small" href="#" >TODO: Export Setting</a>
+                </p>
+            </li>
+        </ol>
+    </accordion-group>
+</accordion>
