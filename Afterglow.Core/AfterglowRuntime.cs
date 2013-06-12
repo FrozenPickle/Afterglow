@@ -37,6 +37,11 @@ namespace Afterglow.Core
         private string _setupFileName;
 
         /// <summary>
+        /// The last error occured
+        /// </summary>
+        public string ErrorMessage { get; private set; }
+
+        /// <summary>
         /// Creates an instance of the Afterglow Runtime using the current execution path to save/load the configuration
         /// </summary>
         public AfterglowRuntime()
@@ -240,6 +245,7 @@ namespace Afterglow.Core
         /// </summary>
         private void MainLoop()
         {
+            string errorMessage = string.Empty;
 
             /*
             1. Capture regions
@@ -254,7 +260,21 @@ namespace Afterglow.Core
             CurrentProfile.CapturePlugin.Start();
             CurrentProfile.ColourExtractionPlugin.Start();
             CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Start());
-            CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Start());
+
+            int outputFailures = 0;
+            foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
+            {
+                if (!outputPlugin.TryStart(out errorMessage))
+                {
+                    outputFailures++;
+                    ErrorMessage = errorMessage;
+                }
+            }
+
+            if (outputFailures == CurrentProfile.OutputPlugins.Count())
+            {
+                Stop();
+            }
 
             try
             {

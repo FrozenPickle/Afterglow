@@ -1,17 +1,35 @@
 ﻿<accordion>
     <accordion-group heading="Light Setup Plugins" id="configuredLightSetupPlugins">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" ng-click="showConfigureNewPlugin(profile, 'basicLightSetupPlugin', 'new')">Add</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <ol data-role="listview">
             <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list>
                 <p>
                     <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
                     <small>{{plugin.Description}}</small>
-                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-primary btn-small" href="#" ng-click="showConfigureNewPlugin(profile, 'basicLightSetupPlugin', plugin)" >Edit Setting</a>
                     <a class="btn btn-small" href="#" >TODO: Export Setting</a>
                 </p>
             </li>
         </ol>
     </accordion-group>
     <accordion-group id="configuredCapturePlugins" heading="Capture Plugins">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" ng-click="showConfigureNewPlugin(profile, 'capture')">Add</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <ol data-role="listview">
             <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list>
                 <p>
@@ -24,6 +42,15 @@
         </ol>
     </accordion-group>
     <accordion-group id="configuredPostProcessPlugins" heading="Post Process Plugins">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" ng-click="showConfigureNewPlugin(profile, 'postProcess')">Add</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <ol data-role="listview">
             <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list>
                 <p>
@@ -36,6 +63,15 @@
         </ol>
     </accordion-group>
     <accordion-group id="configuredOutputPlugins" heading="Output Plugins">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" ng-click="showConfigureNewPlugin(profile, 'output')">Add</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <ol data-role="listview">
             <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list>
                 <p>
@@ -48,3 +84,5 @@
         </ol>
     </accordion-group>
 </accordion>
+
+@Html.Partial("BasicLightSetupPluginView")

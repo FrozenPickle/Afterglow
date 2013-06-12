@@ -15,5 +15,12 @@ namespace Afterglow.Core.Plugins
         /// </summary>
         /// <param name="leds">A collection of lights</param>
         void Output(List<Light> lights);
+
+        /// <summary>
+        /// Trys to start the output plugin
+        /// </summary>
+        /// <param name="errorMessage">The error that has occured</param>
+        /// <returns>Success or failure of starting this plugin</returns>
+        bool TryStart(out string errorMessage);
     }
 }

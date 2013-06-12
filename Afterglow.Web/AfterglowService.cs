@@ -19,7 +19,8 @@ namespace Afterglow.Web
     public class RuntimeResponse
     {
         public bool Active { get; set; }
-        public int NumberOfLights { get; set; }
+        public int NumberOfLightsHigh { get; set; }
+        public int NumberOfLightsWide { get; set; }
     }
 
     [Route("/setup")]
@@ -80,7 +81,9 @@ namespace Afterglow.Web
     public class LightPreview
     {
         [DataMember]
-        public int Index { get; set; }
+        public int Top { get; set; }
+        [DataMember]
+        public int Left { get; set; }
         [DataMember]
         public Color Colour { get; set; }
     }
@@ -117,18 +120,32 @@ namespace Afterglow.Web
         {
             return new RuntimeResponse
             {
-                Active = Program.Active,
-                NumberOfLights = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count
+                Active = Active,
+                NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
+                NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
             };
         }
+        
+        public static bool Active = false;
 
         public object Post(Runtime request)
         {
-            Program.ToggleActive();
+            if (Active)
+            {
+                Program.Runtime.Stop();
+                Active = false;
+            }
+            else
+            {
+                Program.Runtime.Start();
+                Active = true;
+            }
+        
             return new RuntimeResponse
             {
-                Active = Program.Active,
-                NumberOfLights = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count
+                Active = Active,
+                NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
+                NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
             };
         }
 
@@ -283,7 +300,7 @@ namespace Afterglow.Web
         public object Get(Preview request)
         {
             var lights = (from light in Program.Runtime.CurrentProfile.LightSetupPlugin.Lights
-                         select new LightPreview() { Index = light.Index, Colour = light.LightColour }).ToList();
+                         select new LightPreview() { Top = light.Top, Left = light.Left, Colour = light.LightColour }).ToList();
             return new PreviewResponse
             {
                 Lights = lights

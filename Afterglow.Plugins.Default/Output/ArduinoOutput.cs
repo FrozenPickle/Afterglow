@@ -137,12 +137,32 @@ namespace Afterglow.Plugins.Output
                 {
                     //TODO: try and reset the serial connection so the user does not need to disconnect and reattach the cable
                     string message = "Please un plug and re attach the cable";
-                    
+
+                    Stop();
+
                     throw new Exception(message, e);
                     
                     //Logger.Error(ex, "Arduino not found");
                 }
             }
+        }
+
+        public bool TryStart(out string errorMessage)
+        {
+            bool result = true;
+            errorMessage = string.Empty;
+
+            try
+            {
+                Start();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                result = false;
+            }
+
+            return result;
         }
 
         void ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
