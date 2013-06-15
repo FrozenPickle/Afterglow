@@ -3,7 +3,7 @@
         <div class="navbar-inner">
             <ul class="nav">
                 <li>
-                    <a href="#" >TODO:Add Profile</a>
+                    <a href="#" ng-click="addNewPlugin()">Add Profile</a>
                 </li>
             </ul>
         </div>
@@ -15,10 +15,10 @@
                     <div class="navbar-inner">
                         <ul class="nav">
                             <li>
-                                <a href="#" ng-click="showPluginSelect(profile, 'generalSettings')">General Settings</a>
+                                <a href="#" ng-click="showPluginSelect(profile, 'generalProfileSettings')">General Settings</a>
                             </li>
                             <li>
-                                <a href="#">TODO: Delete</a>
+                                <a href="#" ng-click="removeProfile(profile)">Delete</a>
                             </li>
                             <li>
                                 <a href="#">TODO: Export Profile Settings</a>
@@ -63,6 +63,27 @@
                                 <small>{{plugin.Description}}</small>
                                 <!--<a href="#" data-role="button">Edit</a>-->
                                 <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'postProcess', plugin)" >Remove</a>
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+                <accordion-group heading="Colour Extraction Plugins">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'colourExtraction')">Change</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.ColourExtractionPlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                                <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'colourExtraction', plugin)" >Remove</a>
                             </p>
                         </li>
                     </ol>

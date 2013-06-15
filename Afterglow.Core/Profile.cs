@@ -201,7 +201,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = lightSetupPlugin;
-                    existingPlugin.Id = this.Setup.GetNewPluginId<ILightSetupPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewId<ILightSetupPlugin>();
                     this.Setup.ConfiguredLightSetupPlugins.Add(existingPlugin);
                 }
                 lightSetupPlugins.Add(existingPlugin);
@@ -216,7 +216,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = capturePlugin;
-                    existingPlugin.Id = this.Setup.GetNewPluginId<ICapturePlugin>();
+                    existingPlugin.Id = this.Setup.GetNewId<ICapturePlugin>();
                     this.Setup.ConfiguredCapturePlugins.Add(existingPlugin);
                 }
                 capturePlugins.Add(existingPlugin);
@@ -231,7 +231,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = colourExtractionPlugin;
-                    existingPlugin.Id = this.Setup.GetNewPluginId<IColourExtractionPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewId<IColourExtractionPlugin>();
                     this.Setup.ConfiguredColourExtractionPlugins.Add(existingPlugin);
                 }
                 colourExtractionPlugins.Add(existingPlugin);
@@ -246,7 +246,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = postProcessPlugin;
-                    existingPlugin.Id = this.Setup.GetNewPluginId<IPostProcessPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewId<IPostProcessPlugin>();
                     this.Setup.ConfiguredPostProcessPlugins.Add(existingPlugin);
                 }
                 postProcessPlugins.Add(existingPlugin);
@@ -261,7 +261,7 @@ namespace Afterglow.Core
                 if (existingPlugin == null)
                 {
                     existingPlugin = outputPlugin;
-                    existingPlugin.Id = this.Setup.GetNewPluginId<IOutputPlugin>();
+                    existingPlugin.Id = this.Setup.GetNewId<IOutputPlugin>();
                     this.Setup.ConfiguredOutputPlugins.Add(existingPlugin);
                 }
                 outputPlugins.Add(existingPlugin);

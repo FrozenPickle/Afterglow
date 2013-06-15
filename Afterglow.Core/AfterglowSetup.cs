@@ -144,34 +144,44 @@ namespace Afterglow.Core
         //}
 
         /// <summary>
-        /// A Generic function to aid in the creation of IPlugin identifers
+        /// A Generic function to aid in the creation of Profile and IPlugin identifers
         /// </summary>
-        /// <typeparam name="T">Accepted types are ICapturePlugin, IColourExtractionPlugin, ILightSetupPlugin, IPostProcessPlugin, IOutputPlugin</typeparam>
-        /// <returns>Integer Id for a new plugin</returns>
-        public int GetNewPluginId<T>()
+        /// <typeparam name="T">Accepted types are Profile, ICapturePlugin, IColourExtractionPlugin, ILightSetupPlugin, IPostProcessPlugin, IOutputPlugin</typeparam>
+        /// <returns>Integer Id for a new object of the given type</returns>
+        public int GetNewId<T>()
         {
             int result = 0;
 
             //Each query gets the last/largest Id used
-            if (typeof(T) == typeof(ICapturePlugin))
+            if (typeof(T) == typeof(Profile))
             {
-                result = this.ConfiguredCapturePlugins.Max(plugin => plugin.Id);
+                if (this.Profiles.Any())
+                    result = this.Profiles.Max(profile => profile.Id);
+            }
+            else if (typeof(T) == typeof(ICapturePlugin))
+            {
+                if (this.ConfiguredCapturePlugins.Any())
+                    result = this.ConfiguredCapturePlugins.Max(plugin => plugin.Id);
             }
             else if (typeof(T) == typeof(IColourExtractionPlugin))
             {
-                result = this.ConfiguredColourExtractionPlugins.Max(plugin => plugin.Id);
+                if (this.ConfiguredColourExtractionPlugins.Any())
+                    result = this.ConfiguredColourExtractionPlugins.Max(plugin => plugin.Id);
             }
             else if (typeof(T) == typeof(ILightSetupPlugin))
             {
-                result = this.ConfiguredLightSetupPlugins.Max(plugin => plugin.Id);
+                if (this.ConfiguredLightSetupPlugins.Any())
+                    result = this.ConfiguredLightSetupPlugins.Max(plugin => plugin.Id);
             }
             else if (typeof(T) == typeof(IPostProcessPlugin))
             {
-                result = this.ConfiguredPostProcessPlugins.Max(plugin => plugin.Id);
+                if (this.ConfiguredPostProcessPlugins.Any())
+                    result = this.ConfiguredPostProcessPlugins.Max(plugin => plugin.Id);
             }
             else if (typeof(T) == typeof(IOutputPlugin))
             {
-                result = this.ConfiguredOutputPlugins.Max(plugin => plugin.Id);
+                if (this.ConfiguredOutputPlugins.Any())
+                    result = this.ConfiguredOutputPlugins.Max(plugin => plugin.Id);
             }
             return result++;
         }
@@ -187,6 +197,24 @@ namespace Afterglow.Core
         {
             get { return Get(() => Profiles, new List<Profile>()); }
             set { Set(() => Profiles, value); }
+        }
+
+        /// <summary>
+        /// Adds a new profile
+        /// </summary>
+        /// <returns>New Profile</returns>
+        public Profile AddNewProfile()
+        {
+            Profile newProfile = new Profile();
+            newProfile.Id = GetNewId<Profile>();
+            newProfile.LightSetupPlugins = DefaultLightSetupPlugins();
+            newProfile.CapturePlugins = DefaultCapturePlugins();
+            newProfile.ColourExtractionPlugins = DefaultColourExtractionPlugins();
+            newProfile.PostProcessPlugins = DefaultPostProcessPlugins();
+            newProfile.OutputPlugins = DefaultOutputPlugins();
+            this.Profiles.Add(newProfile);
+
+            return newProfile;
         }
 
         /// <summary>

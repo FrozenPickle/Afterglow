@@ -161,6 +161,7 @@
         $scope.afterglowSetup = null;
         $scope.currentProfile = null;
         $scope.pluginType = null;
+        $scope.modalDialogName = null;
         $scope.currentPlugin = null;
 
         $http.get('/setup?format=json').success(function (data) {
@@ -179,7 +180,13 @@
             });
         }
 
-        $scope.selectProfile= function(profile, pluginType){
+        $scope.addNewPlugin = function(){
+            $scope.modalDialogName = 'generalProfileSettings';
+            $scope.shouldBeOpen[$scope.modalDialogName] = true;
+            $scope.currentProfile = {Id:0};
+        }
+
+        $scope.selectProfile = function(profile, pluginType){
             $scope.currentProfile = profile;
             $scope.pluginType = pluginType;
         }
@@ -199,11 +206,17 @@
             if ($scope.currentProfile == null) {
                 return;
             }
-            
-            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: 'update'};
+            var actionType = 'update';
+            if ($scope.currentProfile.Id == 0){
+                actionType = 'addProfile';
+            }
+
+            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: actionType};
             $http.post('/updateProfile?format=json', data).success( function( data){
                 $scope.afterglowSetup = data;
             });
+
+            $scope.close();
         }
 
         $scope.removePluginFromProfile = function (profile, pluginType, plugin){
@@ -216,18 +229,29 @@
             });
         }
 
+        $scope.removeProfile = function (profile){
+            if (profile == null) {
+                return;
+            }
+            var data = {profileId: profile.Id, actionType: 'removeProfile'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
         $scope.shouldBeOpen = {};
 
         // Toggle modal
         $scope.showPluginSelect = function(profile, pluginType){
             $scope.currentProfile = profile;
             $scope.pluginType = pluginType;
-            
+
+            $scope.modalDialogName = pluginType;
             $scope.shouldBeOpen[pluginType] = true;
         };
 
         $scope.close = function () {
-            $scope.shouldBeOpen[$scope.pluginType] = false;
+            $scope.shouldBeOpen[$scope.modalDialogName] = false;
         };
 
         $scope.modalOptions = {
@@ -242,6 +266,7 @@
             $scope.pluginType = pluginType;
             $scope.currentPlugin = plugin;
 
+            $scope.modalDialogName = pluginType;
             $scope.shouldBeOpen[pluginType] = true;
         };
     }

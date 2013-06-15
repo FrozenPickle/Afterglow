@@ -63,7 +63,8 @@ namespace Afterglow.Core
                 this.Setup = new AfterglowSetup();
             }
 
-            CurrentProfile = this.Setup.Profiles.First();
+            if (this.Setup.Profiles.Any())
+                CurrentProfile = this.Setup.Profiles.First();
         }
 
         private AfterglowSetup _setup;
@@ -211,16 +212,24 @@ namespace Afterglow.Core
         /// </summary>
         public void Start()
         {
+
+            if (this.Setup.Profiles.Any())
+                CurrentProfile = this.Setup.Profiles.First();
+
             if (CurrentProfile == null)
-                throw new InvalidOperationException("No profile has been selected");
-
-            CurrentProfile.Validate();
-
-            if (!_active)
             {
-                _active = true;
-                _mainLoopTask = new Task(MainLoop);
-                _mainLoopTask.Start();
+                throw new InvalidOperationException("No profile has been selected");
+            }
+            else
+            {
+                CurrentProfile.Validate();
+
+                if (!_active)
+                {
+                    _active = true;
+                    _mainLoopTask = new Task(MainLoop);
+                    _mainLoopTask.Start();
+                }
             }
         }
 

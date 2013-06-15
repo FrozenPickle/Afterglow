@@ -36,6 +36,25 @@
     </div>
 </div>
     
+<!-- Start of Add Colour Extraction Plugin -->
+<div modal="shouldBeOpen['colourExtraction']" close="close()" options="modalOptions" id="changeColourExtractionPluginOnProfile">
+
+	<div class="modal-header">
+		<h1>Capture Plugins</h1>
+	</div>
+
+	<div class="modal-body">
+        <ul data-role="listview">
+            <!--<li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>-->
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredColourExtractionPlugins" data-refresh-list>
+            <a ng-click="updateProfile(plugin)" href="#mainContent" data-rel="back">{{plugin.Name + " - " + plugin.DisplayName}}</a></li>
+        </ul>
+	</div>
+    <div class="modal-footer">
+        <button class="btn btn-warning cancel" ng-click="close()">Close</button>
+    </div>
+</div>
+    
 <!-- Start of Add Post Process Plugin -->
 <div modal="shouldBeOpen['postProcess']" close="close()" options="modalOptions" id="addPostProcessPluginToProfile">
 
@@ -74,7 +93,7 @@
     </div>
 </div>
 
-<div modal="shouldBeOpen['generalSettings']" close="close()" options="modalOptions" id="profileGeneralSettings" >
+<div modal="shouldBeOpen['generalProfileSettings']" close="close()" options="modalOptions" id="profileGeneralSettings" >
 	<div class="modal-header">
 		<h1>{{currentProfile.Name}} - Profile General Settings</h1>
 	</div>

@@ -41,6 +41,27 @@
             </li>
         </ol>
     </accordion-group>
+    <accordion-group id="configuredColourExtractionPlugins" heading="Colour Extraction Plugins">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" ng-click="showConfigureNewPlugin(profile, 'colourExtraction')">Add</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <ol data-role="listview">
+            <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredColourExtractionPlugins" data-refresh-list>
+                <p>
+                    <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                    <small>{{plugin.Description}}</small>
+                    <a class="btn btn-primary btn-small" href="#" >TODO: Edit Setting</a>
+                    <a class="btn btn-small" href="#" >TODO: Export Setting</a>
+                </p>
+            </li>
+        </ol>
+    </accordion-group>
     <accordion-group id="configuredPostProcessPlugins" heading="Post Process Plugins">
         <div class="navbar">
             <div class="navbar-inner">
