@@ -8,42 +8,18 @@
 <script type="text/javascript">
     var agSessionId = null;
 </script>
+
 @if (session != null && session.IsAuthenticated)
 {
-<script type="text/javascript">
-    agSessionId = @session.Id;
-</script>
+    <script type="text/javascript">
+        agSessionId = @session.Id;
+    </script>
 }
-
 <script type="text/javascript">
-    angular.module('jqmDirectives', [])
-    .directive('refreshList', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                $(element).closest(':jqmData(role=listview)').listview('refresh');
-            }
-        };
-    });
-    var logTemplate = {};
-    var installedPluginTemplate = {};
-    var lightPreviewTemplate = {};
 
-    // Apply UI
+    angular.module('afterglow',['ui.bootstrap']);
+    
     $(function () {
-
-        $("#startStopBtn").button();
-        $("#logoutBtn").button();
-//        $('#previewAndSettings').accordion();
-//        $("#previewAndSettings").accordion({
-//            'fillSpace': true,
-//            'clearStyle': true
-//        });
-        
-        //Get Templates
-        logTemplate = _.template($('#logTemplate').html());
-      //  installedPluginTemplate = _.template($('#installedPluginTemplate').html());
-        lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
 
         if (agSessionId) {
             $('#logout').show();
@@ -60,13 +36,7 @@
             } else if (thrownError) {
                 msg = thrownError;
             }
-            $("#log").html(logTemplate({ title: "Error", message: msg }));
         });
-
-        
-
-
-
     });
 
     function DoLogin() {
@@ -94,10 +64,13 @@
         $.post('/runtime?format=json', {},
         function (data, textStatus, jqXHR) {
             afterglowRuntime = data;
-            $('#startStopBtn').html(afterglowRuntime.Active ? 'Stop' : 'Start');
+            $('#startStop').html(afterglowRuntime.Active ? 'Stop' : 'Start');
+            generatePreviewGrid(data);
 
             if (afterglowRuntime.Active) {
-                timer = setInterval(getPreview, 100);
+                if ($($("#previewGroup").children()[1]).height() != 0){
+                    timer = setInterval(getPreview, 100);
+                }
             } else {
                 clearInterval(timer);
                 timer = null;
@@ -111,8 +84,11 @@
         $.get("/preview?format=json", {}, function (data, status, xhr) {
             clearInterval(timer);
             timer = null;
-            if (firstPreview) {
-				lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
+            $(data.Lights).each(function (index, item) {
+                $("#previewLight_" + item.Top + "_" + item.Left).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
+            });
+            /*if (firstPreview) {
+                lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
                 var lights = "";
                 $(data.Lights).each(function (index, item) {
                     $("#previewScreen").append(lightPreviewTemplate({ index: item.Index, colour: "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16) }));
@@ -124,16 +100,69 @@
                 $(data.Lights).each(function (index, item) {
                     $("#lightPreview" + item.Index).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
                 });
-            }
+            }*/
             timer = setInterval(getPreview, 100);
         });
         
     }
 
-    function AfterglowCtrl($scope, $http) {
+    function generatePreviewGrid(setup) {
+        var cellHeight = 20;
+        var cellWidth = 20;
+
+        var numberHigh = setup.NumberOfLightsHigh;
+        var numberWide = setup.NumberOfLightsWide;
+
+        $("#previewScreen").children().remove();
+        
+        var height = cellHeight * numberHigh;
+        var width = cellWidth * numberWide;
+
+        $("#previewScreen").attr('style', 'position:relative;width:' + width + 'px; height:' + height +'px;');
+
+        var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
+        var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
+
+        $("#previewScreen").append('<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth +'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;" ></div>');
+
+        for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
+            for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
+                //Only add 
+                if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
+                    var top = cellHeight * topPosition;
+                    var left = cellWidth * leftPosition;
+                    $("#previewScreen").append('<div id="previewLight_' + topPosition + '_' + leftPosition + '" style="display:inline-block;position: absolute;background-color:#b0c4de;height:' + cellHeight + 'px; width:' + cellWidth + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
+                    delete top;
+                    delete left;
+                }
+            }
+        }
+        delete centreDivHeight;
+        delete centreDivWidth;
+        delete cellHeight;
+        delete cellWidth;
+        delete numberHigh;
+        delete numberWide;
+        delete height;
+        delete width;
+    }
+
+    function AfterglowCtrl($scope, $http, $dialog) {
+        $scope.oneAtATime = true;
+
+        /*
+        http://angular-ui.github.io/bootstrap/
+        http://bootswatch.com/slate/#
+        http://mgcrea.github.io/angular-strap/#/modal
+        http://plnkr.co/edit/xKP5PW3Dco1CczmCuuVN?p=preview
+        https://github.com/angular-ui/bootstrap/tree/master/src/dialog
+        */
+
         $scope.afterglowSetup = null;
         $scope.currentProfile = null;
         $scope.pluginType = null;
+        $scope.modalDialogName = null;
+        $scope.currentPlugin = null;
 
         $http.get('/setup?format=json').success(function (data) {
             $scope.afterglowSetup = data;
@@ -142,13 +171,22 @@
             $scope.afterglowRuntime = data;
         });
         
+        
+
+
         $scope.save = function () {
             $http.post('/setup?format=json', $scope.afterglowSetup).success(function (data) {
                 $scope.afterglowSetup = data;
             });
         }
 
-        $scope.selectProfile= function(profile, pluginType){
+        $scope.addNewPlugin = function(){
+            $scope.modalDialogName = 'generalProfileSettings';
+            $scope.shouldBeOpen[$scope.modalDialogName] = true;
+            $scope.currentProfile = {Id:0};
+        }
+
+        $scope.selectProfile = function(profile, pluginType){
             $scope.currentProfile = profile;
             $scope.pluginType = pluginType;
         }
@@ -168,11 +206,17 @@
             if ($scope.currentProfile == null) {
                 return;
             }
-            
-            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: 'update'};
+            var actionType = 'update';
+            if ($scope.currentProfile.Id == 0){
+                actionType = 'addProfile';
+            }
+
+            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: actionType};
             $http.post('/updateProfile?format=json', data).success( function( data){
                 $scope.afterglowSetup = data;
             });
+
+            $scope.close();
         }
 
         $scope.removePluginFromProfile = function (profile, pluginType, plugin){
@@ -184,153 +228,163 @@
                 $scope.afterglowSetup = data;
             });
         }
+
+        $scope.removeProfile = function (profile){
+            if (profile == null) {
+                return;
+            }
+            var data = {profileId: profile.Id, actionType: 'removeProfile'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.shouldBeOpen = {};
+
+        // Toggle modal
+        $scope.showPluginSelect = function(profile, pluginType){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+
+            $scope.modalDialogName = pluginType;
+            $scope.shouldBeOpen[pluginType] = true;
+        };
+
+        $scope.close = function () {
+            $scope.shouldBeOpen[$scope.modalDialogName] = false;
+        };
+
+        $scope.modalOptions = {
+            backdropFade: true,
+            dialogFade:true
+        };
+
+
+
+        $scope.showConfigureNewPlugin = function(profile, pluginType, plugin){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+            $scope.currentPlugin = plugin;
+
+            $scope.modalDialogName = pluginType;
+            $scope.shouldBeOpen[pluginType] = true;
+        };
     }
     //look at this http://stackoverflow.com/questions/13836765/angular-scope-inside-script
-    var currentProfile = null;
-    function TrySetLightSetupPlugin(plugin) {
-        if (currentProfile == null || plugin == null) {
-            return;
-        }
-    }
 
+</script>
+
+<script type="text/javascript">
+    
+    function generateGrid() {
+        var cellHeight = 20;
+        var cellWidth = 20;
+
+        var numberHigh = parseInt($("#numberOfLightsHighInput").val());
+        var numberWide = parseInt($("#numberOfLightsWideInput").val());
+
+        $("#basicLightSetupGrid").children().remove();
+        
+        var height = cellHeight * numberHigh;
+        var width = cellWidth * numberWide;
+
+        $("#basicLightSetupGrid").attr('style', 'position:relative;width:' + width + 'px; height:' + height +'px;');
+
+        var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
+        var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
+
+        $("#basicLightSetupGrid").append('<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth +'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;" ></div>');
+
+        for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
+            for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
+                //Only add 
+                if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
+                    var top = cellHeight * topPosition;
+                    var left = cellWidth * leftPosition;
+                    $("#basicLightSetupGrid").append('<div style="display:inline-block;position: absolute;background-color:#b0c4de;height:' + cellHeight + 'px; width:' + cellWidth + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
+                    delete top;
+                    delete left;
+                }
+            }
+        }
+        delete centreDivHeight;
+        delete centreDivWidth;
+        delete cellHeight;
+        delete cellWidth;
+        delete numberHigh;
+        delete numberWide;
+        delete height;
+        delete width;
+    }
 </script>
 
 <div ng-controller="AfterglowCtrl">
-<div data-role="page" class="type-interior" id="mainContent">
-
-	<div data-role="header" data-theme="e">
-		<h1>Afterglow</h1>
-	</div><!-- /header -->
-
-    <div data-role="content" >
-		<div class="content-primary">
-
-            <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
-                <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
-                <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
-                @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
-            <input type="submit" value="Login" onclick="DoLogin(); return false;" />
-            </form>
-            <div id="loggedIn" >
-                <div id="StartStop">
-                    <button onclick="DoStartStop();" id="startStopBtn" style="width:100%">Start</button>
-                </div>
-                <div id="logout">
-                    <button onclick="DoLogout();" id="logoutBtn" style="width:100%">Logout</button>
-                </div>
-            </div>
-
-            <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
-            <div data-role="collapsible" data-collapsed="true">
-                <h3 class="ui-collapsible-heading">
-                    Preview
-                </h3>
-                <div id="previewScreen">
-                    
-                </div>
-            </div>
-            <div data-role="collapsible" data-collapsed="false">
-                <h3 class="ui-collapsible-heading">
-                    Settings
-                </h3>
-                <div id="settings">
-                    <h2>Installed Plugin Types</h2>
-                    <div id="installedPlugins" >
-                        <div data-role="collapsible-set"  data-theme="b" data-content-theme="c" class="ui-collapsible-set">
-                            <div data-role="collapsible" data-collapsed="true" id="installedLightSetupPlugins">
-                                <h3 class="ui-collapsible-heading">
-                                    Light Setup Plugins
-                                </h3>
-                                <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableLightSetupPlugins">
-                                    {{plugin}}
-                                </div>
-                            </div>
-                            <div data-role="collapsible" data-collapsed="true" id="installedCapturePlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Capture Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableCapturePlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        <div data-role="collapsible" data-collapsed="true" id="installedPostProcessPlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Post Process Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailablePostProcessPlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        <div data-role="collapsible" data-collapsed="true" id="installedOutputPlugins">
-                            <h3 class="ui-collapsible-heading">
-                                Output Plugins
-                            </h3>
-                            <div class="ui-collapsible-content" aria-hidden="false" ng-repeat="plugin in afterglowSetup.Setup.AvailableOutputPlugins">
-                                {{plugin}}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <h2>Configured Plugins</h2>
-                    <div id="configuredPlugins">
-                        <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
-                            <div data-role="collapsible" id="configuredLightSetupPlugins">
-                                <h3>
-                                    Light Setup Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li><button onclick="alert('bo');" data-theme="e" data-icon="plus" data-mini="true" data-inline="true" >Add</button></li>
-                                    <li ng-repeat="plugin in afterglowSetup.Setup.ConfiguredLightSetupPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredCapturePlugins">
-                                <h3>
-                                    Capture Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredCapturePlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredPostProcessPlugins">
-                                <h3>
-                                    Post Process Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredPostProcessPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                            <div data-role="collapsible" id="configuredOutputPlugins">
-                                <h3>
-                                    Output Plugins
-                                </h3>
-                                <ul data-role="listview">
-                                    <li class="ui-collapsible-content" ng-repeat="plugin in afterglowSetup.Setup.ConfiguredOutputPlugins" data-refresh-list><a href="index.html">{{plugin.Name + " - " + plugin.DisplayName}}<span class="ui-li-count">88</span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    @Html.Partial("ProfilesView")
-                </div>
+	
+    <div id="mainContent">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" onclick="DoStartStop();" id="startStop">Start</a>
+                    </li>
+                    <li>
+                        <a href="#">TODO: Log In/Out</a>
+                    </li>
+                </ul>
             </div>
         </div>
+        <div>
+		    <div>
+
+                <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
+                    <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
+                    <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
+                    @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
+                <input type="submit" value="Login" onclick="DoLogin(); return false;" />
+                </form>
+                <!--<div id="loggedIn" >
+                    <div id="StartStop">
+                        <button onclick="DoStartStop();" id="startStopBtn" style="width:100%" type="button" class="btn">Start</button>
+                    </div>
+                    <div id="logout">
+                        <button onclick="DoLogout();" id="logoutBtn" style="width:100%" type="button" class="btn">Logout</button>
+                    </div>
+                </div>-->
+            </div>
+            
+        <accordion close-others="false">
+		    <accordion-group id="previewGroup" heading="Preview">
+                <div id="previewScreen">
+                </div>
+            </accordion-group>
+            <accordion-group heading="Settings">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li>
+                                <a href="#">TODO: General Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Import Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Export Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <accordion  id="settings">
+                    <accordion-group heading="Installed Plugin Types" id="installedPlugins" >
+                        @Html.Partial("InstalledPluginTypesView")
+                    </accordion-group>
+                    <accordion-group heading="Configured Plugins" id="configuredPlugins">
+                        @Html.Partial("ConfiguredPluginsView")
+                    </accordion-group>
+                    <accordion-group heading="Profiles">
+                        @Html.Partial("ProfilesView")
+                    </accordion-group>
+                </accordion-group>
+            </accordion>
         </div>
     </div><!-- /content -->
-</div>
-    
-@Html.Partial("ProfilesPopupsView")
-
-<div id="log"></div>
-
-</div> <!-- Controller Scope -->
-
-<script id="logTemplate" type="text/template">
-	<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-		<strong><%= title %>:</strong> <%= message %></p>
-	</div>
-</script>
-
-<script id="lightPreviewTemplate" type="text/template">
-    <span id="lightPreview<%= index %>" style="float: left; display: block;background-color: <%= colour %>; width:10px; height:10px"></span>
-</script>
+</div><!-- Controller Scope -->

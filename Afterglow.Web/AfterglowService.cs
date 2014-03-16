@@ -19,7 +19,8 @@ namespace Afterglow.Web
     public class RuntimeResponse
     {
         public bool Active { get; set; }
-        public int NumberOfLights { get; set; }
+        public int NumberOfLightsHigh { get; set; }
+        public int NumberOfLightsWide { get; set; }
     }
 
     [Route("/setup")]
@@ -45,13 +46,15 @@ namespace Afterglow.Web
         public string description { get; set; }
         public long frameRateLimiter { get; set; }
 
-
+        public const string ActionType_AddProfile = "addProfile";
+        public const string ActionType_RemoveProfile = "removeProfile";
         public const string ActionType_Update = "update";
         public const string ActionType_Add = "add";
         public const string ActionType_Remove = "remove";
 
         public const string PluginType_LightSetup = "lightSetup";
         public const string PluginType_Capture = "capture";
+        public const string PluginType_ColourExtraction = "colourExtraction";
         public const string PluginType_PostProcess = "postProcess";
         public const string PluginType_Output = "output";
     }
@@ -80,7 +83,9 @@ namespace Afterglow.Web
     public class LightPreview
     {
         [DataMember]
-        public int Index { get; set; }
+        public int Top { get; set; }
+        [DataMember]
+        public int Left { get; set; }
         [DataMember]
         public Color Colour { get; set; }
     }
@@ -117,18 +122,32 @@ namespace Afterglow.Web
         {
             return new RuntimeResponse
             {
-                Active = Program.Active,
-                NumberOfLights = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count
+                Active = Active,
+                NumberOfLightsHigh = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh : 0),
+                NumberOfLightsWide = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide : 0)
             };
         }
+        
+        public static bool Active = false;
 
         public object Post(Runtime request)
         {
-            Program.ToggleActive();
+            if (Active)
+            {
+                Program.Runtime.Stop();
+                Active = false;
+            }
+            else
+            {
+                Program.Runtime.Start();
+                Active = true;
+            }
+        
             return new RuntimeResponse
             {
-                Active = Program.Active,
-                NumberOfLights = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count
+                Active = Active,
+                NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
+                NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
             };
         }
 
@@ -145,6 +164,16 @@ namespace Afterglow.Web
 
         public object Post(UpdateProfile updateProfile)
         {
+            if (updateProfile != null && updateProfile.actionType == UpdateProfile.ActionType_AddProfile)
+            {
+                Profile profile = Program.Runtime.Setup.AddNewProfile();
+                profile.Name = updateProfile.name;
+                profile.Description = updateProfile.description;
+                profile.FrameRateLimiter = updateProfile.frameRateLimiter;
+
+                Program.Runtime.Save();
+            }
+
             if (updateProfile != null && updateProfile.profileId != 0)
             {
 
@@ -162,6 +191,12 @@ namespace Afterglow.Web
 
                     Program.Runtime.Save();
                 }
+                else if (updateProfile.actionType == UpdateProfile.ActionType_RemoveProfile)
+                {
+                    Program.Runtime.Setup.Profiles.Remove(profile);
+
+                    Program.Runtime.Save();
+                }
                 else if (updateProfile.pluginType == UpdateProfile.PluginType_LightSetup)
                 {
                     if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Light Setup Plugins";
@@ -171,7 +206,7 @@ namespace Afterglow.Web
                                                 select pl).FirstOrDefault();
 
                     //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && profile.LightSetupPlugin.Id != updateProfile.pluginId)
+                    if (plugin != null && profile.LightSetupPlugin != null && profile.LightSetupPlugin.Id != updateProfile.pluginId)
                     {
                         profile.LightSetupPlugins.Clear();
                         profile.LightSetupPlugins.Add(plugin);
@@ -184,11 +219,11 @@ namespace Afterglow.Web
                     if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Capture Plugins";
 
                     ICapturePlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredCapturePlugins
-                                                where pl.Id == updateProfile.pluginId
-                                                select pl).FirstOrDefault();
+                                             where pl.Id == updateProfile.pluginId
+                                             select pl).FirstOrDefault();
 
                     //Ensure that the profile does not already use the selected plugin
-                    if (plugin != null && profile.CapturePlugin.Id != updateProfile.pluginId)
+                    if (plugin != null && profile.CapturePlugin != null && profile.CapturePlugin.Id != updateProfile.pluginId)
                     {
                         profile.CapturePlugins.Clear();
                         profile.CapturePlugins.Add(plugin);
@@ -196,11 +231,28 @@ namespace Afterglow.Web
                         Program.Runtime.Save();
                     }
                 }
+                else if (updateProfile.pluginType == UpdateProfile.PluginType_ColourExtraction)
+                {
+                    if (updateProfile.actionType == UpdateProfile.ActionType_Remove) return "Error: Not supported for Colour Extraction Plugins";
+
+                    IColourExtractionPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredColourExtractionPlugins
+                                                      where pl.Id == updateProfile.pluginId
+                                                      select pl).FirstOrDefault();
+
+                    //Ensure that the profile does not already use the selected plugin
+                    if (plugin != null && profile.ColourExtractionPlugin != null && profile.ColourExtractionPlugin.Id != updateProfile.pluginId)
+                    {
+                        profile.ColourExtractionPlugins.Clear();
+                        profile.ColourExtractionPlugins.Add(plugin);
+
+                        Program.Runtime.Save();
+                    }
+                }
                 else if (updateProfile.pluginType == UpdateProfile.PluginType_PostProcess)
                 {
                     IPostProcessPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredPostProcessPlugins
-                                                where pl.Id == updateProfile.pluginId
-                                                select pl).FirstOrDefault();
+                                                 where pl.Id == updateProfile.pluginId
+                                                 select pl).FirstOrDefault();
 
                     if (updateProfile.actionType == UpdateProfile.ActionType_Add)
                     {
@@ -217,8 +269,8 @@ namespace Afterglow.Web
                     {
                         //Ensure that the profile does already use the selected plugin
                         if (plugin != null && (from pp in profile.PostProcessPlugins
-                                                where pp.Id == updateProfile.pluginId
-                                                select pp).Any())
+                                               where pp.Id == updateProfile.pluginId
+                                               select pp).Any())
                         {
                             profile.PostProcessPlugins.Remove(plugin);
                             Program.Runtime.Save();
@@ -228,15 +280,15 @@ namespace Afterglow.Web
                 else if (updateProfile.pluginType == UpdateProfile.PluginType_Output)
                 {
                     IOutputPlugin plugin = (from pl in Program.Runtime.Setup.ConfiguredOutputPlugins
-                                                where pl.Id == updateProfile.pluginId
-                                                select pl).FirstOrDefault();
-                    
+                                            where pl.Id == updateProfile.pluginId
+                                            select pl).FirstOrDefault();
+
                     if (updateProfile.actionType == UpdateProfile.ActionType_Add)
                     {
                         //Ensure that the profile does not already use the selected plugin
                         if (plugin != null && !(from op in profile.OutputPlugins
-                                                 where op.Id == updateProfile.pluginId
-                                                 select op).Any())
+                                                where op.Id == updateProfile.pluginId
+                                                select op).Any())
                         {
                             profile.OutputPlugins.Add(plugin);
                             Program.Runtime.Save();
@@ -246,8 +298,8 @@ namespace Afterglow.Web
                     {
                         //Ensure that the profile does already use the selected plugin
                         if (plugin != null && (from op in profile.OutputPlugins
-                                                where op.Id == updateProfile.pluginId
-                                                select op).Any())
+                                               where op.Id == updateProfile.pluginId
+                                               select op).Any())
                         {
                             profile.OutputPlugins.Remove(plugin);
                             Program.Runtime.Save();
@@ -283,7 +335,7 @@ namespace Afterglow.Web
         public object Get(Preview request)
         {
             var lights = (from light in Program.Runtime.CurrentProfile.LightSetupPlugin.Lights
-                         select new LightPreview() { Index = light.Index, Colour = light.LightColour }).ToList();
+                         select new LightPreview() { Top = light.Top, Left = light.Left, Colour = light.LightColour }).ToList();
             return new PreviewResponse
             {
                 Lights = lights

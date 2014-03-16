@@ -99,5 +99,15 @@ namespace Afterglow.Plugins.Output
             {
             }
         }
+
+
+        public bool TryStart(out string errorMessage)
+        {
+            Start();
+
+            errorMessage = string.Empty;
+
+            return true;
+        }
     }
 }

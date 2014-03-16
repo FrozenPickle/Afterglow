@@ -37,6 +37,11 @@ namespace Afterglow.Core
         private string _setupFileName;
 
         /// <summary>
+        /// The last error occured
+        /// </summary>
+        public string ErrorMessage { get; private set; }
+
+        /// <summary>
         /// Creates an instance of the Afterglow Runtime using the current execution path to save/load the configuration
         /// </summary>
         public AfterglowRuntime()
@@ -58,7 +63,8 @@ namespace Afterglow.Core
                 this.Setup = new AfterglowSetup();
             }
 
-            CurrentProfile = this.Setup.Profiles.First();
+            if (this.Setup.Profiles.Any())
+                CurrentProfile = this.Setup.Profiles.First();
         }
 
         private AfterglowSetup _setup;
@@ -206,16 +212,24 @@ namespace Afterglow.Core
         /// </summary>
         public void Start()
         {
+
+            if (this.Setup.Profiles.Any())
+                CurrentProfile = this.Setup.Profiles.First();
+
             if (CurrentProfile == null)
-                throw new InvalidOperationException("No profile has been selected");
-
-            CurrentProfile.Validate();
-
-            if (!_active)
             {
-                _active = true;
-                _mainLoopTask = new Task(MainLoop);
-                _mainLoopTask.Start();
+                throw new InvalidOperationException("No profile has been selected");
+            }
+            else
+            {
+                CurrentProfile.Validate();
+
+                if (!_active)
+                {
+                    _active = true;
+                    _mainLoopTask = new Task(MainLoop);
+                    _mainLoopTask.Start();
+                }
             }
         }
 
@@ -240,6 +254,7 @@ namespace Afterglow.Core
         /// </summary>
         private void MainLoop()
         {
+            string errorMessage = string.Empty;
 
             /*
             1. Capture regions
@@ -254,7 +269,21 @@ namespace Afterglow.Core
             CurrentProfile.CapturePlugin.Start();
             CurrentProfile.ColourExtractionPlugin.Start();
             CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Start());
-            CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Start());
+
+            int outputFailures = 0;
+            foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
+            {
+                if (!outputPlugin.TryStart(out errorMessage))
+                {
+                    outputFailures++;
+                    ErrorMessage = errorMessage;
+                }
+            }
+
+            if (outputFailures == CurrentProfile.OutputPlugins.Count())
+            {
+                Stop();
+            }
 
             try
             {

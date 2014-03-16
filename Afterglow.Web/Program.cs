@@ -20,11 +20,9 @@ namespace Afterglow.Web
             }
         }
         private static AfterglowRuntime _runtime;
-        public static bool Active = false;
-        
+                
         static void Main(string[] args)
         {
-
 
             _runtime = new AfterglowRuntime();
             
@@ -73,20 +71,6 @@ namespace Afterglow.Web
             //_runtime.Setup.Profiles.Add(profile);
             //_runtime.Setup.ConfiguredLightSetupPlugins.Add(.FirstOrDefault().OLDPostProcessPlugins.FirstOrDefault());
             //_runtime.Save();
-        }
-
-        internal static void ToggleActive()
-        {
-            if (Active)
-            {
-                Runtime.Stop();
-                Active = false;
-            }
-            else
-            {
-                Runtime.Start();
-                Active = true;
-            }
         }
     }
 }

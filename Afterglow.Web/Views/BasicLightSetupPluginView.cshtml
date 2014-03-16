@@ -1,0 +1,57 @@
+﻿<div modal="shouldBeOpen['basicLightSetupPlugin']" close="close()" options="modalOptions" id="basicLightSetupPlugin">
+
+	<div class="modal-header">
+		<h1>Basic Light Setup</h1>
+	</div>
+
+	<div class="modal-body">
+            <h4>1. First setup the grid</h4>
+            <div class="control-group">
+                <label class="control-label" for="numberOfLightsHighInput">Number Of Light Positions High</label>
+                <div class="controls">
+                  <input type="number"
+                       ng-model="currentPlugin.NumberOfLightsHigh"
+                       id="numberOfLightsHighInput"
+                       min="1"
+                       max="99999">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="numberOfLightsWideInput">Number Of Light Positions Wide</label>
+                <div class="controls">
+                  <input type="number"
+                       ng-model="currentPlugin.NumberOfLightsWide"
+                       id="numberOfLightsWideInput"
+                       min="1"
+                       max="99999">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="numberOfLights">Number Of Lights</label>
+                <div class="controls">
+                  <input type="number"
+                       id="numberOfLights"
+                       min="1"
+                       max="99999">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="selectDirection">Select light direction</label>
+                <div class="controls">
+                  <select id="selectDirection">
+                    <option>Clockwise</option>
+                    <option>Counter Clockwise</option>
+                  </select>
+                </div>
+            </div>
+            <button type="button" class="btn btn-warning" onclick="generateGrid()">Generate Grid</button>
+            <h4>2. First setup the grid</h4>
+            <div id="basicLightSetupGrid">
+
+            </div>
+	</div>
+    <div class="modal-footer">
+        <button class="btn btn-success save" ng-click="updateProfileGeneralSettings()">Save</button>
+        <button class="btn btn-warning cancel" ng-click="close()">Close</button>
+    </div>
+</div>

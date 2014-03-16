@@ -1,93 +1,139 @@
-﻿<h2>Profiles</h2>
-<div id="profiles">
-    <div ng-repeat="profile in afterglowSetup.Setup.Profiles" data-role="collapsible-set" data-theme="b" data-content-theme="d" data-refresh-list>
-        <div data-role="collapsible">
-            <h3>
-                {{profile.Name}}
-            </h3>
-            <div data-role="collapsible-set" data-theme="b" data-content-theme="d">
-                
-                <a ng-click="selectProfile(profile, 'generalSettings')" href="#profileGeneralSettings" data-rel="dialog" data-transition="pop" data-role="button">General Settings</a>
-
-                <div data-role="collapsible" >
-                    <h3>
-                        Light Setup
-                    </h3>
-                    <ul data-role="listview">
-                        <li>
-                            <div data-role="controlgroup" data-type="horizontal">
-                                <a ng-click="selectProfile(profile, 'lightSetup')" href="#changeLightSetupPluginOnProfile" data-rel="dialog" data-transition="pop" data-role="button">Change</a>
-                                <!--<a href="#" data-role="button">Import</a>-->
-                            </div>
-                        </li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.LightSetupPlugins" data-refresh-list>
-                            <a href="#index">
-                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
-                            <p>{{plugin.Description}}</p></a>
-                            <!--<a href="#" data-role="button">Export</a>-->
-                        </li>
-                    </ul>
-                </div>
-                <div data-role="collapsible" data-theme="b" data-content-theme="d">
-                    <h3>
-                        Capture Plugins
-                    </h3>
-                    <ul data-role="listview">
-                        <li>
-                            <div data-role="controlgroup" data-type="horizontal">
-                                <a ng-click="selectProfile(profile, 'capture')" href="#changeCapturePluginOnProfile" data-rel="dialog" data-transition="pop" data-role="button">Change</a>
-                                <!--<a href="#" data-role="button">Import</a>-->
-                            </div>
-                        </li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.CapturePlugins" data-refresh-list>
-                            <a href="#index">
-                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
-                            <p>{{plugin.Description}}</p></a>
-                            <!--<a href="#" data-role="button">Export</a>-->
-                        </li>
-                    </ul>
-                </div>
-                <div data-role="collapsible" data-theme="b" data-content-theme="d">
-                    <h3>
-                        Post Process Plugins
-                    </h3>
-                    <ul data-role="listview">
-                        <li>
-                            <div data-role="controlgroup" data-type="horizontal">
-                                <a ng-click="selectProfile(profile, 'postProcess')" href="#addPostProcessPluginToProfile" data-rel="dialog" data-transition="pop" data-role="button">Add</a>
-                                <!--<a href="#" data-role="button">Import</a>-->
-                            </div>
-                        </li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list>
-                            <a href="#index">
-                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
-                            <p>{{plugin.Description}}</p></a>
-                            <a ng-click="removePluginFromProfile(profile, 'postProcess', plugin)" href="#index" data-icon="delete" data-rel="popup" data-position-to="window">Delete</a>
-                            <!--<a href="#" data-role="button">Export</a>-->
-                        </li>
-                    </ul>
-                </div>
-                <div data-role="collapsible" data-theme="b" data-content-theme="d">
-                    <h3>
-                        Output Plugins
-                    </h3>
-                    <ul data-role="listview">
-                        <li>
-                            <div data-role="controlgroup" data-type="horizontal">
-                                <a ng-click="selectProfile(profile, 'output')" href="#addOutputPluginToProfile" data-rel="dialog" data-transition="pop" data-role="button">Add</a>
-                                <!--<a href="#" data-role="button">Import</a>-->
-                            </div>
-                        </li>
-                        <li class="ui-collapsible-content" ng-repeat="plugin in profile.OutputPlugins" data-refresh-list>
-                            <a href="#index">
-                            <h2>{{plugin.Name + " - " + plugin.DisplayName}}</h2>
-                            <p>{{plugin.Description}}</p></a>
-                            <a ng-click="removePluginFromProfile(profile, 'output', plugin)" href="#index" data-icon="delete" data-rel="popup" data-position-to="window">Delete</a>
-                            <!--<a href="#" data-role="button">Export</a>-->
-                        </li>
-                    </ul>
-                </div>
-            </div>
+﻿<accordion id="profiles">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="nav">
+                <li>
+                    <a href="#" ng-click="addNewPlugin()">Add Profile</a>
+                </li>
+            </ul>
         </div>
     </div>
-</div>
+    <div ng-repeat="profile in afterglowSetup.Setup.Profiles" data-role="collapsible-set" data-theme="b" data-content-theme="d" data-refresh-list>
+        <accordion-group heading="{{profile.Name}}">
+            <accordion>
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li>
+                                <a href="#" ng-click="showPluginSelect(profile, 'generalProfileSettings')">General Settings</a>
+                            </li>
+                            <li>
+                                <a href="#" ng-click="removeProfile(profile)">Delete</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Export Profile Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <accordion-group heading="Light Setup">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'lightSetup')">Change</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.LightSetupPlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+                <accordion-group heading="Capture Plugins">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'capture')">Change</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.CapturePlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                                <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'postProcess', plugin)" >Remove</a>
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+                <accordion-group heading="Colour Extraction Plugins">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'colourExtraction')">Change</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.ColourExtractionPlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                                <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'colourExtraction', plugin)" >Remove</a>
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+                <accordion-group heading="Post Process Plugins">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'postProcess')">Add</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.PostProcessPlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                                <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'postProcess', plugin)" >Remove</a>
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+                <accordion-group heading="Output Plugins">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#" ng-click="showPluginSelect(profile, 'output')">Add</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ol data-role="listview">
+                        <li ng-repeat="plugin in profile.OutputPlugins" data-refresh-list>
+                            <p>
+                                <strong>{{plugin.Name + " - " + plugin.DisplayName}}</strong>
+                                <small>{{plugin.Description}}</small>
+                                <!--<a href="#" data-role="button">Edit</a>-->
+                                <a class="btn btn-danger btn-small" href="#" ng-click="removePluginFromProfile(profile, 'output', plugin)" >Remove</a>
+                            </p>
+                        </li>
+                    </ol>
+                </accordion-group>
+            </accordion>
+        </div>
+    </div>
+</accordion>
+    
+@Html.Partial("ProfilesPopupsView")
+
