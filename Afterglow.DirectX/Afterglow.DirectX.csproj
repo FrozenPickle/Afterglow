@@ -44,22 +44,24 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\packages\SharpDX.2.4.2\lib\net40\SharpDX.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.5.0\lib\net40\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.D3DCompiler">
-      <HintPath>..\packages\SharpDX.D3DCompiler.2.4.2\lib\net40\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>..\packages\SharpDX.D3DCompiler.2.5.0\lib\net40\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D10">
-      <HintPath>..\packages\SharpDX.Direct3D10.2.4.2\lib\net40\SharpDX.Direct3D10.dll</HintPath>
+      <HintPath>..\packages\SharpDX.Direct3D10.2.5.0\lib\net40\SharpDX.Direct3D10.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\packages\SharpDX.Direct3D11.2.4.2\lib\net40\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.Direct3D11.2.5.0\lib\net40\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\packages\SharpDX.Direct3D9.2.4.2\lib\net40\SharpDX.Direct3D9.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D9, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.Direct3D9.2.5.0\lib\net40\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
-      <HintPath>..\packages\SharpDX.DXGI.2.4.2\lib\net40\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\packages\SharpDX.DXGI.2.5.0\lib\net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -106,6 +108,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="EasyHookBin\EasyHook64.lib" />
     <None Include="keyfile.snk" />
     <None Include="packages.config" />
@@ -143,7 +146,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)External\ILMerge\ILMerge.exe /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 /keyfile:$(ProjectDir)keyfile.snk /out:$(TargetDir)..\$(TargetFileName) $(TargetPath) $(ProjectDir)EasyHookBin\EasyHook.dll $(TargetDir)SharpDX.dll $(TargetDir)SharpDX.D3DCompiler.dll $(TargetDir)SharpDX.Direct3D10.dll $(TargetDir)SharpDX.DXGI.dll $(TargetDir)SharpDX.Direct3D9.dll $(TargetDir)SharpDX.Direct3D11.dll</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)External\ILMerge\ILMerge.exe /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 /keyfile:$(ProjectDir)keyfile.snk /out:$(TargetDir)..\$(TargetFileName) $(TargetPath) $(TargetDir)SharpDX.dll $(TargetDir)SharpDX.D3DCompiler.dll $(TargetDir)SharpDX.Direct3D10.dll $(TargetDir)SharpDX.DXGI.dll $(TargetDir)SharpDX.Direct3D9.dll $(TargetDir)SharpDX.Direct3D11.dll $(ProjectDir)EasyHookBin\EasyHook.dll
+REM $(ProjectDir)EasyHookBin\EasyHook.dll</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

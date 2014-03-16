@@ -1,10 +1,10 @@
 *********************************************************************************************
-******************************************************* 1) License information
+* 1) License information
 *********************************************************************************************
 
     EasyHook - The reinvention of Windows API hooking
  
-    Copyright (C) 2009 Christoph Husse & (C) 2012 EasyHook Development Team
+    Copyright (C) 2009 Christoph Husse & (C) 2013 EasyHook Development Team
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -22,25 +22,33 @@
 
     Please visit http://www.codeplex.com/easyhook for more information
     about the project and latest updates.
-    
 
-BUG REPORTS:
-    Reporting bugs is the only chance to get them fixed! Don't consider your
-    report useless... The EasyHook team will fix any serious bug within a short time! 
-    Bugs with lower priority will try be fixed in the next release...
+UDIS86:
+    udis86 is Copyright (c) 2002-2012, Vivek Thampi <vivek.mt@gmail.com>
+    See DirectShared\Disassembler\udis86-LICENSE.txt for license details.
+    Minor modifications have been made for it to compile correctly.
+    More information can be found at https://github.com/vmt/udis86
+
+BUG REPORTS OR QUESTIONS:
+    Reporting bugs is the only chance to get them fixed!
+
+    Discussion forum: https://easyhook.codeplex.com/discussions
+    Issues: https://easyhook.codeplex.com/workitem/list/basic
     
 EVENT LOGS:
     Please notice that you should always look into the application event log
     if something goes wrong, because EasyHook will often output extended error
-    information there...
+    information there.
 
 *********************************************************************************************
-***************************************************** 2) How to compile
+* 2) How to compile
 *********************************************************************************************
+
+** Requires Visual Studio 2012 to build
 
 EasyHook 2.7 includes a MSBuild script to build all versions of the binaries as well as
 packaging for deployment, just run build.bat and then build-package.bat.
-(requires the MSBuild Community Tasks http://msbuildtasks.tigris.org/)
+(requires the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks)
 
 After running the build-package.bat you will have all files you need for deployment with an
 application located in the ".\Deploy\NetFX3.5" and ".\Deploy\NetFX4.0" directories. This is 
@@ -73,7 +81,7 @@ necessary to ship an application based on EasyHook.
 
 
 *********************************************************************************************
-***************************************************** 3) Prerequisites
+* 3) Prerequisites
 *********************************************************************************************
 
 Since the CRT is now statically compiled, you won't need the Visual Studio Redistributable 
