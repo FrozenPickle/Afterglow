@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Afterglow.Core.Plugins;
 using System.Runtime.Remoting.Channels.Ipc;
-using EasyHook;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Drawing;
@@ -15,11 +14,15 @@ using Afterglow.Core;
 using Afterglow.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
 using Capture;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Afterglow.DirectX.Plugin
 {
+    [DataContract]
     public class Direct3DCapture : BasePlugin, ICapturePlugin
     {
+        [DataMember]
         /// <summary>
         /// The name of the current plugin
         /// </summary>
@@ -27,6 +30,8 @@ namespace Afterglow.DirectX.Plugin
         {
             get { return "Direct3D Capture"; }
         }
+
+        [DataMember]
         /// <summary>
         /// The author of this plugin
         /// </summary>
@@ -34,6 +39,8 @@ namespace Afterglow.DirectX.Plugin
         {
             get { return "Jono C. and Justin S."; }
         }
+        
+        [DataMember]
         /// <summary>
         /// A description of this plugin
         /// </summary>
@@ -42,16 +49,20 @@ namespace Afterglow.DirectX.Plugin
             get { return "An Afterglow capture plugin for Direct3D 9/10/11 applications"; }
         }
 
+        [DataMember]
         public override string Website
         {
             get { return "https://github.com/FrozenPickle/Afterglow"; }
         }
 
+        [DataMember]
         public override Version Version
         {
             get { return new Version(1, 0, 0); }
         }
 
+        [DataMember]
+        [Required]
         [Display(Name = "Target application executable name")]
         public string Target
         {
@@ -62,6 +73,7 @@ namespace Afterglow.DirectX.Plugin
         private String _channelName = null;
         private Capture.Interface.CaptureInterface _captureInterface;
         private CaptureProcess _capturedProcess;
+        [XmlIgnore]
         public string TargetProcess { get; set;  }
         private Task _screenshotPump = null;
         private volatile bool _stopped = false;

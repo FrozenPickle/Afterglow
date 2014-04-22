@@ -42,6 +42,8 @@ namespace Afterglow.Core.Load
         /// </summary>
         static List<Type> _types = null;
 
+        public static string PluginsDir = "Plugins";
+
         //Help found at http://blogs.msdn.com/b/abhinaba/archive/2005/11/14/492458.aspx
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace Afterglow.Core.Load
         /// <returns>An array of object types</returns>
         public Type[] GetPlugins<T>()
         {
-            string folder = Path.Combine(Environment.CurrentDirectory, "Plugins");
+            string folder = Path.Combine(Environment.CurrentDirectory, PluginsDir);
 
             Type[] list = GetObjectsTypes<T>(folder);
             return list;

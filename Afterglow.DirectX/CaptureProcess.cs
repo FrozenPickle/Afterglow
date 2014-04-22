@@ -62,13 +62,12 @@ namespace Capture
 
             try
             {
-
                 // Inject DLL into target process
                 RemoteHooking.Inject(
                     process.Id,
                     InjectionOptions.Default,
-                    typeof(Capture.Interface.CaptureInterface).Assembly.Location,//"Capture.dll", // 32-bit version (the same because AnyCPU) could use different assembly that links to 32-bit C++ helper dll
-                    typeof(Capture.Interface.CaptureInterface).Assembly.Location, //"Capture.dll", // 64-bit version (the same because AnyCPU) could use different assembly that links to 64-bit C++ helper dll
+                    typeof(global::Capture.Interface.CaptureInterface).Assembly.Location,//"Capture.dll", // 32-bit version (the same because AnyCPU) could use different assembly that links to 32-bit C++ helper dll
+                    typeof(global::Capture.Interface.CaptureInterface).Assembly.Location, //"Capture.dll", // 64-bit version (the same because AnyCPU) could use different assembly that links to 64-bit C++ helper dll
                     // the optional parameter list...
                     _channelName, // The name of the IPC channel for the injected assembly to connect to
                     config
