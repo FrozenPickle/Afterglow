@@ -115,14 +115,23 @@
                     <textarea id="profileDescription" ng-model="currentProfile.Description"  ></textarea>
             
                 </li>
-            
+
                 <li>
-                    <label for="profileFrameRateLimiter">
-                        Frame Rate Limit
+                    <label for="captureFrequency">
+                        Capture Frequency (Hertz)
                     </label>
-                    <input id="profileFrameRateLimiter" type="number"
-                        ng-model="currentProfile.FrameRateLimiter" min="0" max="100"
-                        data-highlight="false" data-theme="b">
+                    <input id="profileCaptureFrequency" type="number"
+                           ng-model="currentProfile.CaptureFrequency" min="0" max="100"
+                           data-highlight="false" data-theme="b">
+                </li>
+
+                <li>
+                    <label for="outputFrequency">
+                        Output Frequency (Hertz)
+                    </label>
+                    <input id="profileOutputFrequency" type="number"
+                           ng-model="currentProfile.OutputFrequency" min="0" max="200"
+                           data-highlight="false" data-theme="b">
                 </li>
             </ul>
         </div>

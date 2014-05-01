@@ -80,26 +80,6 @@ namespace Afterglow.Core
             get { return Get(() => this.Height, () => 1); }
             set { Set(() => this.Height, value); }
         }
-        /// <summary>
-        /// The previous pre processed colour of the light
-        /// </summary>
-        [XmlIgnore]
-        public Color OldSourceColour { get; set; }
-        /// <summary>
-        /// The current pre processed colour of the light
-        /// </summary>
-        [XmlIgnore]
-        public Color SourceColour { get; set; }
-        /// <summary>
-        /// The previous processed colour of the light
-        /// </summary>
-        [XmlIgnore]
-        public Color OldLightColour { get; set; }
-        /// <summary>
-        /// The current processed colour of the light
-        /// </summary>
-        [XmlIgnore]
-        public Color LightColour { get; set; }
 
         /// <summary>
         /// The region used to capture the screen that this light will correspond to

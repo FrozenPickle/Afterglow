@@ -44,7 +44,8 @@ namespace Afterglow.Web
         
         public string name { get; set; }
         public string description { get; set; }
-        public long frameRateLimiter { get; set; }
+        public int captureFrequency { get; set; }
+        public int outputFrequency { get; set; }
 
         public const string ActionType_AddProfile = "addProfile";
         public const string ActionType_RemoveProfile = "removeProfile";
@@ -77,6 +78,15 @@ namespace Afterglow.Web
     public class PreviewResponse
     {
         public List<LightPreview> Lights { get; set; }
+
+        public double CaptureFPS { get; set; }
+        
+        public double CaptureFrameTime { get; set; }
+        
+        public double OutputFPS { get; set; }
+
+        public double OutputFrameTime { get; set; }
+            
     }
 
     [DataContract]
@@ -169,7 +179,8 @@ namespace Afterglow.Web
                 Profile profile = Program.Runtime.Setup.AddNewProfile();
                 profile.Name = updateProfile.name;
                 profile.Description = updateProfile.description;
-                profile.FrameRateLimiter = updateProfile.frameRateLimiter;
+                profile.CaptureFrequency = updateProfile.captureFrequency;
+                profile.OutputFrequency = updateProfile.outputFrequency;
 
                 Program.Runtime.Save();
             }
@@ -187,7 +198,8 @@ namespace Afterglow.Web
                 {
                     profile.Name = updateProfile.name;
                     profile.Description = updateProfile.description;
-                    profile.FrameRateLimiter = updateProfile.frameRateLimiter;
+                    profile.CaptureFrequency = updateProfile.captureFrequency;
+                    profile.OutputFrequency = updateProfile.outputFrequency;
 
                     Program.Runtime.Save();
                 }
@@ -334,11 +346,24 @@ namespace Afterglow.Web
 
         public object Get(Preview request)
         {
-            var lights = (from light in Program.Runtime.CurrentProfile.LightSetupPlugin.Lights
-                         select new LightPreview() { Top = light.Top, Left = light.Left, Colour = light.LightColour }).ToList();
+            List<LightPreview> lights = new List<LightPreview>(Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count);
+            // Retrieve previous final light output data
+            var lightData = Program.Runtime.GetPreviousLightData();
+            if (lightData != null)
+            {
+                for (var i = 0; i < Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count; i++)
+                {
+                    var light = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights[i];
+                    lights.Add(new LightPreview() { Top = light.Top, Left = light.Left, Colour = lightData[i] });
+                }
+            }
             return new PreviewResponse
             {
-                Lights = lights
+                Lights = lights,
+                CaptureFPS = Program.Runtime.CaptureLoopFPS,
+                CaptureFrameTime = Program.Runtime.CaptureLoopFrameTime,
+                OutputFPS = Program.Runtime.OutputLoopFPS,
+                OutputFrameTime = Program.Runtime.OutputLoopFrameTime
             };
         }
     }

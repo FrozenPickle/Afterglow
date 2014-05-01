@@ -29,12 +29,15 @@
         }
 
         $(document).ajaxError(function (event, jqXHR, settings, thrownError) {
-            var response = $.parseJSON(jqXHR.responseText);
-            var msg = "Ajax error";
-            if (response && response.ResponseStatus) {
-                msg = "<pre>" + response.ResponseStatus.Message + "\r\n" + response.ResponseStatus.StackTrace + "</pre>";
-            } else if (thrownError) {
-                msg = thrownError;
+            if (typeof jqXHR.responseText !== 'undefined')
+            {
+                var response = $.parseJSON(jqXHR.responseText);
+                var msg = "Ajax error";
+                if (response && response.ResponseStatus) {
+                    msg = "<pre>" + response.ResponseStatus.Message + "\r\n" + response.ResponseStatus.StackTrace + "</pre>";
+                } else if (thrownError) {
+                    msg = thrownError;
+                }
             }
         });
     });
@@ -81,11 +84,11 @@
     var firstPreview = true;
     function getPreview() {
 
-        $.get("/preview?format=json", {}, function (data, status, xhr) {
+        $.get('/preview?format=json', {}, function (data, status, xhr) {
             clearInterval(timer);
             timer = null;
             $(data.Lights).each(function (index, item) {
-                $("#previewLight_" + item.Top + "_" + item.Left).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
+                $('#previewLight_' + item.Top + '_' + item.Left).css('background-color', 'rgb(' + item.Colour.R +','+ item.Colour.G +','+ item.Colour.B+')');
             });
             /*if (firstPreview) {
                 lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
@@ -101,6 +104,10 @@
                     $("#lightPreview" + item.Index).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
                 });
             }*/
+            $('#previewFPS').children().remove();
+            $('#previewFPS').append('<div>Capture speed: ' + data.CaptureFPS.toFixed(2) + 'fps (' + data.CaptureFrameTime.toFixed(2) + 'ms)</div>');
+            $('#previewFPS').append('<div>Output speed: ' + data.OutputFPS.toFixed(2) + 'fps (' + data.OutputFrameTime.toFixed(2) + 'ms)</div>');
+
             timer = setInterval(getPreview, 100);
         });
         
@@ -211,7 +218,7 @@
                 actionType = 'addProfile';
             }
 
-            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, frameRateLimiter: $scope.currentProfile.FrameRateLimiter, actionType: actionType};
+            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, captureFrequency: $scope.currentProfile.CaptureFrequency, outputFrequency: $scope.currentProfile.OutputFrequency, actionType: actionType};
             $http.post('/updateProfile?format=json', data).success( function( data){
                 $scope.afterglowSetup = data;
             });
@@ -356,6 +363,7 @@
 		    <accordion-group id="previewGroup" heading="Preview">
                 <div id="previewScreen">
                 </div>
+                <div id="previewFPS"></div>
             </accordion-group>
             <accordion-group heading="Settings">
                 <div class="navbar">

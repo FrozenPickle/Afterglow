@@ -68,22 +68,30 @@ namespace Afterglow.Core
             set { Set(() => Description, value); }
         }
         
-        /// <summary>
-        /// This sets the minimum time that the program will take to complete each loop
-        /// Frame Rate = Frame Rate Limiter + Execution time of program
-        /// Default - 1 Millisecond
-        /// </summary>
         [DataMember]
         [Required]
-        [Display(Name = "Frame Rate Limiter (Milliseconds)", 
-            Order = 300, 
-            Description = "This sets the minimum time that the program will take to complete each loop. Frame Rate = Frame Rate Limiter + Execution time of program", 
+        [Display(Name = "Capture Frequency (Hz)",
+            Order = 300,
+            Description = "Target capture frequency in Hertz",
             GroupName = "General Settings")]
-        public double FrameRateLimiter
+        public int CaptureFrequency
         {
-            get { return Get(() => FrameRateLimiter, 1.00); }
-            set { Set(() => FrameRateLimiter, value); }
+            get { return Get(() => CaptureFrequency, 10); }
+            set { Set(() => CaptureFrequency, value); }
         }
+
+        [DataMember]
+        [Required]
+        [Display(Name = "Output Frequency (Hz)",
+            Order = 300,
+            Description = "Target output frequency in Hertz",
+            GroupName = "General Settings")]
+        public int OutputFrequency
+        {
+            get { return Get(() => OutputFrequency, 30); }
+            set { Set(() => OutputFrequency, value); }
+        }
+
         #endregion
 
         ///<summary>
@@ -170,6 +178,17 @@ namespace Afterglow.Core
         {
             get { return Get(() => PostProcessPlugins, () => new SerializableInterfaceList<IPostProcessPlugin>()); }
             set { Set(() => PostProcessPlugins, value); }
+        }
+
+        /// <summary>
+        /// Selected Pre-Output Plugins
+        /// Optional - may contain zero or more plugins
+        /// </summary>
+        [DataMember]
+        public SerializableInterfaceList<IPreOutputPlugin> PreOutputPlugins
+        {
+            get { return Get(() => PreOutputPlugins, () => new SerializableInterfaceList<IPreOutputPlugin>()); }
+            set { Set(() => PreOutputPlugins, value); }
         }
 
         /// <summary>

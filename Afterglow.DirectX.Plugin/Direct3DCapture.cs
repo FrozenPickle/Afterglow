@@ -75,11 +75,10 @@ namespace Afterglow.DirectX.Plugin
         private CaptureProcess _capturedProcess;
         [XmlIgnore]
         public string TargetProcess { get; set;  }
-        private Task _screenshotPump = null;
         private volatile bool _stopped = false;
         private global::Capture.Interface.Screenshot _currentResponse;
         private DateTime _startTime;
-        private int _captures;
+        private long _captures;
         
         public override void Start()
         {
@@ -97,23 +96,7 @@ namespace Afterglow.DirectX.Plugin
 
             Inject();
             _stopped = false;
-            _screenshotPump = new Task(() =>
-                {
-                    _startTime = DateTime.Now;
-                    while(!_stopped)
-                    {
 
-                        var response = _capturedProcess.CaptureInterface.GetScreenshot();
-                        //var response = ScreenshotManager.GetScreenshotSynchronous(_processId,
-                        //                                            new ScreenshotRequest(
-                        //                                                Rectangle.Empty));
-                        if (response != null)
-                            Interlocked.Increment(ref _captures);
-                        Interlocked.Exchange(ref _currentResponse, response);
-                        Thread.Sleep(5);
-                    }
-                }, TaskCreationOptions.LongRunning);
-            _screenshotPump.Start();
         }
 
         #region Injection methods
@@ -136,9 +119,6 @@ namespace Afterglow.DirectX.Plugin
                     {
                         continue;
                     }
-
-                    // Keep track of hooked processes in case more than one need to be hooked
-                    //HookManager.AddHookedProcess(process.Id);
 
                     _processId = process.Id;
                     _process = process;
@@ -170,6 +150,12 @@ namespace Afterglow.DirectX.Plugin
         private Bitmap _capturedImage;
         public IDictionary<Core.Light, Core.PixelReader> Capture(ILightSetupPlugin lightSetup)
         {
+
+            var response = _capturedProcess.CaptureInterface.GetScreenshot();
+            if (response != null)
+                Interlocked.Increment(ref _captures);
+            Interlocked.Exchange(ref _currentResponse, response);
+
             IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
 
             if (_currentResponse != null)
@@ -184,7 +170,7 @@ namespace Afterglow.DirectX.Plugin
                 }
             }
             if (_captures > 0 && _captures % 10 == 0)
-                Console.WriteLine("Time per capture: {0}", new TimeSpan(0, 0, 0, 0, (int)(DateTime.Now - _startTime).TotalMilliseconds / _captures));
+                Debug.WriteLine("Time per capture: {0}", new TimeSpan(0, 0, 0, 0, (int)((DateTime.Now - _startTime).TotalMilliseconds / _captures)));
 
             return dictionary;
         }

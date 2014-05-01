@@ -45,12 +45,10 @@ namespace Afterglow.Plugins.Output
         #endregion
 
 
-        public void Output(List<Core.Light> leds)
+        public void Output(List<Core.Light> leds, LightData data)
         {
-            
-            Debug.WriteLine("DebugOutput LEDs:");
-            Debug.WriteLine("LED count: {0}", leds.Count);
-            
+            //Debug.WriteLine("DebugOutput LEDs:");
+            //Debug.WriteLine("LED count: {0}", leds.Count);
         }
 
         public override void Start()

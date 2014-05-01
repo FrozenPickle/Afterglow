@@ -101,64 +101,61 @@ namespace Afterglow.Plugins.PostProcess
         public override void Stop()
         {
         }
-    
-        public void Process(Core.Light led)
+
+        public void Process(List<Core.Light> lights, LightData data)
         {
-            double red = led.LightColour.R;
-            double green = led.LightColour.G;
-            double blue = led.LightColour.B;
+            if (this.Brightness == 100 && this.RedSaturation == 100 && this.GreenSaturation == 100 && this.BlueSaturation == 100)
+                return;
 
-            bool coloursChanged = false;
-
- 	        //Change brightness first
-            if (this.Brightness != 100)
+            for (var i = 0; i < data.Length; i++)
             {
-                double percent = Brightness / 100.00;
-                red = red * percent;
-                green = green * percent;
-                blue = blue * percent;
+                var lightColour = data[i];
+                double red = lightColour.R;
+                double green = lightColour.G;
+                double blue = lightColour.B;
 
-                coloursChanged = true;
+                bool coloursChanged = false;
+
+                //Change brightness first
+                if (this.Brightness != 100)
+                {
+                    double percent = Brightness / 100.00;
+                    red = red * percent;
+                    green = green * percent;
+                    blue = blue * percent;
+
+                    coloursChanged = true;
+                }
+
+                if (this.RedSaturation != 100)
+                {
+                    double percent = RedSaturation / 100.00;
+                    red = red * percent;
+
+                    coloursChanged = true;
+                }
+
+                if (this.GreenSaturation != 100)
+                {
+                    double percent = GreenSaturation / 100.00;
+                    green = green * percent;
+
+                    coloursChanged = true;
+                }
+
+                if (this.BlueSaturation != 100)
+                {
+                    double percent = BlueSaturation / 100.00;
+                    blue = blue * percent;
+
+                    coloursChanged = true;
+                }
+
+                if (coloursChanged)
+                {
+                    data[i] = Color.FromArgb((int)red, (int)green, (int)blue);
+                }
             }
-
-            if (this.RedSaturation != 100)
-            {
-                double percent = RedSaturation / 100.00;
-                red = red * percent;
-
-                coloursChanged = true;
-            }
-
-            if (this.GreenSaturation != 100)
-            {
-                double percent = GreenSaturation / 100.00;
-                green = green * percent;
-
-                coloursChanged = true;
-            }
-
-            if (this.BlueSaturation != 100)
-            {
-                double percent = BlueSaturation / 100.00;
-                blue = blue * percent;
-
-                coloursChanged = true;
-            }
-
-
-            if (coloursChanged)
-            {
-                int resultRed = led.LightColour.R;
-                int resultGreen = led.LightColour.G;
-                int resultBlue = led.LightColour.B;
-
-                resultRed = Convert.ToInt32(red);
-                resultGreen = Convert.ToInt32(green);
-                resultBlue = Convert.ToInt32(blue);
-
-                led.LightColour = Color.FromArgb(resultRed, resultGreen, resultBlue);
-            }
-
         }
     }
 }

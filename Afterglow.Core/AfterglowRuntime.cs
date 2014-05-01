@@ -23,14 +23,47 @@ namespace Afterglow.Core
     public sealed class AfterglowRuntime
     {
         /// <summary>
-        /// The main loop task
+        /// The capture loop task
         /// </summary>
-        private Task _mainLoopTask;
+        private Task _captureLoopTask;
+
         /// <summary>
-        /// Setting this to false will stop the main loop
+        /// The output loop task
         /// </summary>
-        private bool _active;
-        
+        private Task _outputLoopTask;
+
+        public double CaptureLoopFPS { get { return _captureLoopFPS.FPS; } }
+        public double CaptureLoopFrameTime { get { return _captureLoopFPS.FrameTimeInMilliseconds; } }
+        public double OutputLoopFPS { get { return _outputLoopFPS.FPS; } }
+        public double OutputLoopFrameTime { get { return _outputLoopFPS.FrameTimeInMilliseconds; } }
+
+        private FpsCalculator _captureLoopFPS = new FpsCalculator();
+        private FpsCalculator _outputLoopFPS = new FpsCalculator();
+
+        /// <summary>
+        /// Synchronisation object
+        /// </summary>
+        private object sync = new object();
+
+        private bool _active = false;
+        /// <summary>
+        /// Setting this to false will stop the capture and output threads
+        /// </summary>
+        /// <remarks>Thread Safe</remarks>
+        private bool Active
+        {
+            get
+            {
+                lock (sync)
+                    return _active;
+            }
+            set
+            {
+                lock (sync)
+                    _active = value;
+            }
+        }
+
         /// <summary>
         /// File location of the setup xml file
         /// </summary>
@@ -207,12 +240,31 @@ namespace Afterglow.Core
         //    }
         //}
 
+        LightData _nextLightData;
+        LightData _prevLightData;
+        object previousSync = new object();
+
+        /// <summary>
+        /// Thread safe retrieval of the previous frame's final adjusted light data
+        /// </summary>
+        /// <returns>A copy of the current light data (can be null if no light data)</returns>
+        /// <remarks>Frequent calling of this method may have a performance impact due to thread synchronisation.</remarks>
+        public LightData GetPreviousLightData()
+        {
+            lock (previousSync)
+            {
+                if (_prevLightData == null)
+                    return null;
+                LightData data = new LightData(_prevLightData);
+                return data;
+            }
+        }
+
         /// <summary>
         /// Start running the current profile
         /// </summary>
         public void Start()
         {
-
             if (this.Setup.Profiles.Any())
                 CurrentProfile = this.Setup.Profiles.First();
 
@@ -224,11 +276,44 @@ namespace Afterglow.Core
             {
                 CurrentProfile.Validate();
 
-                if (!_active)
+                if (!Active)
                 {
-                    _active = true;
-                    _mainLoopTask = new Task(MainLoop);
-                    _mainLoopTask.Start();
+                    Active = true;
+
+                    _captureLoopTask = new Task(CaptureLoop);
+                    _outputLoopTask = new Task(OutputLoop);
+
+                    // Prepare light data buffer
+                    _nextLightData = new LightData(CurrentProfile.LightSetupPlugin.Lights.Count);
+                    _prevLightData = new LightData(CurrentProfile.LightSetupPlugin.Lights.Count); ;
+
+                    // Start all plugins
+                    CurrentProfile.CapturePlugin.Start();
+                    CurrentProfile.ColourExtractionPlugin.Start();
+                    CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Start());
+                    CurrentProfile.PreOutputPlugins.ToList().ForEach(p => p.Start());
+
+                    string errorMessage = String.Empty;
+                    int outputFailures = 0;
+                    foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
+                    {
+                        if (!outputPlugin.TryStart(out errorMessage))
+                        {
+                            outputFailures++;
+                            ErrorMessage = errorMessage;
+                        }
+                    }
+
+                    if (outputFailures == CurrentProfile.OutputPlugins.Count())
+                    {
+                        Stop();
+                    }
+                    else
+                    {
+                        // Commence capture and output threads
+                        _captureLoopTask.Start();
+                        _outputLoopTask.Start();
+                    }
                 }
             }
         }
@@ -238,77 +323,46 @@ namespace Afterglow.Core
         /// </summary>
         public void Stop()
         {
-            if (_active)
+            if (Active)
             {
-                _active = false;
+                Active = false;
 
                 //TODO the wait sometimes never finishes executing
-                _mainLoopTask.Wait();
-                _mainLoopTask.Dispose();
-                _mainLoopTask = null;
+                Task.WaitAll(_captureLoopTask, _outputLoopTask);
+                _captureLoopTask.Dispose();
+                _outputLoopTask.Dispose();
             }
         }
 
-        /// <summary>
-        /// The main Afterglow Loop
-        /// </summary>
-        private void MainLoop()
+        private void CaptureLoop()
         {
-            string errorMessage = string.Empty;
-
-            /*
-            1. Capture regions
-            2. Perform colour extraction
-            3. Perform post processing
-            4. Cleanup Captured Regions
-            5. Perform Output(s)
-            6. Perform timing waits
-            7. Check for messages (stop etc)
-             * */
-
-            CurrentProfile.CapturePlugin.Start();
-            CurrentProfile.ColourExtractionPlugin.Start();
-            CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Start());
-
-            int outputFailures = 0;
-            foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
-            {
-                if (!outputPlugin.TryStart(out errorMessage))
-                {
-                    outputFailures++;
-                    ErrorMessage = errorMessage;
-                }
-            }
-
-            if (outputFailures == CurrentProfile.OutputPlugins.Count())
-            {
-                Stop();
-            }
-
             try
             {
-                //int cycles = 0;
-                while (_active)
-                {
-                    //Get Light Setup Plugin
-                    ILightSetupPlugin lightSetupPlugin = CurrentProfile.LightSetupPlugin;
+                //Get Light Setup Plugin
+                ILightSetupPlugin lightSetupPlugin = CurrentProfile.LightSetupPlugin;
 
-                    //Set previous light colour
-                    foreach (var light in lightSetupPlugin.Lights)
-                    {
-                        light.OldLightColour = light.LightColour;
-                        light.OldSourceColour = light.SourceColour;
-                    }
+                Stopwatch timer = Stopwatch.StartNew();
+                long lastTicks = 0;
+                double waitTicks = 1.0 / CurrentProfile.CaptureFrequency;
+                double freq = 1.0 / Stopwatch.Frequency;
+
+                LightData newLightData = new LightData(_nextLightData);
+
+                while (Active)
+                {
+                    lastTicks = timer.ElapsedTicks;
 
                     //Get screen segments
                     IDictionary<Light, PixelReader> ledSources = CurrentProfile.CapturePlugin.Capture(lightSetupPlugin);
+                    newLightData.Time = timer.ElapsedTicks;
                     try
                     {
                         //Extract Colours from segments
+                        int i = 0;
                         foreach (var keyValue in ledSources)
                         {
-                            keyValue.Key.SourceColour = CurrentProfile.ColourExtractionPlugin.Extract(keyValue.Key, keyValue.Value);
-                            keyValue.Key.LightColour = keyValue.Key.SourceColour;
+                            newLightData[i] = CurrentProfile.ColourExtractionPlugin.Extract(keyValue.Key, keyValue.Value);
+                            i++;
                         }
                     }
                     finally
@@ -324,38 +378,112 @@ namespace Afterglow.Core
                     //Run any Post Process Plugins
                     foreach (var postProcessPlugin in CurrentProfile.PostProcessPlugins)
                     {
-                        foreach (var led in lightSetupPlugin.Lights)
-                        {
-                            (postProcessPlugin as IPostProcessPlugin).Process(led);
-                        }
+                        (postProcessPlugin as IPostProcessPlugin).Process(lightSetupPlugin.Lights, newLightData);
                     }
 
-                    //Run Output Plugin
-                    CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(lightSetupPlugin.Lights.ToList()));
+                    // Thread safe swap of new light data into _nextLightData
+                    lock (sync)
+                    {
+                        var t = _nextLightData;
+                        _nextLightData = newLightData;
+                        newLightData = t;
+                    }
 
-                    //Frame Rate Limiter
-                    Thread.Sleep(TimeSpan.FromMilliseconds(CurrentProfile.FrameRateLimiter));
+                    // Throttle Capture Frequency
+                    while ((timer.ElapsedTicks - lastTicks) * freq < waitTicks)
+                    {
+                        Thread.Sleep(5);
+                    }
 
-                    //TODO implement debug logging
-                    //cycles++;
-                    //if (cycles % 5 == 0)
-                    //{
-                    //    Debug.WriteLine("");
-                    //}
+                    // Update capture FPS counter
+                    _captureLoopFPS.Tick();
                 }
-
-                // Set all to black
-                CurrentProfile.LightSetupPlugin.Lights.ToList().ForEach(led => led.LightColour = Color.Black);
-                CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(CurrentProfile.LightSetupPlugin.Lights.ToList()));
-
+            }
+            catch (Exception e)
+            {
+                lock (sync)
+                {
+                    Active = false;
+                    ErrorMessage = e.ToString();
+                }
             }
             finally
             {
-                //Dispose of anything remaining
-                CurrentProfile.CapturePlugin.Stop();
-                CurrentProfile.ColourExtractionPlugin.Stop();
-                CurrentProfile.PostProcessPlugins.ToList().ForEach(p => p.Stop());
-                CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Stop());
+                // Allow plugins to clean up
+                CurrentProfile.CapturePlugins.ForEach(cp => cp.Stop());
+                CurrentProfile.PostProcessPlugins.ForEach(pp => pp.Stop());
+            }
+        }
+
+        private void OutputLoop()
+        {
+            try
+            {
+                //Get Light Setup Plugin
+                ILightSetupPlugin lightSetupPlugin = CurrentProfile.LightSetupPlugin;
+
+                Stopwatch timer = new Stopwatch();
+                double waitTicks = 1.0 / CurrentProfile.OutputFrequency;
+                double freq = 1.0 / Stopwatch.Frequency;
+
+                long lastUpdate = 0;
+
+                // Initialise temporary lightData
+                LightData lightData = new LightData(lightSetupPlugin.Lights.Count);
+
+                while (Active)
+                {
+                    timer.Restart();
+
+                    // If available, replace _currentLightData with _nextLightData
+                    lock (sync)
+                    {
+                        if (lastUpdate < _nextLightData.Time)
+                        {
+                            var t = lightData;
+                            lightData = _nextLightData;
+                            _nextLightData = t;
+                            lastUpdate = lightData.Time;
+                        }
+                    }
+
+                    if (lightData != null)
+                    {
+                        // Run pre-output plugins
+                        CurrentProfile.PreOutputPlugins.ToList().ForEach(po => po.PreOutput(lightSetupPlugin.Lights, lightData));
+
+                        //Run Output Plugin(s)
+                        CurrentProfile.OutputPlugins.ToList().ForEach(o => o.Output(lightSetupPlugin.Lights, lightData));
+                    }
+
+                    // Copy the last frame to _prevLightData
+                    lock(previousSync)
+                    {
+                        Buffer.BlockCopy(lightData.ColourData, 0, _prevLightData.ColourData, 0, lightData.ColourData.Length);
+                    }
+
+                    // Throttle Output Frequency
+                    while (timer.ElapsedTicks * freq < waitTicks)
+                    {
+                        Thread.Sleep(5);
+                    }
+
+                    _outputLoopFPS.Tick();
+                }
+            }
+            catch (Exception e)
+            {
+                lock (sync)
+                {
+                    Active = false;
+                    ErrorMessage = e.ToString();
+                }
+            }
+            finally
+            {
+                // Allow plugins to clean up
+                CurrentProfile.PreOutputPlugins.ForEach(po => po.Stop());
+                CurrentProfile.OutputPlugins.ForEach(o => o.Stop());
             }
         }
     }

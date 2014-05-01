@@ -63,12 +63,15 @@
     <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FastBitmap.cs" />
+    <Compile Include="FpsCalculator.cs" />
+    <Compile Include="LightData.cs" />
     <Compile Include="Load\ILoader.cs" />
     <Compile Include="Load\PluginLoader.cs" />
     <Compile Include="Log\ILogger.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Log\Log4netProxy.cs" />
     <Compile Include="PixelReader.cs" />
+    <Compile Include="Plugins\IPreOutputPlugin.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="SerializableInterfaceList.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />

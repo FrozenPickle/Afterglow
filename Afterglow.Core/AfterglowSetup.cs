@@ -22,7 +22,7 @@ namespace Afterglow.Core
         /// All of the configured plugins exist here and then are referenced in each Profile
         /// </summary>
         /// <remarks>
-        /// Loaded first by the XML Deserilization
+        /// Loaded first by the XML Deserialization
         /// </remarks>
         #region Configured Plugins
 
@@ -35,6 +35,7 @@ namespace Afterglow.Core
             get { return Get(() => ConfiguredCapturePlugins, new SerializableInterfaceList<ICapturePlugin>()); }
             set { Set(() => ConfiguredCapturePlugins, value); }
         }
+
         /// <summary>
         /// A list of configured Colour Extraction Plugins
         /// </summary>
@@ -44,6 +45,7 @@ namespace Afterglow.Core
             get { return Get(() => ConfiguredColourExtractionPlugins, new SerializableInterfaceList<IColourExtractionPlugin>()); }
             set { Set(() => ConfiguredColourExtractionPlugins, value); }
         }
+
         /// <summary>
         /// A list of configured Light Setup Plugins
         /// </summary>
@@ -53,6 +55,7 @@ namespace Afterglow.Core
             get { return Get(() => ConfiguredLightSetupPlugins, new SerializableInterfaceList<ILightSetupPlugin>()); }
             set { Set(() => ConfiguredLightSetupPlugins, value); }
         }
+
         /// <summary>
         /// A list of configured Post Process Plugins
         /// </summary>
@@ -62,6 +65,17 @@ namespace Afterglow.Core
             get { return Get(() => ConfiguredPostProcessPlugins, new SerializableInterfaceList<IPostProcessPlugin>()); }
             set { Set(() => ConfiguredPostProcessPlugins, value); }
         }
+
+        /// <summary>
+        /// A list of configured Pre-Output Plugins
+        /// </summary>
+        [DataMember]
+        public SerializableInterfaceList<IPreOutputPlugin> ConfiguredPreOutputPlugins
+        {
+            get { return Get(() => ConfiguredPreOutputPlugins, new SerializableInterfaceList<IPreOutputPlugin>()); }
+            set { Set(() => ConfiguredPreOutputPlugins, value); }
+        }
+
         /// <summary>
         /// A list of configured Output Plugins
         /// </summary>
@@ -71,6 +85,7 @@ namespace Afterglow.Core
             get { return Get(() => ConfiguredOutputPlugins, new SerializableInterfaceList<IOutputPlugin>()); }
             set { Set(() => ConfiguredOutputPlugins, value); }
         }
+
         #endregion
 
         //[XmlIgnore]
