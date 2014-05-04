@@ -124,10 +124,91 @@ namespace Afterglow.Web
         public List<Afterglow.Core.Profile> Results { get; set; }
     }
 
+    #region Plugins Controller
+    [Route("/availablePlugins")]
+    [DataContract]
+    public class AvailablePluginsRequest
+    {
+    }
+    [DataContract]
+    public class AvailablePluginsResult
+    {
+        [DataMember(Name = "availableLightSetupPlugins")]
+        public IEnumerable<AvailablePlugin> AvailableLightSetupPlugins { get; set; }
 
+        [DataMember(Name = "availableCapturePlugins")]
+        public IEnumerable<AvailablePlugin> AvailableCapturePlugins { get; set; }
+
+        [DataMember(Name = "availableColourExtractionPlugins")]
+        public IEnumerable<AvailablePlugin> AvailableColourExtractionPlugins { get; set; }
+
+        [DataMember(Name = "availablePostProcessPlugins")]
+        public IEnumerable<AvailablePlugin> AvailablePostProcessPlugins { get; set; }
+
+        [DataMember(Name = "availablePreOutputPlugins")]
+        public IEnumerable<AvailablePlugin> AvailablePreOutputPlugins { get; set; }
+
+        [DataMember(Name = "availableOutputPlugins")]
+        public IEnumerable<AvailablePlugin> AvailableOutputPlugins { get; set; }
+    }
+    [DataContract]
+    public class AvailablePlugin
+    {
+        [DataMember(Name="name")]
+        public string Name { get; set; }
+        [DataMember(Name="description")]
+        public string Description { get; set; }
+    }
+    #endregion
 
     public class AfterglowService : Service
     {
+        #region Plugins Controller
+        public object Get(AvailablePluginsRequest request)
+        {
+            AvailablePluginsResult result = new AvailablePluginsResult();
+            
+            result.AvailableLightSetupPlugins = (from p in Program.Runtime.Setup.AvailableLightSetupPlugins
+                                     select new AvailablePlugin
+                                     {
+                                         Name = p.Name,
+                                         Description = p.ToString()
+                                     });
+            result.AvailableCapturePlugins = (from p in Program.Runtime.Setup.AvailableCapturePlugins
+                                              select new AvailablePlugin
+                                              {
+                                                  Name = p.Name,
+                                                  Description = p.ToString()
+                                              });
+            result.AvailableColourExtractionPlugins = (from p in Program.Runtime.Setup.AvailableColourExtractionPlugins
+                                              select new AvailablePlugin
+                                              {
+                                                  Name = p.Name,
+                                                  Description = p.ToString()
+                                              });
+            result.AvailablePostProcessPlugins = (from p in Program.Runtime.Setup.AvailablePostProcessPlugins
+                                              select new AvailablePlugin
+                                              {
+                                                  Name = p.Name,
+                                                  Description = p.ToString()
+                                              });
+            result.AvailablePreOutputPlugins = (from p in Program.Runtime.Setup.AvailablePreOutputPlugins
+                                              select new AvailablePlugin
+                                              {
+                                                  Name = p.Name,
+                                                  Description = p.ToString()
+                                              });
+            result.AvailableOutputPlugins = (from p in Program.Runtime.Setup.AvailableOutputPlugins
+                                              select new AvailablePlugin
+                                              {
+                                                  Name = p.Name,
+                                                  Description = p.ToString()
+                                              });
+
+            return result;
+        }
+        #endregion
+
         public object Get(Runtime request)
         {
             return new RuntimeResponse

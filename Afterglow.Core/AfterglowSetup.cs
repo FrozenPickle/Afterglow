@@ -193,6 +193,11 @@ namespace Afterglow.Core
                 if (this.ConfiguredPostProcessPlugins.Any())
                     result = this.ConfiguredPostProcessPlugins.Max(plugin => plugin.Id);
             }
+            else if (typeof(T) == typeof(IPreOutputPlugin))
+            {
+                if (this.ConfiguredPreOutputPlugins.Any())
+                    result = this.ConfiguredPreOutputPlugins.Max(plugin => plugin.Id);
+            }
             else if (typeof(T) == typeof(IOutputPlugin))
             {
                 if (this.ConfiguredOutputPlugins.Any())
@@ -226,6 +231,7 @@ namespace Afterglow.Core
             newProfile.CapturePlugins = DefaultCapturePlugins();
             newProfile.ColourExtractionPlugins = DefaultColourExtractionPlugins();
             newProfile.PostProcessPlugins = DefaultPostProcessPlugins();
+            newProfile.PreOutputPlugins = DefaultPreOutputPlugins();
             newProfile.OutputPlugins = DefaultOutputPlugins();
             this.Profiles.Add(newProfile);
 
@@ -285,6 +291,15 @@ namespace Afterglow.Core
         public Type[] AvailablePostProcessPlugins
         {
             get { return PluginLoader.Loader.GetPlugins<IPostProcessPlugin>(); }
+        }
+        /// <summary>
+        /// Available Pre Output Plugin Types
+        /// </summary>
+        [DataMember]
+        [XmlIgnore]
+        public Type[] AvailablePreOutputPlugins
+        {
+            get { return PluginLoader.Loader.GetPlugins<IPreOutputPlugin>(); }
         }
         /// <summary>
         /// Available Available Output Plugin Types
@@ -401,6 +416,15 @@ namespace Afterglow.Core
         public SerializableInterfaceList<IPostProcessPlugin> DefaultPostProcessPlugins()
         {
             return new SerializableInterfaceList<IPostProcessPlugin>();
+        }
+
+        /// <summary>
+        /// Returns an empty list as there are no default Pre Output Plugins
+        /// </summary>
+        /// <returns>An empty list object</returns>
+        public SerializableInterfaceList<IPreOutputPlugin> DefaultPreOutputPlugins()
+        {
+            return new SerializableInterfaceList<IPreOutputPlugin>();
         }
 
         /// <summary>

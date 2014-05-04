@@ -1,132 +1,92 @@
 ﻿<div class="container">
     <div>
         <h1>Plugins</h1>
-        <button type="button" class="btn btn-default">Upload New Plugin Type</button>
-        <br />
-        <br />
 
         <div class="panel panel-success">
-            <!-- Default panel contents -->
             <div class="panel-heading">Light Setup Plugins</div>
-            <div class="panel-body">
-                <p class="text-muted">Light Setup Plugins are used to configure the screen capture positions and corresponding lights</p>
-            </div>
 
             <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableLightSetupPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                        {{plugin.Name}}
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availableLightSetupPlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
                     </div>
                     <div class="list-group-item-text">
-                        {{plugin.Description}}
-                    </div>-->
+                        {{plugin.description}}
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="panel panel-info">
-            <!-- Default panel contents -->
             <div class="panel-heading">Capture Plugins</div>
-            <div class="panel-body">
-                <p class="text-muted">...</p>
-            </div>
 
             <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableCaptureSetupPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                        {{plugin.Name}}
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availableCapturePlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
                     </div>
                     <div class="list-group-item-text">
-                        {{plugin.Description}}
-                    </div>-->
+                        {{plugin.description}}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="panel panel-warning">
-            <!-- Default panel contents -->
-            <div class="panel-heading">
-                <div class="panel-title">Colour Extraction Plugins</div>
-            </div>
-            <div class="panel-body">
-                <p>...</p>
-            </div>
+        <div class="panel panel-success">
+            <div class="panel-heading">Colour Extraction Plugins</div>
 
             <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableColourExtractionPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                        {{plugin.Name}}
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availableColourExtractionPlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
                     </div>
                     <div class="list-group-item-text">
-                        {{plugin.Description}}
-                    </div>-->
+                        {{plugin.description}}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="panel panel-warning">
-            <!-- Default panel contents -->
-            <div class="panel-heading">
-                <div class="panel-title">Colour Extraction Plugins</div>
-            </div>
-            <div class="panel-body">
-                <p>...</p>
-            </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Post Process Plugins</div>
 
             <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableColourExtractionPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                    {{plugin.Name}}
-                </div>
-                <div class="list-group-item-text">
-                    {{plugin.Description}}
-                </div>-->
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-warning">
-            <!-- Default panel contents -->
-            <div class="panel-heading">
-                <div class="panel-title">Colour Extraction Plugins</div>
-            </div>
-            <div class="panel-body">
-                <p>...</p>
-            </div>
-
-            <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableColourExtractionPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                    {{plugin.Name}}
-                </div>
-                <div class="list-group-item-text">
-                    {{plugin.Description}}
-                </div>-->
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-error">
-            <!-- Default panel contents -->
-            <div class="panel-heading">
-                <div class="panel-title">Output Plugins</div>
-            </div>
-            <div class="panel-body">
-                <p>...</p>
-            </div>
-
-            <div class="list-group">
-                <div class="list-group-item" ng-repeat="plugin in afterglowSetup.Setup.AvailableOutputPlugins">
-                    {{plugin}}
-                    <!--<div class="list-group-item-heading">
-                        {{plugin.Name}}
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availablePostProcessPlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
                     </div>
                     <div class="list-group-item-text">
-                        {{plugin.Description}}
-                    </div>-->
+                        {{plugin.description}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-success">
+            <div class="panel-heading">Pre Output Plugins</div>
+
+            <div class="list-group">
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availablePreOutputPlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
+                    </div>
+                    <div class="list-group-item-text">
+                        {{plugin.description}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Output Plugins</div>
+
+            <div class="list-group">
+                <div class="list-group-item" ng-repeat="plugin in availablePlugins.availableOutputPlugins">
+                    <div class="list-group-item-heading">
+                        {{plugin.name}}
+                    </div>
+                    <div class="list-group-item-text">
+                        {{plugin.description}}
+                    </div>
                 </div>
             </div>
         </div>

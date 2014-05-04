@@ -160,12 +160,12 @@ function ProfilesController($scope, $route, $routeParams, $http) {
 
 function PluginsController($scope, $route, $routeParams, $http) {
 
-    $scope.afterglowSetup = null;
+    $scope.availablePlugins = null;
     
     $scope.refresh = function () {
-        $http.get('/setup?format=json').success(
+        $http.get('/availablePlugins?format=json').success(
         function (data) {
-            $scope.afterglowSetup = data;
+            $scope.availablePlugins = data;
         });
     }
 
