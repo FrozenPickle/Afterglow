@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceHost;
 using ServiceStack.Text;
 using System.Runtime.Serialization;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;
+using ServiceStack;
 
 namespace Afterglow.Web
 {
     [Route("/runtime")]
     public class Runtime
     {
+        public bool? Start { get; set; }
     }
 
     public class RuntimeResponse
@@ -122,30 +122,31 @@ namespace Afterglow.Web
         {
             return new RuntimeResponse
             {
-                Active = Active,
+                Active = Program.Runtime.Active,
                 NumberOfLightsHigh = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh : 0),
                 NumberOfLightsWide = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide : 0)
             };
         }
         
-        public static bool Active = false;
-
         public object Post(Runtime request)
         {
-            if (Active)
+            if (!request.Start.HasValue)
             {
-                Program.Runtime.Stop();
-                Active = false;
+                request.Start = !Program.Runtime.Active;
+            }
+
+            if (request.Start.Value)
+            {
+                Program.Runtime.Start();
             }
             else
             {
-                Program.Runtime.Start();
-                Active = true;
+                Program.Runtime.Stop();
             }
         
             return new RuntimeResponse
             {
-                Active = Active,
+                Active = Program.Runtime.Active,
                 NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
                 NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
             };

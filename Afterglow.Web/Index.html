@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Afterglow</title>
+    <link rel="stylesheet" href="Content/Darkly/bootstrap.min.css" />
+</head>
+<body ng-app="afterglowApp">
+
+    <div ng-controller="IndexController">
+        <div class="navbar navbar-default navbar-static-top">
+           <div class="container">
+                <div class="navbar-header navbar-left">
+                    <a class="navbar-brand" href="#">Afterglow</a>
+                    <div class="navbar-left navbar-btn btn-group" data-toggle="buttons">
+                        <label class="btn btn-primary" ng-click="startAfterglow()" id="onLabel">
+                            <input type="radio" value="true"> On
+                        </label>
+                        <label class="btn btn-primary" ng-click="stopAfterglow()" id="offLabel">
+                            <input type="radio" value="false"> Off
+                        </label>
+                    </div>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <div class="navbar-text">{{currentProfile.Name}}</div>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown">Profiles <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="profile in profiles"><a ng-click="selectProfile(profile.id)">{{profile.name}}</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown">Settings <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#settings">General</a></li>
+                                <li><a href="#profiles">Profiles</a></li>
+                                <li><a href="#plugins">Plugins</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="container">
+        <div ng-view></div>
+    </div>
+
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+
+    <script src="js/controllers.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/routes.js"></script>
+
+    <footer>
+        <p class="text-muted">
+            Contact Us
+            <a href="https://github.com/FrozenPickle/Afterglow">GitHub</a>
+            <a href="http://afterglow.frozenpickle.com/">Afterglow</a>
+        </p>
+    </footer>
+</body>
+</html>

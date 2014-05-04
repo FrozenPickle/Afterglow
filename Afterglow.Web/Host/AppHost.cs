@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.WebHost.Endpoints;
-using ServiceStack.Logging;
-using ServiceStack.Logging.Support.Logging;
-using ServiceStack.Razor;
 using System.Net;
-using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceInterface.Auth;
-using ServiceStack.CacheAccess;
-using ServiceStack.CacheAccess.Providers;
+using ServiceStack;
+using ServiceStack.Caching;
+using ServiceStack.Razor;
 
 namespace Afterglow.Web.Host
 {

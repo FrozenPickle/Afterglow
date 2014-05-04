@@ -14,6 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,7 +27,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -54,39 +54,26 @@
     <StartupObject>Afterglow.Web.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.3.9.33\lib\net35\ServiceStack.dll</HintPath>
+    <Reference Include="ServiceStack">
+      <HintPath>..\packages\ServiceStack.4.0.18\lib\net40\ServiceStack.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Common, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Common.3.9.33\lib\net35\ServiceStack.Common.dll</HintPath>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\packages\ServiceStack.Client.4.0.18\lib\net40\ServiceStack.Client.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Interfaces, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Common.3.9.33\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\packages\ServiceStack.Common.4.0.18\lib\net40\ServiceStack.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.OrmLite, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.33\lib\ServiceStack.OrmLite.dll</HintPath>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Interfaces.4.0.18\lib\net40\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.33\lib\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>..\packages\ServiceStack.OrmLite.4.0.18\lib\net40\ServiceStack.OrmLite.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Razor, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Razor.3.9.33\lib\net40\ServiceStack.Razor.dll</HintPath>
+    <Reference Include="ServiceStack.Razor">
+      <HintPath>..\packages\ServiceStack.Razor.4.0.18\lib\net40\ServiceStack.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Redis, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Redis.3.9.33\lib\net35\ServiceStack.Redis.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.ServiceInterface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.3.9.33\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Text, Version=3.9.33.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Text.3.9.33\lib\net35\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.4.0.18\lib\net40\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -96,21 +83,8 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\ServiceStack.Razor.3.9.33\lib\net40\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\ServiceStack.Razor.3.9.33\lib\net40\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\ServiceStack.Razor.3.9.33\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\ServiceStack.Razor.3.9.33\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    <Reference Include="System.Web.Razor.Unofficial">
+      <HintPath>..\packages\ServiceStack.Razor.4.0.18\lib\net40\System.Web.Razor.Unofficial.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -126,14 +100,78 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\controllers.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="js\app.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PluginsView.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ProfilesView.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ProfileView.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\SettingsView.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="app.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Content\bootstrap-theme.css.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\bootstrap.css.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="fonts\glyphicons-halflings-regular.eot" />
+    <None Include="fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="fonts\glyphicons-halflings-regular.woff" />
     <None Include="packages.config" />
-    <None Include="Scripts\jquery-2.0.0.min.map">
+    <None Include="Scripts\angular-animate.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-cookies.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-loader.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-resource.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Content\Darkly\bootstrap.css" />
+    <Content Include="Content\Darkly\bootstrap.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-route.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Scripts\angular-sanitize.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-touch.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Scripts\angular.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Scripts\errors.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\jquery-2.1.0.min.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\underscore-min.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\version.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Views\ConfiguredPluginsView.cshtml">
@@ -164,10 +202,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Content\bootstrap-responsive.css">
+    <Content Include="Content\bootstrap-theme.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\bootstrap-responsive.min.css">
+    <Content Include="Content\bootstrap-theme.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\bootstrap.css">
@@ -182,36 +220,67 @@
     <Content Include="Content\img\glyphicons-halflings.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Controllers\ProfilesController.js" />
-    <Content Include="Scripts\angular-bootstrap-prettify.js" />
-    <Content Include="Scripts\angular-bootstrap-prettify.min.js">
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-bootstrap.js">
+    <Content Include="js\routes.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-bootstrap.min.js">
+    <Content Include="Scripts\angular-animate.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-cookies.js" />
+    <Content Include="Scripts\angular-animate.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-cookies.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular-cookies.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-loader.js" />
+    <Content Include="Scripts\angular-csp.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-loader.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular-loader.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-mocks.js" />
-    <Content Include="Scripts\angular-resource.js" />
+    <Content Include="Scripts\angular-mocks.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-resource.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular-resource.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-sanitize.js" />
+    <Content Include="Scripts\angular-route.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-route.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-sanitize.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular-sanitize.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\angular-scenario.js" />
-    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular-scenario.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-touch.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-touch.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -253,10 +322,8 @@
     <Content Include="Scripts\i18n\angular-locale_ca-ad.js" />
     <Content Include="Scripts\i18n\angular-locale_ca-es.js" />
     <Content Include="Scripts\i18n\angular-locale_ca.js" />
-    <Content Include="Scripts\i18n\angular-locale_chr.js" />
     <Content Include="Scripts\i18n\angular-locale_cs-cz.js" />
     <Content Include="Scripts\i18n\angular-locale_cs.js" />
-    <Content Include="Scripts\i18n\angular-locale_cy.js" />
     <Content Include="Scripts\i18n\angular-locale_da-dk.js" />
     <Content Include="Scripts\i18n\angular-locale_da.js" />
     <Content Include="Scripts\i18n\angular-locale_de-at.js" />
@@ -268,7 +335,6 @@
     <Content Include="Scripts\i18n\angular-locale_de.js" />
     <Content Include="Scripts\i18n\angular-locale_el-cy.js" />
     <Content Include="Scripts\i18n\angular-locale_el-gr.js" />
-    <Content Include="Scripts\i18n\angular-locale_el-polyton.js" />
     <Content Include="Scripts\i18n\angular-locale_el.js" />
     <Content Include="Scripts\i18n\angular-locale_en-as.js" />
     <Content Include="Scripts\i18n\angular-locale_en-au.js">
@@ -305,14 +371,11 @@
     <Content Include="Scripts\i18n\angular-locale_en-tc.js" />
     <Content Include="Scripts\i18n\angular-locale_en-tt.js" />
     <Content Include="Scripts\i18n\angular-locale_en-um.js" />
-    <Content Include="Scripts\i18n\angular-locale_en-us.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Scripts\i18n\angular-locale_en-us.js" />
     <Content Include="Scripts\i18n\angular-locale_en-vg.js" />
     <Content Include="Scripts\i18n\angular-locale_en-vi.js" />
     <Content Include="Scripts\i18n\angular-locale_en-za.js" />
     <Content Include="Scripts\i18n\angular-locale_en-zw.js" />
-    <Content Include="Scripts\i18n\angular-locale_en-zz.js" />
     <Content Include="Scripts\i18n\angular-locale_en.js" />
     <Content Include="Scripts\i18n\angular-locale_es-419.js" />
     <Content Include="Scripts\i18n\angular-locale_es-ar.js" />
@@ -378,10 +441,6 @@
     <Content Include="Scripts\i18n\angular-locale_fr-mq.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-ne.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-re.js" />
-    <Content Include="Scripts\i18n\angular-locale_fr-rw.js" />
-    <Content Include="Scripts\i18n\angular-locale_fr-sn.js" />
-    <Content Include="Scripts\i18n\angular-locale_fr-td.js" />
-    <Content Include="Scripts\i18n\angular-locale_fr-tg.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-yt.js" />
     <Content Include="Scripts\i18n\angular-locale_fr.js" />
     <Content Include="Scripts\i18n\angular-locale_gl-es.js" />
@@ -390,7 +449,6 @@
     <Content Include="Scripts\i18n\angular-locale_gsw.js" />
     <Content Include="Scripts\i18n\angular-locale_gu-in.js" />
     <Content Include="Scripts\i18n\angular-locale_gu.js" />
-    <Content Include="Scripts\i18n\angular-locale_haw.js" />
     <Content Include="Scripts\i18n\angular-locale_he-il.js" />
     <Content Include="Scripts\i18n\angular-locale_he.js" />
     <Content Include="Scripts\i18n\angular-locale_hi-in.js" />
@@ -404,7 +462,6 @@
     <Content Include="Scripts\i18n\angular-locale_in.js" />
     <Content Include="Scripts\i18n\angular-locale_is-is.js" />
     <Content Include="Scripts\i18n\angular-locale_is.js" />
-    <Content Include="Scripts\i18n\angular-locale_it-ch.js" />
     <Content Include="Scripts\i18n\angular-locale_it-it.js" />
     <Content Include="Scripts\i18n\angular-locale_it-sm.js" />
     <Content Include="Scripts\i18n\angular-locale_it.js" />
@@ -416,7 +473,6 @@
     <Content Include="Scripts\i18n\angular-locale_ko-kr.js" />
     <Content Include="Scripts\i18n\angular-locale_ko.js" />
     <Content Include="Scripts\i18n\angular-locale_ln-cd.js" />
-    <Content Include="Scripts\i18n\angular-locale_ln-cg.js" />
     <Content Include="Scripts\i18n\angular-locale_ln.js" />
     <Content Include="Scripts\i18n\angular-locale_lt-lt.js" />
     <Content Include="Scripts\i18n\angular-locale_lt.js" />
@@ -424,16 +480,12 @@
     <Content Include="Scripts\i18n\angular-locale_lv.js" />
     <Content Include="Scripts\i18n\angular-locale_ml-in.js" />
     <Content Include="Scripts\i18n\angular-locale_ml.js" />
-    <Content Include="Scripts\i18n\angular-locale_mo.js" />
     <Content Include="Scripts\i18n\angular-locale_mr-in.js" />
     <Content Include="Scripts\i18n\angular-locale_mr.js" />
-    <Content Include="Scripts\i18n\angular-locale_ms-bn.js" />
     <Content Include="Scripts\i18n\angular-locale_ms-my.js" />
     <Content Include="Scripts\i18n\angular-locale_ms.js" />
     <Content Include="Scripts\i18n\angular-locale_mt-mt.js" />
     <Content Include="Scripts\i18n\angular-locale_mt.js" />
-    <Content Include="Scripts\i18n\angular-locale_nl-aw.js" />
-    <Content Include="Scripts\i18n\angular-locale_nl-be.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-cw.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-nl.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-sx.js" />
@@ -443,19 +495,12 @@
     <Content Include="Scripts\i18n\angular-locale_or.js" />
     <Content Include="Scripts\i18n\angular-locale_pl-pl.js" />
     <Content Include="Scripts\i18n\angular-locale_pl.js" />
-    <Content Include="Scripts\i18n\angular-locale_pt-ao.js" />
     <Content Include="Scripts\i18n\angular-locale_pt-br.js" />
-    <Content Include="Scripts\i18n\angular-locale_pt-gw.js" />
-    <Content Include="Scripts\i18n\angular-locale_pt-mz.js" />
     <Content Include="Scripts\i18n\angular-locale_pt-pt.js" />
-    <Content Include="Scripts\i18n\angular-locale_pt-st.js" />
     <Content Include="Scripts\i18n\angular-locale_pt.js" />
-    <Content Include="Scripts\i18n\angular-locale_ro-md.js" />
     <Content Include="Scripts\i18n\angular-locale_ro-ro.js" />
     <Content Include="Scripts\i18n\angular-locale_ro.js" />
-    <Content Include="Scripts\i18n\angular-locale_ru-md.js" />
     <Content Include="Scripts\i18n\angular-locale_ru-ru.js" />
-    <Content Include="Scripts\i18n\angular-locale_ru-ua.js" />
     <Content Include="Scripts\i18n\angular-locale_ru.js" />
     <Content Include="Scripts\i18n\angular-locale_sk-sk.js" />
     <Content Include="Scripts\i18n\angular-locale_sk.js" />
@@ -463,74 +508,63 @@
     <Content Include="Scripts\i18n\angular-locale_sl.js" />
     <Content Include="Scripts\i18n\angular-locale_sq-al.js" />
     <Content Include="Scripts\i18n\angular-locale_sq.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-cyrl-ba.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-cyrl-me.js" />
     <Content Include="Scripts\i18n\angular-locale_sr-cyrl-rs.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-cyrl.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-latn-ba.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-latn-me.js" />
     <Content Include="Scripts\i18n\angular-locale_sr-latn-rs.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-latn.js" />
-    <Content Include="Scripts\i18n\angular-locale_sr-rs.js" />
     <Content Include="Scripts\i18n\angular-locale_sr.js" />
-    <Content Include="Scripts\i18n\angular-locale_sv-fi.js" />
     <Content Include="Scripts\i18n\angular-locale_sv-se.js" />
     <Content Include="Scripts\i18n\angular-locale_sv.js" />
-    <Content Include="Scripts\i18n\angular-locale_sw-ke.js" />
     <Content Include="Scripts\i18n\angular-locale_sw-tz.js" />
     <Content Include="Scripts\i18n\angular-locale_sw.js" />
     <Content Include="Scripts\i18n\angular-locale_ta-in.js" />
-    <Content Include="Scripts\i18n\angular-locale_ta-lk.js" />
     <Content Include="Scripts\i18n\angular-locale_ta.js" />
     <Content Include="Scripts\i18n\angular-locale_te-in.js" />
     <Content Include="Scripts\i18n\angular-locale_te.js" />
     <Content Include="Scripts\i18n\angular-locale_th-th.js" />
     <Content Include="Scripts\i18n\angular-locale_th.js" />
-    <Content Include="Scripts\i18n\angular-locale_tl-ph.js" />
     <Content Include="Scripts\i18n\angular-locale_tl.js" />
     <Content Include="Scripts\i18n\angular-locale_tr-tr.js" />
     <Content Include="Scripts\i18n\angular-locale_tr.js" />
     <Content Include="Scripts\i18n\angular-locale_uk-ua.js" />
     <Content Include="Scripts\i18n\angular-locale_uk.js" />
-    <Content Include="Scripts\i18n\angular-locale_ur-in.js" />
     <Content Include="Scripts\i18n\angular-locale_ur-pk.js" />
     <Content Include="Scripts\i18n\angular-locale_ur.js" />
     <Content Include="Scripts\i18n\angular-locale_vi-vn.js" />
     <Content Include="Scripts\i18n\angular-locale_vi.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-cn.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-hans-cn.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hans-hk.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hans-mo.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hans-sg.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hans.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hant-hk.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hant-mo.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hant-tw.js" />
-    <Content Include="Scripts\i18n\angular-locale_zh-hant.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-hk.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-tw.js" />
     <Content Include="Scripts\i18n\angular-locale_zh.js" />
     <Content Include="Scripts\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\i18n\angular-locale_zu.js" />
-    <Content Include="Scripts\jquery-2.0.0.intellisense.js" />
-    <Content Include="Scripts\jquery-2.0.0.js" />
-    <Content Include="Scripts\jquery-2.0.0.min.js">
+    <Content Include="Scripts\jquery-2.1.0.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-0.3.0.js">
+    <Content Include="Scripts\jquery-2.1.0.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-0.3.0.min.js">
+    <Content Include="Scripts\jquery-2.1.0.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-tpls-0.3.0.js">
+    <Content Include="Scripts\ui-bootstrap-0.10.0.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-tpls-0.3.0.min.js">
+    <Content Include="Scripts\ui-bootstrap-0.10.0.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\underscore.js" />
-    <Content Include="Scripts\underscore.min.js">
+    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\underscore-min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\underscore.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\HomeView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Views\BasicLightSetupPluginView.cshtml">
@@ -568,9 +602,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\ProfileModal\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,7 +5,6 @@ using System.Text;
 using Afterglow.Core;
 using System.Net;
 using ServiceStack.Logging;
-using ServiceStack.Logging.Support.Logging;
 using Afterglow.Web.Host;
 
 namespace Afterglow.Web
@@ -26,7 +25,7 @@ namespace Afterglow.Web
 
             _runtime = new AfterglowRuntime();
             
-            LogManager.LogFactory = new ConsoleLogFactory();
+            //LogManager.LogFactory = new ConsoleLogFactory();
 
             using (var appHost = new AppHost())
             {
