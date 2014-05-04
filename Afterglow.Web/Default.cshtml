@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿@inherits ViewPage
 
 @{
@@ -391,4 +392,403 @@
             </accordion>
         </div>
     </div><!-- /content -->
+=======
+﻿@inherits ViewPage
+
+@{
+    Layout = "SimpleLayout";
+    ViewBag.Title = "Afterglow";
+    var session = Request.GetSession();
+}
+<script type="text/javascript">
+    var agSessionId = null;
+</script>
+
+@if (session != null && session.IsAuthenticated)
+{
+    <script type="text/javascript">
+        agSessionId = @session.Id;
+    </script>
+}
+<script type="text/javascript">
+
+    angular.module('afterglow',['ui.bootstrap']);
+    
+    $(function () {
+
+        if (agSessionId) {
+            $('#logout').show();
+        } else {
+			// Temporarily disabled login
+            //$('#login').show();
+        }
+
+        $(document).ajaxError(function (event, jqXHR, settings, thrownError) {
+            if (typeof jqXHR.responseText !== 'undefined')
+            {
+                var response = $.parseJSON(jqXHR.responseText);
+                var msg = "Ajax error";
+                if (response && response.ResponseStatus) {
+                    msg = "<pre>" + response.ResponseStatus.Message + "\r\n" + response.ResponseStatus.StackTrace + "</pre>";
+                } else if (thrownError) {
+                    msg = thrownError;
+                }
+            }
+        });
+    });
+
+    function DoLogin() {
+        var req = $.post('/auth/credentials?format=json', $('#login').serialize(),
+        function (data, textStatus, jqXHR) {
+            agSessionId = data.SessionId;
+            //$('#login').hide();
+            //$('#loggedIn').show();
+        }, 'json');
+    }
+
+    function DoLogout() {
+        $.get('/auth/logout?format=json', null, function (data, textStatus, jqXHR) {
+            //$('#login').show();
+            //$('#loggedIn').hide();
+            agSessionId = null;
+            if (timer)
+                clearInterval(timer);
+        }, 'json');
+    }
+    
+    var timer = null;
+
+    function DoStartStop() {
+        $.post('/runtime?format=json', {},
+        function (data, textStatus, jqXHR) {
+            afterglowRuntime = data;
+            $('#startStop').html(afterglowRuntime.Active ? 'Stop' : 'Start');
+            generatePreviewGrid(data);
+
+            if (afterglowRuntime.Active) {
+                if ($($("#previewGroup").children()[1]).height() != 0){
+                    timer = setInterval(getPreview, 100);
+                }
+            } else {
+                clearInterval(timer);
+                timer = null;
+            }
+        }, 'json');
+    }
+    
+    var firstPreview = true;
+    function getPreview() {
+
+        $.get('/preview?format=json', {}, function (data, status, xhr) {
+            clearInterval(timer);
+            timer = null;
+            $(data.Lights).each(function (index, item) {
+                $('#previewLight_' + item.Top + '_' + item.Left).css('background-color', 'rgb(' + item.Colour.R +','+ item.Colour.G +','+ item.Colour.B+')');
+            });
+            /*if (firstPreview) {
+                lightPreviewTemplate = _.template($('#lightPreviewTemplate').html());
+                var lights = "";
+                $(data.Lights).each(function (index, item) {
+                    $("#previewScreen").append(lightPreviewTemplate({ index: item.Index, colour: "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16) }));
+                });
+                //$("#previewScreen").html();
+                firstPreview = false;
+            }
+            else {
+                $(data.Lights).each(function (index, item) {
+                    $("#lightPreview" + item.Index).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
+                });
+            }*/
+            $('#previewFPS').children().remove();
+            $('#previewFPS').append('<div>Capture speed: ' + data.CaptureFPS.toFixed(2) + 'fps (' + data.CaptureFrameTime.toFixed(2) + 'ms)</div>');
+            $('#previewFPS').append('<div>Output speed: ' + data.OutputFPS.toFixed(2) + 'fps (' + data.OutputFrameTime.toFixed(2) + 'ms)</div>');
+
+            timer = setInterval(getPreview, 100);
+        });
+        
+    }
+
+    function generatePreviewGrid(setup) {
+        var cellHeight = 20;
+        var cellWidth = 20;
+
+        var numberHigh = setup.NumberOfLightsHigh;
+        var numberWide = setup.NumberOfLightsWide;
+
+        $("#previewScreen").children().remove();
+        
+        var height = cellHeight * numberHigh;
+        var width = cellWidth * numberWide;
+
+        $("#previewScreen").attr('style', 'position:relative;width:' + width + 'px; height:' + height +'px;');
+
+        var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
+        var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
+
+        $("#previewScreen").append('<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth +'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;" ></div>');
+
+        for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
+            for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
+                //Only add 
+                if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
+                    var top = cellHeight * topPosition;
+                    var left = cellWidth * leftPosition;
+                    $("#previewScreen").append('<div id="previewLight_' + topPosition + '_' + leftPosition + '" style="display:inline-block;position: absolute;background-color:#b0c4de;height:' + cellHeight + 'px; width:' + cellWidth + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
+                    delete top;
+                    delete left;
+                }
+            }
+        }
+        delete centreDivHeight;
+        delete centreDivWidth;
+        delete cellHeight;
+        delete cellWidth;
+        delete numberHigh;
+        delete numberWide;
+        delete height;
+        delete width;
+    }
+
+    function AfterglowCtrl($scope, $http, $dialog) {
+        $scope.oneAtATime = true;
+
+        /*
+        http://angular-ui.github.io/bootstrap/
+        http://bootswatch.com/slate/#
+        http://mgcrea.github.io/angular-strap/#/modal
+        http://plnkr.co/edit/xKP5PW3Dco1CczmCuuVN?p=preview
+        https://github.com/angular-ui/bootstrap/tree/master/src/dialog
+        */
+
+        $scope.afterglowSetup = null;
+        $scope.currentProfile = null;
+        $scope.pluginType = null;
+        $scope.modalDialogName = null;
+        $scope.currentPlugin = null;
+
+        $http.get('/setup?format=json').success(function (data) {
+            $scope.afterglowSetup = data;
+        });
+        $http.get('/runtime?format=json').success(function (data) {
+            $scope.afterglowRuntime = data;
+        });
+        
+        
+
+
+        $scope.save = function () {
+            $http.post('/setup?format=json', $scope.afterglowSetup).success(function (data) {
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.addNewPlugin = function(){
+            $scope.modalDialogName = 'generalProfileSettings';
+            $scope.shouldBeOpen[$scope.modalDialogName] = true;
+            $scope.currentProfile = {Id:0};
+        }
+
+        $scope.selectProfile = function(profile, pluginType){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+        }
+
+        $scope.updateProfile = function (plugin){
+            if ($scope.currentProfile == null || plugin == null) {
+                return;
+            }
+            
+            var data = {profileId: $scope.currentProfile.Id, pluginId: plugin.Id, pluginType: $scope.pluginType, actionType: 'add'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.updateProfileGeneralSettings = function(){
+            if ($scope.currentProfile == null) {
+                return;
+            }
+            var actionType = 'update';
+            if ($scope.currentProfile.Id == 0){
+                actionType = 'addProfile';
+            }
+
+            var data = {profileId: $scope.currentProfile.Id, name: $scope.currentProfile.Name, description: $scope.currentProfile.Description, captureFrequency: $scope.currentProfile.CaptureFrequency, outputFrequency: $scope.currentProfile.OutputFrequency, actionType: actionType};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+
+            $scope.close();
+        }
+
+        $scope.removePluginFromProfile = function (profile, pluginType, plugin){
+            if (profile == null || plugin == null) {
+                return;
+            }
+            var data = {profileId: profile.Id, pluginId: plugin.Id, pluginType: pluginType, actionType: 'remove'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.removeProfile = function (profile){
+            if (profile == null) {
+                return;
+            }
+            var data = {profileId: profile.Id, actionType: 'removeProfile'};
+            $http.post('/updateProfile?format=json', data).success( function( data){
+                $scope.afterglowSetup = data;
+            });
+        }
+
+        $scope.shouldBeOpen = {};
+
+        // Toggle modal
+        $scope.showPluginSelect = function(profile, pluginType){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+
+            $scope.modalDialogName = pluginType;
+            $scope.shouldBeOpen[pluginType] = true;
+        };
+
+        $scope.close = function () {
+            $scope.shouldBeOpen[$scope.modalDialogName] = false;
+        };
+
+        $scope.modalOptions = {
+            backdropFade: true,
+            dialogFade:true
+        };
+
+
+
+        $scope.showConfigureNewPlugin = function(profile, pluginType, plugin){
+            $scope.currentProfile = profile;
+            $scope.pluginType = pluginType;
+            $scope.currentPlugin = plugin;
+
+            $scope.modalDialogName = pluginType;
+            $scope.shouldBeOpen[pluginType] = true;
+        };
+    }
+    //look at this http://stackoverflow.com/questions/13836765/angular-scope-inside-script
+
+</script>
+
+<script type="text/javascript">
+    
+    function generateGrid() {
+        var cellHeight = 20;
+        var cellWidth = 20;
+
+        var numberHigh = parseInt($("#numberOfLightsHighInput").val());
+        var numberWide = parseInt($("#numberOfLightsWideInput").val());
+
+        $("#basicLightSetupGrid").children().remove();
+        
+        var height = cellHeight * numberHigh;
+        var width = cellWidth * numberWide;
+
+        $("#basicLightSetupGrid").attr('style', 'position:relative;width:' + width + 'px; height:' + height +'px;');
+
+        var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
+        var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
+
+        $("#basicLightSetupGrid").append('<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth +'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;" ></div>');
+
+        for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
+            for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
+                //Only add 
+                if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
+                    var top = cellHeight * topPosition;
+                    var left = cellWidth * leftPosition;
+                    $("#basicLightSetupGrid").append('<div style="display:inline-block;position: absolute;background-color:#b0c4de;height:' + cellHeight + 'px; width:' + cellWidth + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
+                    delete top;
+                    delete left;
+                }
+            }
+        }
+        delete centreDivHeight;
+        delete centreDivWidth;
+        delete cellHeight;
+        delete cellWidth;
+        delete numberHigh;
+        delete numberWide;
+        delete height;
+        delete width;
+    }
+</script>
+
+<div ng-controller="AfterglowCtrl">
+	
+    <div id="mainContent">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li>
+                        <a href="#" onclick="DoStartStop();" id="startStop">Start</a>
+                    </li>
+                    <li>
+                        <a href="#">TODO: Log In/Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div>
+		    <div>
+
+                <form id="login" method="post" action="#" onsubmit="DoLogin(); return false;" style="display:none;">
+                    <label for="UserName">User name: </label><input type="text" name="UserName" id="UserName" /><br />
+                    <label for="Password">Password: </label><input type="password" name="Password" id="Password" /><br />
+                    @*<label for="RememberMe">Remember me: </label><input type="checkbox" name="RememberMe" checked="checked" />*@
+                <input type="submit" value="Login" onclick="DoLogin(); return false;" />
+                </form>
+                <!--<div id="loggedIn" >
+                    <div id="StartStop">
+                        <button onclick="DoStartStop();" id="startStopBtn" style="width:100%" type="button" class="btn">Start</button>
+                    </div>
+                    <div id="logout">
+                        <button onclick="DoLogout();" id="logoutBtn" style="width:100%" type="button" class="btn">Logout</button>
+                    </div>
+                </div>-->
+            </div>
+            
+        <accordion close-others="false">
+		    <accordion-group id="previewGroup" heading="Preview">
+                <div id="previewScreen">
+                </div>
+                <div id="previewFPS"></div>
+            </accordion-group>
+            <accordion-group heading="Settings">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <ul class="nav">
+                            <li>
+                                <a href="#">TODO: General Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Import Settings</a>
+                            </li>
+                            <li>
+                                <a href="#">TODO: Export Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <accordion  id="settings">
+                    <accordion-group heading="Installed Plugin Types" id="installedPlugins" >
+                        @Html.Partial("InstalledPluginTypesView")
+                    </accordion-group>
+                    <accordion-group heading="Configured Plugins" id="configuredPlugins">
+                        @Html.Partial("ConfiguredPluginsView")
+                    </accordion-group>
+                    <accordion-group heading="Profiles">
+                        @Html.Partial("ProfilesView")
+                    </accordion-group>
+                </accordion-group>
+            </accordion>
+        </div>
+    </div><!-- /content -->
+>>>>>>> debf27d9997ef7a601cf241d9cffdc267a25aaad
 </div><!-- Controller Scope -->

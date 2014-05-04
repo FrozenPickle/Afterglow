@@ -70,7 +70,7 @@ namespace Afterglow.Core
                 if (n < 1)
                     throw new ArgumentOutOfRangeException("n", n, "Must be greater than 0");
                 int counter = 1; // Keep track of when to return a pixel
-                List<Color> colors = new List<Color>();
+                List<Color> colors = new List<Color>(_region.Width * _region.Height / n);
                 foreach (Color[] row in Pixels)
                 {
                     for (int j = 0; j < row.Length; j++)

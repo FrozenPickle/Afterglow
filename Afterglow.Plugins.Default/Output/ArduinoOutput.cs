@@ -175,7 +175,7 @@ namespace Afterglow.Plugins.Output
         /// Send the light information to the arduino
         /// </summary>
         /// <param name="lights"></param>
-        public void Output(List<Core.Light> lights)
+        public void Output(List<Core.Light> lights, LightData data)
         {
             if (_port != null && _port.IsOpen)
             {
@@ -192,12 +192,8 @@ namespace Afterglow.Plugins.Output
                 }
 
                 int serialDataPos = 6;
-                foreach (var led in lights.OrderBy(l => l.Index))
-                {
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.R);
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.G);
-                    _serialData[serialDataPos++] = Convert.ToByte(led.LightColour.B);
-                }
+                // Fast copy of data to serial buffer
+                Buffer.BlockCopy(data.ColourData, 0, _serialData, serialDataPos, data.ColourData.Length);
 
                 // Issue data to Arduino
                 try

@@ -14,6 +14,6 @@ namespace Afterglow.Core.Plugins
         /// Process the Light object and adjust it
         /// </summary>
         /// <param name="light">Light Object</param>
-        void Process(Light light);
+        void Process(List<Core.Light> lights, Core.LightData data);
     }
 }

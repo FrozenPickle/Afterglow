@@ -14,7 +14,7 @@ namespace Afterglow.Core.Plugins
         /// Send the lights to the output device
         /// </summary>
         /// <param name="leds">A collection of lights</param>
-        void Output(List<Light> lights);
+        void Output(List<Light> lights, LightData data);
 
         /// <summary>
         /// Trys to start the output plugin

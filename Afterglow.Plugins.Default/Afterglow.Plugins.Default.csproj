@@ -51,8 +51,8 @@
     <Compile Include="LightSetup\BasicLightSetupPlugin\BasicLightSetup.cs" />
     <Compile Include="Output\ArduinoOutput.cs" />
     <Compile Include="Output\DebugOutput.cs" />
-    <Compile Include="Output\PreviewOutput.cs" />
     <Compile Include="PostProcess\ColourCorrectionPostProcess.cs" />
+    <Compile Include="PreOutput\TestPatternPreOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,6 @@ namespace Afterglow.Web
                 
         static void Main(string[] args)
         {
-
             _runtime = new AfterglowRuntime();
             
             //LogManager.LogFactory = new ConsoleLogFactory();
@@ -46,7 +45,6 @@ namespace Afterglow.Web
                 Console.WriteLine("Press <enter> to exit.");
                 Console.ReadLine();
                 appHost.Stop();
-
             }
 
 
