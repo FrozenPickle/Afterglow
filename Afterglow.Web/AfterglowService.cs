@@ -59,16 +59,7 @@ namespace Afterglow.Web
         public const string PluginType_PostProcess = "postProcess";
         public const string PluginType_Output = "output";
     }
-
-    [Route("/profiles")]
-    [Route("/profiles/{Id}")]
-    [Route("/profiles/name/{Name}")]
-    public class Profiles
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-
+    
     [Route("/preview")]
     public class Preview
     {
@@ -117,13 +108,6 @@ namespace Afterglow.Web
         }
     }
 
-    [Csv(CsvBehavior.FirstEnumerable)]
-    public class ProfilesResponse
-    {
-        public int Total { get; set; }
-        public List<Afterglow.Core.Profile> Results { get; set; }
-    }
-
     #region Plugins Controller
     [Route("/availablePlugins")]
     [DataContract]
@@ -158,6 +142,89 @@ namespace Afterglow.Web
         public string Name { get; set; }
         [DataMember(Name="description")]
         public string Description { get; set; }
+    }
+    #endregion
+
+    #region Profiles Controller
+
+    [Route("/profiles")]
+    [DataContract]
+    public class ProfilesRequest
+    {
+    }
+    [DataContract]
+    public class ProfilesResponse
+    {
+        [DataMember(Name="profiles")]
+        public IEnumerable<ProfilesProfileResponse> Profiles { get; set; }
+    }
+    [DataContract]
+    public class ProfilesProfileResponse
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+    }
+
+    [Route("/addProfile")]
+    [DataContract]
+    public class AddProfileRequest
+    {
+    }
+
+    #endregion
+
+    #region Profile Controller
+    [Route("/profile")]
+    [DataContract]
+    public class ProfileRequest
+    {
+        [DataMember(Name="id")]
+        public int Id { get; set; }
+    }
+    [DataContract]
+    public class ProfileResponse
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+        [DataMember(Name = "captureFrequency")]
+        public int CaptureFrequency { get; set; }
+        [DataMember(Name = "outputFrequency")]
+        public int OutputFrequency { get; set; }
+        [DataMember(Name = "lightSetupPlugins")]
+        public IEnumerable<AvailablePlugin> LightSetupPlugins { get; set; }
+        [DataMember(Name = "capturePlugins")]
+        public IEnumerable<AvailablePlugin> CapturePlugins { get; set; }
+        [DataMember(Name = "colourExtractionPlugins")]
+        public IEnumerable<AvailablePlugin> ColourExtractionPlugins { get; set; }
+        [DataMember(Name = "postProcessPlugins")]
+        public IEnumerable<AvailablePlugin> PostProcessPlugins { get; set; }
+        [DataMember(Name = "preOutputPlugins")]
+        public IEnumerable<AvailablePlugin> PreOutputPlugins { get; set; }
+        [DataMember(Name = "outputPlugins")]
+        public IEnumerable<AvailablePlugin> OutputPlugins { get; set; }
+    }
+    [Route("/updateProfile")]
+    [DataContract]
+    public class UpdateProfileRequest
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+        [DataMember(Name = "captureFrequency")]
+        public int CaptureFrequency { get; set; }
+        [DataMember(Name = "outputFrequency")]
+        public int OutputFrequency { get; set; }
     }
     #endregion
 
@@ -209,6 +276,111 @@ namespace Afterglow.Web
         }
         #endregion
 
+        #region Profiles Controller
+        public object Get(ProfilesRequest request)
+        {
+            return new ProfilesResponse
+            {
+                Profiles = (from p in Program.Runtime.Setup.Profiles
+                            select new ProfilesProfileResponse
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                Description = p.Description
+                            })
+            };
+        }
+
+        public object Get(AddProfileRequest request)
+        {
+            int id = Program.Runtime.Setup.AddNewProfile().Id;
+            Program.Runtime.Save();
+
+            return id;
+        }
+        #endregion
+
+        #region Profile Controller
+
+        public object Post(ProfileRequest request)
+        {
+            ProfileResponse response = null;
+            Profile profile = (from p in Program.Runtime.Setup.Profiles
+                               where p.Id == request.Id
+                               select p).FirstOrDefault();
+            if (profile != null)
+            {
+                response = new ProfileResponse();
+                response.Id = profile.Id;
+                response.Name = profile.Name;
+                response.Description = profile.Description;
+                response.CaptureFrequency = profile.CaptureFrequency;
+                response.OutputFrequency = profile.OutputFrequency;
+
+                response.LightSetupPlugins = (from p in profile.LightSetupPlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+                response.CapturePlugins = (from p in profile.CapturePlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+                response.ColourExtractionPlugins = (from p in profile.ColourExtractionPlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+                response.PostProcessPlugins = (from p in profile.PostProcessPlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+                response.PreOutputPlugins = (from p in profile.PreOutputPlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+                response.OutputPlugins = (from p in profile.OutputPlugins
+                                                select new AvailablePlugin
+                                                {
+                                                    Name = p.Name,
+                                                    Description = p.ToString()
+                                                });
+
+            }
+            return response;
+        }
+
+        public object Post(UpdateProfileRequest request)
+        {
+            object response = null;
+            Profile existingProfile = (from p in Program.Runtime.Setup.Profiles
+                               where p.Id == request.Id
+                               select p).FirstOrDefault();
+            if (existingProfile != null)
+            {
+                existingProfile.Name = request.Name;
+                existingProfile.Description = request.Description;
+                existingProfile.CaptureFrequency = request.CaptureFrequency;
+                existingProfile.OutputFrequency = request.OutputFrequency;
+
+                Program.Runtime.Save();
+
+                // Re load saved changes to ensure save has worked
+                response = Post(new ProfileRequest() { Id = request.Id });
+            }
+            return response;
+        }
+
+        #endregion
+
         public object Get(Runtime request)
         {
             return new RuntimeResponse
@@ -242,17 +414,6 @@ namespace Afterglow.Web
                 Active = Program.Runtime.Active,
                 NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
                 NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
-            };
-        }
-
-        public object Get(Profiles request)
-        {
-            return new ProfilesResponse
-            {
-                Total = Program.Runtime.Setup.Profiles.Count,
-                Results = !String.IsNullOrEmpty(request.Name)
-                    ? Program.Runtime.Setup.Profiles.Where(p => p.Name.ToLower() == request.Name.ToLower()).Select(p => p).ToList()
-                    : Program.Runtime.Setup.Profiles
             };
         }
 

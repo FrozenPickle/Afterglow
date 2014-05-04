@@ -153,14 +153,30 @@ function SettingsController($scope, $route, $routeParams, $location) {
     $scope.$routeParams = $routeParams;
 }
 
-function ProfilesController($scope, $route, $routeParams, $http) {
-    $scope.$route = $route;
-    $scope.$routeParams = $routeParams;
+function ProfilesController($scope, $route, $location, $http) {
+
+    $scope.profiles = [];
+
+    $scope.refresh = function () {
+        $http.get('/profiles?format=json').success(
+        function (data) {
+            $scope.profiles = data.profiles;
+        });
+    }
+
+    $scope.refresh();
+
+    $scope.addProfile = function () {
+        $http.get('/addProfile?format=json').success(
+        function (data) {
+            $location.path('/profile/' + data);
+        });
+    }
 }
 
 function PluginsController($scope, $route, $routeParams, $http) {
 
-    $scope.availablePlugins = null;
+    $scope.availablePlugins = [];
     
     $scope.refresh = function () {
         $http.get('/availablePlugins?format=json').success(
@@ -172,8 +188,30 @@ function PluginsController($scope, $route, $routeParams, $http) {
     $scope.refresh();
 }
 
-function PluginController($scope, $route, $routeParams, $location) {
-    $scope.$route = $route;
-    $scope.$location = $location;
-    $scope.$routeParams = $routeParams;
+function ProfileController($scope, $route, $routeParams, $http) {
+    $scope.id = $routeParams.id;
+
+    $scope.profile = null;
+
+    $scope.refresh = function () {
+        $http.post('/profile?format=json',{id : $scope.id}).success(
+        function (data, textStatus, jqXHR) {
+            $scope.profile = data;
+        });
+    }
+
+    $scope.refresh();
+
+    $scope.update = function (){
+        $http.post('/updateProfile?format=json', {
+            id: $scope.id,
+            name: $scope.profile.name,
+            description: $scope.profile.description,
+            captureFrequency: $scope.profile.captureFrequency,
+            outputFrequency: $scope.profile.outputFrequency
+        }).success(
+        function (data, textStatus, jqXHR) {
+            $scope.profile = data;
+        });
+    }
 }

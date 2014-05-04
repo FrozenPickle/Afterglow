@@ -1,40 +1,121 @@
 ﻿
 <div>
     <h1>Profile Settings</h1>
-    <button type="button" class="btn btn-default">Export Plugin</button>
+    <button type="button" class="btn btn-primary" ng-click="update()">Save</button>
 
     <form class="form-horizontal">
         <fieldset>
-            <legend>Legend</legend>
             <div class="form-group">
                 <label for="inputEmail" class="col-lg-2 control-label">Name</label>
                 <div class="col-lg-10">
-                    <input type="text" class="form-control" id="inputName" placeholder="Name">
+                    <input type="text" class="form-control" id="inputName" placeholder="Name" ng-model="profile.name" />
                 </div>
             </div>
             <div class="form-group">
-                <label for="textArea" class="col-lg-2 control-label">Description</label>
+                <label for="inputDescription" class="col-lg-2 control-label">Description</label>
                 <div class="col-lg-10">
-                    <textarea class="form-control" rows="3" id="textArea"></textarea>
+                    <textarea class="form-control" rows="3" id="inputDescription" ng-model="profile.description"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputCaptureFrequency" class="col-lg-2 control-label">Capture Frequency</label>
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" id="inputCaptureFrequency" ng-model="profile.captureFrequency" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputOutputFrequency" class="col-lg-2 control-label">Output Frequency</label>
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" id="inputOutputFrequency" ng-model="profile.outputFrequency" />
                 </div>
             </div>
         </fieldset>
     </form>
 
     <div class="panel panel-success">
-        <!-- Default panel contents -->
         <div class="panel-heading">Light Setup Plugins</div>
-        <div class="panel-body">
-            <p>Light Setup Plugins are used to configure the screen capture positions and corresponding lights</p>
-        </div>
 
         <div class="list-group">
-            <div class="list-group-item">
+            <div class="list-group-item" ng-repeat="plugin in profile.lightSetupPlugins">
                 <div class="list-group-item-heading">
-                    Basic Light Setup
+                    {{plugin.name}}
                 </div>
                 <div class="list-group-item-text">
-                    Basic Light Setup Plugin
+                    {{plugin.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">Capture Plugins</div>
+
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="plugin in profile.capturePlugins">
+                <div class="list-group-item-heading">
+                    {{plugin.name}}
+                </div>
+                <div class="list-group-item-text">
+                    {{plugin.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-success">
+        <div class="panel-heading">Colour Extraction Plugins</div>
+
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="plugin in profile.colourExtractionPlugins">
+                <div class="list-group-item-heading">
+                    {{plugin.name}}
+                </div>
+                <div class="list-group-item-text">
+                    {{plugin.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">Post Process Plugins</div>
+
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="plugin in profile.postProcessPlugins">
+                <div class="list-group-item-heading">
+                    {{plugin.name}}
+                </div>
+                <div class="list-group-item-text">
+                    {{plugin.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-success">
+        <div class="panel-heading">Pre Output Plugins</div>
+
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="plugin in profile.preOutputPlugins">
+                <div class="list-group-item-heading">
+                    {{plugin.name}}
+                </div>
+                <div class="list-group-item-text">
+                    {{plugin.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">Output Plugins</div>
+
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="plugin in profile.outputPlugins">
+                <div class="list-group-item-heading">
+                    {{plugin.name}}
+                </div>
+                <div class="list-group-item-text">
+                    {{plugin.description}}
                 </div>
             </div>
         </div>

@@ -203,7 +203,7 @@ namespace Afterglow.Core
                 if (this.ConfiguredOutputPlugins.Any())
                     result = this.ConfiguredOutputPlugins.Max(plugin => plugin.Id);
             }
-            return result++;
+            return ++result;
         }
 
         /// <summary>

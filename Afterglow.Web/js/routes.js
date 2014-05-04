@@ -20,17 +20,23 @@ afterglowApp.config(function ($routeProvider) {
             controller: 'SettingsController'
         })
     .when(
+    	'/plugins',
+    	{
+    	    templateUrl: 'Views/PluginsView.html',
+    	    controller: 'PluginsController'
+    	})
+    .when(
         '/profiles',
         {
             templateUrl: 'Views/ProfilesView.html',
             controller: 'ProfilesController'
         })
     .when(
-    	'/plugins',
-    	{
-    	    templateUrl: 'Views/PluginsView.html',
-    	    controller: 'PluginsController'
-    	})
+        '/profile/:id',
+        {
+            templateUrl: 'Views/ProfileView.html',
+            controller: 'ProfileController'
+        })
         .otherwise(
         {
             redirectTo: '/home'
