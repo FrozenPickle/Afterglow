@@ -30,7 +30,14 @@ namespace Afterglow.Core
         /// Setting this to false will stop the main loop
         /// </summary>
         private bool _active;
-        
+        public bool Active
+        {
+            get
+            {
+                return _active;
+            }
+        }
+
         /// <summary>
         /// File location of the setup xml file
         /// </summary>

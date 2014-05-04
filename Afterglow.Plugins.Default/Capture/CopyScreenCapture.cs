@@ -196,10 +196,16 @@ namespace Afterglow.Plugins.Capture
 
         public override void Stop()
         {
-            _img.Dispose();
-            _img = null;
-            _graphics.Dispose();
-            _graphics = null;
+            if (_img != null)
+            {
+                _img.Dispose();
+                _img = null;
+            }
+            if (_graphics != null)
+            {
+                _graphics.Dispose();
+                _graphics = null;
+            }
         }
 
         int _captureHeight = 0;
