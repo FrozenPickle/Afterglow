@@ -228,6 +228,34 @@ namespace Afterglow.Web
     }
     #endregion
 
+    #region Settings Controller
+    [Route("/settings")]
+    public class SettingsRequest { }
+    [DataContract]
+    public class SettingsResponse
+    {
+        [DataMember(Name = "port")]
+        public int Port { get; set; }
+        [DataMember(Name = "userName")]
+        public string UserName { get; set; }
+        [DataMember(Name = "password")]
+        public string Password { get; set; }
+    }
+    [Route("/updateSettings")]
+    [DataContract]
+    public class UpdateSettingsRequest
+    {
+        [DataMember(Name = "port")]
+        public int Port { get; set; }
+        [DataMember(Name = "userName")]
+        public string UserName { get; set; }
+        [DataMember(Name = "password")]
+        public string Password { get; set; }
+    }
+
+
+    #endregion
+
     public class AfterglowService : Service
     {
         #region Plugins Controller
@@ -381,6 +409,31 @@ namespace Afterglow.Web
 
         #endregion
 
+        #region Settings Controller
+        public object Post(SettingsRequest request)
+        {
+            return new SettingsResponse
+            {
+                Port = Program.Runtime.Setup.Port,
+                UserName = Program.Runtime.Setup.UserName,
+                Password = Program.Runtime.Setup.Password
+            };
+        }
+        public object Post(UpdateSettingsRequest request)
+        {
+            AfterglowSetup setup = Program.Runtime.Setup;
+            setup.Port = request.Port;
+            setup.UserName = request.UserName;
+            setup.Password = request.Password;
+
+            Program.Runtime.Save();
+
+            // Load the saved version
+            return Post(new SettingsRequest());
+        }
+
+        #endregion
+
         public object Get(Runtime request)
         {
             return new RuntimeResponse
@@ -390,8 +443,6 @@ namespace Afterglow.Web
                 NumberOfLightsWide = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide : 0)
             };
         }
-        
-        public static bool Active = false;
 
         public object Post(Runtime request)
         {
@@ -417,7 +468,7 @@ namespace Afterglow.Web
             };
         }
 
-        public object Post(UpdateProfile updateProfile)
+     /*   public object Post(UpdateProfile updateProfile)
         {
             if (updateProfile != null && updateProfile.actionType == UpdateProfile.ActionType_AddProfile)
             {
@@ -567,7 +618,7 @@ namespace Afterglow.Web
                 return Program.Runtime.Setup;
             }
             return "Fail";
-        }
+        }*/
 
         public object Get(Setup request)
         {

@@ -148,9 +148,29 @@ function HomeController($scope, $route, $routeParams, $location) {
     }
 }
 
-function SettingsController($scope, $route, $routeParams, $location) {
-    $scope.$route = $route;
-    $scope.$routeParams = $routeParams;
+function SettingsController($scope, $route, $routeParams, $http) {
+    $scope.settings = null;
+
+    $scope.refresh = function () {
+        $http.post('/settings?format=json', {}).success(
+        function (data, textStatus, jqXHR) {
+            $scope.settings = data;
+        });
+    }
+
+    $scope.refresh();
+
+    $scope.update = function () {
+        $http.post('/updateSettings?format=json', {
+            id: $scope.id,
+            port: $scope.settings.port,
+            userName: $scope.settings.userName,
+            password: $scope.settings.password
+        }).success(
+        function (data, textStatus, jqXHR) {
+            $scope.settings = data;
+        });
+    }
 }
 
 function ProfilesController($scope, $route, $location, $http) {
