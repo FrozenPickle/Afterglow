@@ -108,6 +108,51 @@ namespace Afterglow.Web
         }
     }
 
+    #region Index Controller
+    [Route("/isRunning")]
+    public class IsRunningRequest
+    {
+    }
+    [Route("/start")]
+    public class StartRequest
+    {
+    }
+    [Route("/stop")]
+    public class StopRequest
+    {
+    }
+    [Route("/toggleStartStop")]
+    public class ToggleStartStopRequest
+    {
+    }
+    [DataContract]
+    public class AfterglowActiveResponse
+    {
+        [DataMember(Name="active")]
+        public bool Active { get; set; }
+    }
+    [Route("/menuSetup")]
+    public class MenuSetupRequest
+    {
+    }
+    [DataContract]
+    public class MenuSetupResponse
+    {
+        [DataMember(Name = "profiles")]
+        public IEnumerable<ProfilesProfileResponse> Profiles { get; set; }
+
+        [DataMember(Name = "currentProfile")]
+        public ProfilesProfileResponse CurrentProfile { get; set; }
+    }
+    [Route("/setProfile")]
+    [DataContract]
+    public class SetProfileRequest
+    {
+        [DataMember(Name="profileId")]
+        public int ProfileId { get; set; }
+    }
+    #endregion
+
     #region Plugins Controller
     [Route("/availablePlugins")]
     [DataContract]
@@ -258,6 +303,55 @@ namespace Afterglow.Web
 
     public class AfterglowService : Service
     {
+        #region Index Controller
+        public object Get(MenuSetupRequest request)
+        {
+            MenuSetupResponse response = new MenuSetupResponse();
+            response.Profiles = Get(new ProfilesRequest()).Profiles;
+            response.CurrentProfile = (from p in response.Profiles
+                                       where p.Id == Program.Runtime.CurrentProfile.Id
+                                       select p).FirstOrDefault();
+            return response;
+        }
+        public object Get(IsRunningRequest request)
+        {
+            return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
+        }
+        public object Get(StartRequest request)
+        {
+            Program.Runtime.Start();
+            return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
+        }
+        public object Get(StopRequest request)
+        {
+            Program.Runtime.Stop();
+            return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
+        }
+        public object Get(ToggleStartStopRequest request)
+        {
+            if (!Program.Runtime.Active)
+            {
+                Program.Runtime.Start();
+            }
+            else
+            {
+                Program.Runtime.Stop();
+            }
+            return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
+        }
+        public object Post(SetProfileRequest request)
+        {
+
+            Profile profile = (from p in Program.Runtime.Setup.Profiles
+                                       where p.Id == request.ProfileId
+                                       select p).FirstOrDefault();
+
+            Program.Runtime.CurrentProfile = profile;
+            Program.Runtime.Save();
+            return new ProfilesProfileResponse() { Id = profile.Id, Name = profile.Name, Description = profile.Description };
+        }
+        #endregion
+
         #region Plugins Controller
         public object Get(AvailablePluginsRequest request)
         {
@@ -305,7 +399,7 @@ namespace Afterglow.Web
         #endregion
 
         #region Profiles Controller
-        public object Get(ProfilesRequest request)
+        public ProfilesResponse Get(ProfilesRequest request)
         {
             return new ProfilesResponse
             {
@@ -433,6 +527,8 @@ namespace Afterglow.Web
         }
 
         #endregion
+
+
 
         public object Get(Runtime request)
         {

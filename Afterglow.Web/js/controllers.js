@@ -18,38 +18,39 @@
     });
 
     $scope.refresh = function () {
-        $http.get('/setup?format=json').success(
+        $http.get('/menuSetup?format=json').success(
         function (data) {
-            $scope.profiles = [];
-            $.each(data.Setup.Profiles, function (index, object) {
-                $scope.profiles.push({name:object.Name, description: object.Description})
-            });
-            var currentProfile = $.grep(data.Setup.Profiles, function (object, index) {
-                return object.Id == data.Setup.CurrentProfileId;
-            });
-            $scope.currentProfile = currentProfile[0];
+            $scope.profiles = data.profiles;
+            $scope.currentProfile = data.currentProfile;
         });
 
-        $.get('/runtime?format=json', {},
+        $http.get('/isRunning?format=json').success(
         function (data, textStatus, jqXHR) {
-            $scope.running = data.Active;
-        }, 'json');
+            $scope.running = data.active;
+        });
     }
 
     $scope.refresh();
 
     $scope.startAfterglow = function () {
-        $.post('/runtime?format=json', { Start: true },
+        $http.get('/start?format=json').success(
         function (data, textStatus, jqXHR) {
-            $scope.running = data.Active;
-        }, 'json');
+            $scope.running = data.active;
+        });
     }
 
     $scope.stopAfterglow = function () {
-        $.post('/runtime?format=json', { Start: false },
+        $http.get('/stop?format=json').success(
         function (data, textStatus, jqXHR) {
-            $scope.running = data.Active;
-        }, 'json');
+            $scope.running = data.active;
+        });
+    }
+
+    $scope.selectProfile = function (profileId) {
+        $http.post('/setProfile?format=json', { profileId: profileId }).success(
+        function (data) {
+            $scope.currentProfile = data;
+        })
     }
 }
 
