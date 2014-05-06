@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack;
-using ServiceStack.Text;
+using ServiceStack.ServiceInterface;
+using ServiceStack.ServiceHost;
 using System.Runtime.Serialization;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;

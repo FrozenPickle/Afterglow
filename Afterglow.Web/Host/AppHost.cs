@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using ServiceStack;
-using ServiceStack.Caching;
+using ServiceStack.WebHost.Endpoints;
+using ServiceStack.Logging;
+using ServiceStack.Logging.Support.Logging;
 using ServiceStack.Razor;
+using ServiceStack.ServiceInterface;
+using ServiceStack.ServiceInterface.Auth;
+using ServiceStack.CacheAccess;
+using ServiceStack.CacheAccess.Providers;
 
 namespace Afterglow.Web.Host
 {
