@@ -1,6 +1,9 @@
-﻿
+
 *.user
 */bin
 */obj
 /bin
 /*.suo
+
+# NuGet Packages Directory
+packages/*
