@@ -7,6 +7,7 @@ using ServiceStack.ServiceHost;
 using System.Runtime.Serialization;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;
+using System.ComponentModel.DataAnnotations;
 
 namespace Afterglow.Web
 {
@@ -528,7 +529,66 @@ namespace Afterglow.Web
 
         #endregion
 
+        #region Plugin Settings
 
+
+
+        public PluginProperty[] GetPluginProperties(object plugin)
+        {
+            List<PluginProperty> pluginProperties = new List<PluginProperty>();
+
+            Type pluginObjectType = plugin.GetType();
+
+            foreach (System.Reflection.PropertyInfo objectProperty in pluginObjectType.GetProperties())
+            {
+                PluginProperty pluginProperty = new PluginProperty();
+
+                pluginProperty.Name = objectProperty.Name;
+
+                pluginProperty.Value = objectProperty.GetValue(plugin, null);
+
+                foreach (System.Attribute attr in objectProperty.GetCustomAttributes(true))
+                {
+                    if ((attr as DisplayAttribute) != null)
+                    {
+                        DisplayAttribute displayName = (DisplayAttribute)attr;
+                        pluginProperty.DisplayName = displayName.Name;
+                        pluginProperty.Description = displayName.Description;
+                    }
+                    else if ((attr as RangeAttribute) != null)
+                    {
+                        RangeAttribute range = (RangeAttribute)attr;
+                        pluginProperty.MinValue = range.Minimum as int?;
+                        pluginProperty.MaxValue = range.Maximum as int?;
+                    }
+                    else if ((attr as RequiredAttribute) != null)
+                    {
+                        RequiredAttribute required = (RequiredAttribute)attr;
+                        pluginProperty.Required = required.AllowEmptyStrings;
+                    }
+                }
+
+                pluginProperties.Add(pluginProperty);
+            }
+
+            return pluginProperties.ToArray();
+        }
+
+
+
+        public class PluginProperty
+        {
+            public string Name { get; set; }
+            public string DataType { get; set; }
+            public bool Required { get; set; }
+            public string DisplayName { get; set; }
+            public string Description { get; set; }
+            public int? MinValue { get; set; }
+            public int? MaxValue { get; set; }
+
+            public object Value { get; set; }
+        }
+        #endregion
 
         public object Get(Runtime request)
         {

@@ -6,7 +6,6 @@ using System.Net;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Support.Logging;
-using ServiceStack.Razor;
 using ServiceStack.ServiceInterface;
 using ServiceStack.ServiceInterface.Auth;
 using ServiceStack.CacheAccess;
@@ -20,8 +19,6 @@ namespace Afterglow.Web.Host
         
         public override void Configure(Funq.Container container)
         {
-            Plugins.Add(new RazorFormat());
-
             //Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[] {
             //    new AfterglowCredentialsAuthProvider()
             //}));
