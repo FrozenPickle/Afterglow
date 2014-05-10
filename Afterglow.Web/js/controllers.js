@@ -236,3 +236,34 @@ function ProfileController($scope, $route, $routeParams, $http) {
         });
     }
 }
+
+function PluginController($scope, $route, $routeParams, $http) {
+    $scope.id = $routeParams.id;
+
+    $scope.plugin = null;
+
+    $scope.refresh = function () {
+        $http.post('/plugin?format=json', {
+            id: $routeParams.id,
+            profileId: $routeParams.profileId,
+            pluginType: $routeParams.pluginType
+        }).success(
+        function (data, textStatus, jqXHR) {
+            $scope.plugin = data;
+        });
+    }
+
+    $scope.refresh();
+
+    $scope.update = function () {
+        $http.post('/updatePlugin?format=json', {
+            id: $scope.id,
+            profileId: $scope.plugin.profileId,
+            pluginType: $scope.plugin.pluginType,
+            properties: $scope.plugin.properties
+        }).success(
+        function (data, textStatus, jqXHR) {
+            $scope.plugin = data;
+        });
+    }
+}

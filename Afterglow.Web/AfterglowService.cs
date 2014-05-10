@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Afterglow.Web
 {
@@ -245,17 +246,27 @@ namespace Afterglow.Web
         [DataMember(Name = "outputFrequency")]
         public int OutputFrequency { get; set; }
         [DataMember(Name = "lightSetupPlugins")]
-        public IEnumerable<AvailablePlugin> LightSetupPlugins { get; set; }
+        public IEnumerable<SavedPlugin> LightSetupPlugins { get; set; }
         [DataMember(Name = "capturePlugins")]
-        public IEnumerable<AvailablePlugin> CapturePlugins { get; set; }
+        public IEnumerable<SavedPlugin> CapturePlugins { get; set; }
         [DataMember(Name = "colourExtractionPlugins")]
-        public IEnumerable<AvailablePlugin> ColourExtractionPlugins { get; set; }
+        public IEnumerable<SavedPlugin> ColourExtractionPlugins { get; set; }
         [DataMember(Name = "postProcessPlugins")]
-        public IEnumerable<AvailablePlugin> PostProcessPlugins { get; set; }
+        public IEnumerable<SavedPlugin> PostProcessPlugins { get; set; }
         [DataMember(Name = "preOutputPlugins")]
-        public IEnumerable<AvailablePlugin> PreOutputPlugins { get; set; }
+        public IEnumerable<SavedPlugin> PreOutputPlugins { get; set; }
         [DataMember(Name = "outputPlugins")]
-        public IEnumerable<AvailablePlugin> OutputPlugins { get; set; }
+        public IEnumerable<SavedPlugin> OutputPlugins { get; set; }
+    }
+    [DataContract]
+    public class SavedPlugin
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
     }
     [Route("/updateProfile")]
     [DataContract]
@@ -300,6 +311,79 @@ namespace Afterglow.Web
     }
 
 
+    #endregion
+
+    #region Plugin Controller
+    [Route("/plugin")]
+    [DataContract]
+    public class PluginRequest
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "profileId")]
+        public int ProfileId { get; set; }
+        [DataMember(Name = "pluginType")]
+        public int PluginType { get; set; }
+    }
+    [DataContract]
+    public class PluginResponse
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "profileId")]
+        public int ProfileId { get; set; }
+        [DataMember(Name = "pluginType")]
+        public int PluginType { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+        [DataMember(Name = "author")]
+        public string Author { get; set; }
+        [DataMember(Name = "version")]
+        public Version Version { get; set; }
+        [DataMember(Name = "website")]
+        public string Website { get; set; }
+        [DataMember(Name = "properties")]
+        public IEnumerable<PluginProperty> Properties { get; set; }
+        [DataMember(Name = "title")]
+        public string Title { get; set; }
+    }
+    [DataContract]
+    public class PluginProperty
+    {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
+        [DataMember(Name = "required")]
+        public bool Required { get; set; }
+        [DataMember(Name = "displayName")]
+        public string DisplayName { get; set; }
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+        [DataMember(Name = "minValue")]
+        public int? MinValue { get; set; }
+        [DataMember(Name = "maxValue")]
+        public int? MaxValue { get; set; }
+        [DataMember(Name = "value")]
+        public object Value { get; set; }
+    }
+    [Route("/updatePlugin")]
+    [DataContract]
+    public class UpdatePluginRequest
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "profileId")]
+        public int ProfileId { get; set; }
+        [DataMember(Name = "pluginType")]
+        public int PluginType { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+        [DataMember(Name = "properties")]
+        public IEnumerable<PluginProperty> Properties { get; set; }
+    }
     #endregion
 
     public class AfterglowService : Service
@@ -441,38 +525,44 @@ namespace Afterglow.Web
                 response.OutputFrequency = profile.OutputFrequency;
 
                 response.LightSetupPlugins = (from p in profile.LightSetupPlugins
-                                                select new AvailablePlugin
+                                                select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
                 response.CapturePlugins = (from p in profile.CapturePlugins
-                                                select new AvailablePlugin
+                                           select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
                 response.ColourExtractionPlugins = (from p in profile.ColourExtractionPlugins
-                                                select new AvailablePlugin
+                                                    select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
                 response.PostProcessPlugins = (from p in profile.PostProcessPlugins
-                                                select new AvailablePlugin
+                                               select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
                 response.PreOutputPlugins = (from p in profile.PreOutputPlugins
-                                                select new AvailablePlugin
+                                             select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
                 response.OutputPlugins = (from p in profile.OutputPlugins
-                                                select new AvailablePlugin
+                                          select new SavedPlugin
                                                 {
+                                                    Id = p.Id,
                                                     Name = p.Name,
                                                     Description = p.ToString()
                                                 });
@@ -531,21 +621,94 @@ namespace Afterglow.Web
 
         #region Plugin Settings
 
+        public object Post(PluginRequest request)
+        {
+            PluginResponse response = new PluginResponse();
+            Profile profile = (from p in Program.Runtime.Setup.Profiles
+                               where p.Id == request.ProfileId
+                               select p).FirstOrDefault();
 
+            IAfterglowPlugin plugin = null;
 
-        public PluginProperty[] GetPluginProperties(object plugin)
+            switch (request.PluginType)
+            {
+                case 1:
+                    plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 2:
+                    plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 3:
+                    plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 4:
+                    plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 5:
+                    plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 6:
+                    plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                default:
+                    plugin = null;
+                    break;
+            }
+
+            response.Id = plugin.Id;
+            response.Name = plugin.Name;
+            response.Title = string.Format("{0} - {1}", profile.Name, plugin.Name) ;
+            response.Description = plugin.Description;
+            response.Author = plugin.Author;
+            response.Version = plugin.Version;
+            response.Website = plugin.Website;
+            response.PluginType = request.PluginType;
+            response.ProfileId = profile.Id;
+
+            response.Properties = GetPluginProperties(plugin);
+
+            return response;
+        }
+
+        private PluginProperty[] GetPluginProperties(object plugin)
         {
             List<PluginProperty> pluginProperties = new List<PluginProperty>();
+
+            if (plugin == null)
+            {
+                return pluginProperties.ToArray();
+            }
 
             Type pluginObjectType = plugin.GetType();
 
             foreach (System.Reflection.PropertyInfo objectProperty in pluginObjectType.GetProperties())
             {
                 PluginProperty pluginProperty = new PluginProperty();
+                bool exclude = false;
+                bool dataMember = false;
+
+                if (!objectProperty.CanWrite)
+                {
+                    continue;
+                }
 
                 pluginProperty.Name = objectProperty.Name;
 
                 pluginProperty.Value = objectProperty.GetValue(plugin, null);
+
+                Type propertyType = objectProperty.PropertyType;
+                if (propertyType == typeof(string))
+                {
+                    pluginProperty.Type = "text";
+                }
+                else if (propertyType == typeof(int))
+                {
+                    pluginProperty.Type = "number";
+                }
+                else if (propertyType == typeof(bool))
+                {
+                    pluginProperty.Type = "boolean";
+                }
 
                 foreach (System.Attribute attr in objectProperty.GetCustomAttributes(true))
                 {
@@ -566,27 +729,110 @@ namespace Afterglow.Web
                         RequiredAttribute required = (RequiredAttribute)attr;
                         pluginProperty.Required = required.AllowEmptyStrings;
                     }
+                    else if ((attr as DataMemberAttribute) != null)
+                    {
+                        dataMember = true;
+                    }
+                    else if ((attr as KeyAttribute) != null)
+                    {
+                        exclude = true;
+                        break;
+                    }
                 }
 
-                pluginProperties.Add(pluginProperty);
+                if (dataMember && !exclude)
+                {
+                    pluginProperties.Add(pluginProperty);
+                }
             }
 
             return pluginProperties.ToArray();
         }
 
-
-
-        public class PluginProperty
+        public object Post(UpdatePluginRequest request)
         {
-            public string Name { get; set; }
-            public string DataType { get; set; }
-            public bool Required { get; set; }
-            public string DisplayName { get; set; }
-            public string Description { get; set; }
-            public int? MinValue { get; set; }
-            public int? MaxValue { get; set; }
+            PluginResponse response = new PluginResponse();
+            Profile profile = (from p in Program.Runtime.Setup.Profiles
+                               where p.Id == request.ProfileId
+                               select p).FirstOrDefault();
 
-            public object Value { get; set; }
+            IAfterglowPlugin plugin = null;
+
+            switch (request.PluginType)
+            {
+                case 1:
+                    plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 2:
+                    plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 3:
+                    plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 4:
+                    plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 5:
+                    plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                case 6:
+                    plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    break;
+                default:
+                    plugin = null;
+                    break;
+            }
+
+            if (SetPluginProperties(plugin, request.Properties))
+            {
+                Program.Runtime.Save();
+
+                // Load the saved version
+                PluginRequest newRequest = new PluginRequest();
+                newRequest.Id = plugin.Id;
+                newRequest.PluginType = request.PluginType;
+                newRequest.ProfileId = profile.Id;
+
+                return Post(newRequest);
+            }
+            return null;
+        }
+
+        private bool SetPluginProperties(object plugin, IEnumerable<PluginProperty> pluginProperties)
+        {
+            Type pluginObjectType = plugin.GetType();
+
+            foreach (PluginProperty pluginProperty in pluginProperties)
+            {
+                PropertyInfo objectProperty = pluginObjectType.GetProperty(pluginProperty.Name);
+
+                Type propertyType = objectProperty.PropertyType;
+                if (pluginProperty.Type == "text")
+                {
+                    string value = pluginProperty.Value as string;
+                    objectProperty.SetValue(plugin, pluginProperty.Value, null);
+                }
+                else if (pluginProperty.Type == "number")
+                {
+                    int value = 0;
+                    if (pluginProperty.Value != null 
+                        && int.TryParse(pluginProperty.Value.ToString(), out value))
+                    {
+                        objectProperty.SetValue(plugin, value, null);
+                    }
+                }
+                else if (pluginProperty.Type == "boolean")
+                {
+                    bool value = false;
+                    if (pluginProperty.Value != null
+                        && bool.TryParse(pluginProperty.Value.ToString(), out value))
+                    {
+                        objectProperty.SetValue(plugin, value, null);
+                    }
+                }                
+            }
+
+            return true;
         }
         #endregion
 

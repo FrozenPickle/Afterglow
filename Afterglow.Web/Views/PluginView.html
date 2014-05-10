@@ -1,0 +1,28 @@
+﻿<h1>{{plugin.title}}</h1>
+<button type="button" class="btn btn-primary" ng-click="update()">Save</button>
+
+<form class="form-horizontal">
+    <fieldset>
+        <div class="form-group" ng-repeat="property in plugin.properties">
+            <label for="input{{property.name}}" class="col-lg-2 control-label">{{property.displayName}}</label>
+            <div ng-switch on="property.type">
+                <div class="col-lg-10" ng-switch-when="text">
+                    <input type="text" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                </div>
+                <div class="col-lg-10" ng-switch-when="number">
+                    <input type="text" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                </div>
+                <div class="col-lg-10" ng-switch-when="options">
+                    <select class="form-control" id="input{{property.name}}" ng-model="property.value"
+                            ng-options="o.name for option in property.options"></select>
+                </div>
+                <div class="col-lg-10" ng-switch-when="boolean">
+                    <input type="checkbox" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                </div>
+                <div ng-switch-default>
+                    <label>Error: Could not render {{property.displayName}}, data type:{{property.type}} is not currently supported</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form>
