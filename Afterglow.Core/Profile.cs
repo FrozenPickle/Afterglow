@@ -205,87 +205,8 @@ namespace Afterglow.Core
 
         #endregion
         
-        /// <summary>
-        /// This rebuilds Selected Plugins with objects from AfterglowSetup.Configured*Plugins
-        /// So that object references are re-used therefore will also use less RAM
-        /// </summary>
         internal void OnDeserialized()
         {
-            SerializableInterfaceList<ILightSetupPlugin> lightSetupPlugins = new SerializableInterfaceList<ILightSetupPlugin>();
-            foreach (ILightSetupPlugin lightSetupPlugin in LightSetupPlugins)
-            {
-                ILightSetupPlugin existingPlugin = this.Setup.ConfiguredLightSetupPlugins.Single(p => p.Id == lightSetupPlugin.Id);
-
-                //Add to configured list if not found
-                if (existingPlugin == null)
-                {
-                    existingPlugin = lightSetupPlugin;
-                    existingPlugin.Id = this.Setup.GetNewId<ILightSetupPlugin>();
-                    this.Setup.ConfiguredLightSetupPlugins.Add(existingPlugin);
-                }
-                lightSetupPlugins.Add(existingPlugin);
-            }
-            this.LightSetupPlugins = lightSetupPlugins;
-
-            SerializableInterfaceList<ICapturePlugin> capturePlugins = new SerializableInterfaceList<ICapturePlugin>();
-            foreach (ICapturePlugin capturePlugin in CapturePlugins)
-            {
-                ICapturePlugin existingPlugin = this.Setup.ConfiguredCapturePlugins.Single(p => p.Id == capturePlugin.Id);
-                //Add to configured list if not found
-                if (existingPlugin == null)
-                {
-                    existingPlugin = capturePlugin;
-                    existingPlugin.Id = this.Setup.GetNewId<ICapturePlugin>();
-                    this.Setup.ConfiguredCapturePlugins.Add(existingPlugin);
-                }
-                capturePlugins.Add(existingPlugin);
-            }
-            this.CapturePlugins = capturePlugins;
-
-            SerializableInterfaceList<IColourExtractionPlugin> colourExtractionPlugins = new SerializableInterfaceList<IColourExtractionPlugin>();
-            foreach (IColourExtractionPlugin colourExtractionPlugin in ColourExtractionPlugins)
-            {
-                IColourExtractionPlugin existingPlugin = this.Setup.ConfiguredColourExtractionPlugins.Single(p => p.Id == colourExtractionPlugin.Id);
-                //Add to configured list if not found
-                if (existingPlugin == null)
-                {
-                    existingPlugin = colourExtractionPlugin;
-                    existingPlugin.Id = this.Setup.GetNewId<IColourExtractionPlugin>();
-                    this.Setup.ConfiguredColourExtractionPlugins.Add(existingPlugin);
-                }
-                colourExtractionPlugins.Add(existingPlugin);
-            }
-            this.ColourExtractionPlugins = colourExtractionPlugins;
-
-            SerializableInterfaceList<IPostProcessPlugin> postProcessPlugins = new SerializableInterfaceList<IPostProcessPlugin>();
-            foreach (IPostProcessPlugin postProcessPlugin in PostProcessPlugins)
-            {
-                IPostProcessPlugin existingPlugin = this.Setup.ConfiguredPostProcessPlugins.Single(p => p.Id == postProcessPlugin.Id);
-                //Add to configured list if not found
-                if (existingPlugin == null)
-                {
-                    existingPlugin = postProcessPlugin;
-                    existingPlugin.Id = this.Setup.GetNewId<IPostProcessPlugin>();
-                    this.Setup.ConfiguredPostProcessPlugins.Add(existingPlugin);
-                }
-                postProcessPlugins.Add(existingPlugin);
-            }
-            this.PostProcessPlugins = postProcessPlugins;
-
-            SerializableInterfaceList<IOutputPlugin> outputPlugins = new SerializableInterfaceList<IOutputPlugin>();
-            foreach (IOutputPlugin outputPlugin in OutputPlugins)
-            {
-                IOutputPlugin existingPlugin = this.Setup.ConfiguredOutputPlugins.FirstOrDefault(p => p.Id == outputPlugin.Id);
-                //Add to configured list if not found
-                if (existingPlugin == null)
-                {
-                    existingPlugin = outputPlugin;
-                    existingPlugin.Id = this.Setup.GetNewId<IOutputPlugin>();
-                    this.Setup.ConfiguredOutputPlugins.Add(existingPlugin);
-                }
-                outputPlugins.Add(existingPlugin);
-            }
-            this.OutputPlugins = outputPlugins;
         }
 
         /// <summary>

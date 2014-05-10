@@ -17,147 +17,6 @@ namespace Afterglow.Core
     [DataContract]
     public class AfterglowSetup : BaseModel
     {
-
-        /// <summary>
-        /// All of the configured plugins exist here and then are referenced in each Profile
-        /// </summary>
-        /// <remarks>
-        /// Loaded first by the XML Deserialization
-        /// </remarks>
-        #region Configured Plugins
-
-        /// <summary>
-        /// A list of configured Capture Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<ICapturePlugin> ConfiguredCapturePlugins
-        {
-            get { return Get(() => ConfiguredCapturePlugins, new SerializableInterfaceList<ICapturePlugin>()); }
-            set { Set(() => ConfiguredCapturePlugins, value); }
-        }
-
-        /// <summary>
-        /// A list of configured Colour Extraction Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<IColourExtractionPlugin> ConfiguredColourExtractionPlugins
-        {
-            get { return Get(() => ConfiguredColourExtractionPlugins, new SerializableInterfaceList<IColourExtractionPlugin>()); }
-            set { Set(() => ConfiguredColourExtractionPlugins, value); }
-        }
-
-        /// <summary>
-        /// A list of configured Light Setup Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<ILightSetupPlugin> ConfiguredLightSetupPlugins
-        {
-            get { return Get(() => ConfiguredLightSetupPlugins, new SerializableInterfaceList<ILightSetupPlugin>()); }
-            set { Set(() => ConfiguredLightSetupPlugins, value); }
-        }
-
-        /// <summary>
-        /// A list of configured Post Process Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<IPostProcessPlugin> ConfiguredPostProcessPlugins
-        {
-            get { return Get(() => ConfiguredPostProcessPlugins, new SerializableInterfaceList<IPostProcessPlugin>()); }
-            set { Set(() => ConfiguredPostProcessPlugins, value); }
-        }
-
-        /// <summary>
-        /// A list of configured Pre-Output Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<IPreOutputPlugin> ConfiguredPreOutputPlugins
-        {
-            get { return Get(() => ConfiguredPreOutputPlugins, new SerializableInterfaceList<IPreOutputPlugin>()); }
-            set { Set(() => ConfiguredPreOutputPlugins, value); }
-        }
-
-        /// <summary>
-        /// A list of configured Output Plugins
-        /// </summary>
-        [DataMember]
-        public SerializableInterfaceList<IOutputPlugin> ConfiguredOutputPlugins
-        {
-            get { return Get(() => ConfiguredOutputPlugins, new SerializableInterfaceList<IOutputPlugin>()); }
-            set { Set(() => ConfiguredOutputPlugins, value); }
-        }
-
-        #endregion
-
-        //[XmlIgnore]
-        //[DataMember]
-        //public List<PluginCategory> PluginCategories
-        //{
-        //    get
-        //    {
-        //        var result = new List<PluginCategory>();
-
-        //        PluginCategory lightSetupPlugins = new PluginCategory();
-        //        lightSetupPlugins.Name = "Light Setup Plugins";
-        //        lightSetupPlugins.InstalledPlugins =
-        //            (from available in this.AvailableLightSetupPlugins
-        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
-        //            ).ToList();
-        //        result.Add(lightSetupPlugins);
-
-
-        //        PluginCategory capturePlugins = new PluginCategory();
-        //        capturePlugins.Name = "Capture Plugins";
-        //        capturePlugins.InstalledPlugins =
-        //            (from available in this.AvailableCapturePlugins
-        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
-        //            ).ToList();
-        //        result.Add(capturePlugins);
-
-
-        //        PluginCategory colourExtractionPlugins = new PluginCategory();
-        //        colourExtractionPlugins.Name = "Colour Extraction Plugins";
-        //        colourExtractionPlugins.InstalledPlugins =
-        //            (from available in this.AvailableColourExtractionPlugins
-        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
-        //            ).ToList();
-        //        result.Add(colourExtractionPlugins);
-
-
-        //        PluginCategory postProcessPlugins = new PluginCategory();
-        //        postProcessPlugins.Name = "Post Process Plugins";
-        //        postProcessPlugins.InstalledPlugins =
-        //            (from available in this.AvailablePostProcessPlugins
-        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
-        //            ).ToList();
-        //        result.Add(postProcessPlugins);
-
-
-        //        PluginCategory outputPlugins = new PluginCategory();
-        //        outputPlugins.Name = "Output Plugins";
-        //        outputPlugins.InstalledPlugins =
-        //            (from available in this.AvailableOutputPlugins
-        //             select new InstalledPlugin() { Name = available.FullName, PluginType = available }
-        //            ).ToList();
-        //        result.Add(outputPlugins);
-                
-        //        return result;
-        //    }
-        //}
-
-        //public class PluginCategory
-        //{
-        //    public string Name { get; set; }
-
-        //    public List<InstalledPlugin> InstalledPlugins { get; set; }
-        //}
-
-        //public class InstalledPlugin
-        //{
-        //    public Type PluginType { get; set; }
-        //    public string Name { get; set; }
-
-        //}
-
         /// <summary>
         /// A Generic function to aid in the creation of Profile and IPlugin identifers
         /// </summary>
@@ -175,33 +34,39 @@ namespace Afterglow.Core
             }
             else if (typeof(T) == typeof(ICapturePlugin))
             {
-                if (this.ConfiguredCapturePlugins.Any())
-                    result = this.ConfiguredCapturePlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                            from plugin in profile.CapturePlugins
+                            select plugin.Id).Max(p => p);
             }
             else if (typeof(T) == typeof(IColourExtractionPlugin))
             {
-                if (this.ConfiguredColourExtractionPlugins.Any())
-                    result = this.ConfiguredColourExtractionPlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                          from plugin in profile.ColourExtractionPlugins
+                          select plugin.Id).Max(p => p);
             }
             else if (typeof(T) == typeof(ILightSetupPlugin))
             {
-                if (this.ConfiguredLightSetupPlugins.Any())
-                    result = this.ConfiguredLightSetupPlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                          from plugin in profile.LightSetupPlugins
+                          select plugin.Id).Max(p => p);
             }
             else if (typeof(T) == typeof(IPostProcessPlugin))
             {
-                if (this.ConfiguredPostProcessPlugins.Any())
-                    result = this.ConfiguredPostProcessPlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                          from plugin in profile.PostProcessPlugins
+                          select plugin.Id).Max(p => p);
             }
             else if (typeof(T) == typeof(IPreOutputPlugin))
             {
-                if (this.ConfiguredPreOutputPlugins.Any())
-                    result = this.ConfiguredPreOutputPlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                          from plugin in profile.PreOutputPlugins
+                          select plugin.Id).Max(p => p);
             }
             else if (typeof(T) == typeof(IOutputPlugin))
             {
-                if (this.ConfiguredOutputPlugins.Any())
-                    result = this.ConfiguredOutputPlugins.Max(plugin => plugin.Id);
+                result = (from profile in this.Profiles
+                          from plugin in profile.OutputPlugins
+                          select plugin.Id).Max(p => p);
             }
             return ++result;
         }
@@ -325,22 +190,17 @@ namespace Afterglow.Core
         public SerializableInterfaceList<ILightSetupPlugin> DefaultLightSetupPlugins()
         {
             SerializableInterfaceList<ILightSetupPlugin> lightSetupPlugins = new SerializableInterfaceList<ILightSetupPlugin>();
-            if (this.ConfiguredLightSetupPlugins.Any())
+            Type type = AvailableLightSetupPlugins.FirstOrDefault();
+            if (type == null)
             {
-                lightSetupPlugins.Add(this.ConfiguredLightSetupPlugins.FirstOrDefault());
+                //TODO log error
+                throw new ArgumentNullException("No ILightSetupPlugin's have been loaded, please check the install and try again");
             }
             else
             {
-                Type type = AvailableLightSetupPlugins.FirstOrDefault();
-                if (type == null)
-                {
-                    //TODO log error
-                    throw new ArgumentNullException("No ILightSetupPlugin's have been loaded, please check the install and try again");
-                }
-                else
-                {
-                    lightSetupPlugins.Add(Activator.CreateInstance(type) as ILightSetupPlugin);
-                }
+                ILightSetupPlugin plugin = Activator.CreateInstance(type) as ILightSetupPlugin;
+                plugin.Id = this.GetNewId<ILightSetupPlugin>();
+                lightSetupPlugins.Add(plugin);
             }
 
             return lightSetupPlugins;
@@ -355,28 +215,24 @@ namespace Afterglow.Core
         public SerializableInterfaceList<ICapturePlugin> DefaultCapturePlugins()
         {
             SerializableInterfaceList<ICapturePlugin> capturePlugins = new SerializableInterfaceList<ICapturePlugin>();
-            if (this.ConfiguredCapturePlugins != null && this.ConfiguredCapturePlugins.Any())
+            Type type = AvailableCapturePlugins.Where(a => a.Name == "CopyScreenCapture").FirstOrDefault();
+            if (type == null)
             {
-                capturePlugins.Add(this.ConfiguredCapturePlugins.FirstOrDefault());
+                type = AvailableCapturePlugins.FirstOrDefault();
+            }
+
+            if (type == null)
+            {
+                //TODO log error
+                throw new ArgumentNullException("No ICapturePlugin's have been loaded, please check the install and try again");
             }
             else
             {
-                Type type = AvailableCapturePlugins.Where(a => a.Name == "CopyScreenCapture").FirstOrDefault();
-                if (type == null)
-                {
-                    type = AvailableCapturePlugins.FirstOrDefault();
-                }
-
-                if (type == null)
-                {
-                    //TODO log error
-                    throw new ArgumentNullException("No ICapturePlugin's have been loaded, please check the install and try again");
-                }
-                else
-                {
-                    capturePlugins.Add(Activator.CreateInstance(type) as ICapturePlugin);
-                }
+                ICapturePlugin plugin = Activator.CreateInstance(type) as ICapturePlugin;
+                plugin.Id = this.GetNewId<ICapturePlugin>();
+                capturePlugins.Add(plugin);
             }
+            
             return capturePlugins;
         }
 
@@ -389,22 +245,17 @@ namespace Afterglow.Core
         public SerializableInterfaceList<IColourExtractionPlugin> DefaultColourExtractionPlugins()
         {
             SerializableInterfaceList<IColourExtractionPlugin> colourExtractionPlugins = new SerializableInterfaceList<IColourExtractionPlugin>();
-            if (this.ConfiguredColourExtractionPlugins.Any())
+            Type type = AvailableColourExtractionPlugins.FirstOrDefault();
+            if (type == null)
             {
-                colourExtractionPlugins.Add(this.ConfiguredColourExtractionPlugins.FirstOrDefault());
+                //TODO log error
+                throw new ArgumentNullException("No IColourExtractionPlugin's have been loaded, please check the install and try again");
             }
             else
             {
-                Type type = AvailableColourExtractionPlugins.FirstOrDefault();
-                if (type == null)
-                {
-                    //TODO log error
-                    throw new ArgumentNullException("No IColourExtractionPlugin's have been loaded, please check the install and try again");
-                }
-                else
-                {
-                    colourExtractionPlugins.Add(Activator.CreateInstance(type) as IColourExtractionPlugin);
-                }
+                IColourExtractionPlugin plugin = Activator.CreateInstance(type) as IColourExtractionPlugin;
+                plugin.Id = this.GetNewId<IColourExtractionPlugin>();
+                colourExtractionPlugins.Add(plugin);
             }
             return colourExtractionPlugins;
         }
@@ -436,27 +287,21 @@ namespace Afterglow.Core
         public SerializableInterfaceList<IOutputPlugin> DefaultOutputPlugins()
         {
             SerializableInterfaceList<IOutputPlugin> outputPlugins = new SerializableInterfaceList<IOutputPlugin>();
-            if (this.ConfiguredOutputPlugins.Any())
+            Type type = AvailableOutputPlugins.FirstOrDefault();
+            if (type == null)
             {
-                outputPlugins.Add(this.ConfiguredOutputPlugins.FirstOrDefault());
+                //TODO log error
+                throw new ArgumentNullException("No IOutputPlugin's have been loaded, please check the install and try again");
             }
             else
             {
-                Type type = AvailableOutputPlugins.FirstOrDefault();
-                if (type == null)
-                {
-                    //TODO log error
-                    throw new ArgumentNullException("No IOutputPlugin's have been loaded, please check the install and try again");
-                }
-                else
-                {
-                    outputPlugins.Add(Activator.CreateInstance(type) as IOutputPlugin);
-                }
+                IOutputPlugin plugin = Activator.CreateInstance(type) as IOutputPlugin;
+                plugin.Id = this.GetNewId<IOutputPlugin>();
+                outputPlugins.Add(plugin);
             }
             return outputPlugins;
         }
         #endregion
-
 
         ///<summary>
         /// General settings applied to the Afterglow runtime
