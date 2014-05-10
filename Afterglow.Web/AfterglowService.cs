@@ -9,6 +9,7 @@ using Afterglow.Core;
 using Afterglow.Core.Plugins;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Afterglow.Core.Configuration;
 
 namespace Afterglow.Web
 {
@@ -368,7 +369,19 @@ namespace Afterglow.Web
         public int? MaxValue { get; set; }
         [DataMember(Name = "value")]
         public object Value { get; set; }
+        [DataMember(Name = "options")]
+        public IEnumerable<PluginOption> Options { get; set; }
     }
+
+    [DataContract]
+    public class PluginOption
+    {
+        [DataMember(Name = "id")]
+        public object Id { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+    }
+
     [Route("/updatePlugin")]
     [DataContract]
     public class UpdatePluginRequest
@@ -627,6 +640,10 @@ namespace Afterglow.Web
             Profile profile = (from p in Program.Runtime.Setup.Profiles
                                where p.Id == request.ProfileId
                                select p).FirstOrDefault();
+            if (profile == null)
+            {
+                return response;
+            }
 
             IAfterglowPlugin plugin = null;
 
@@ -653,6 +670,11 @@ namespace Afterglow.Web
                 default:
                     plugin = null;
                     break;
+            }
+
+            if (plugin == null)
+            {
+                return response;
             }
 
             response.Id = plugin.Id;
@@ -738,10 +760,55 @@ namespace Afterglow.Web
                         exclude = true;
                         break;
                     }
+                    else if ((attr as ConfigLookupAttribute) != null)
+                    {
+                        ConfigLookupAttribute lookup = (ConfigLookupAttribute)attr;
+                        pluginProperty.Type = "lookup";
+
+                        PropertyInfo optionsProperty = pluginObjectType.GetProperty(lookup.RetrieveValuesFrom);
+
+                        IEnumerable<object> options = optionsProperty.GetValue(plugin, null) as IEnumerable<object>;
+                        List<PluginOption> parsedOptions = new List<PluginOption>();
+                        if (options.Any())
+                        {
+                            foreach (object option in options)
+                            {
+                                LookupItem lookupItem = option as LookupItem;
+                                PluginOption pluginOption = new PluginOption();
+
+                                if (lookupItem != null)
+                                {
+                                    pluginOption.Id = lookupItem.Id;
+                                    pluginOption.Name = lookupItem.Name;
+                                }
+                                else
+                                {
+                                    pluginOption.Id = option;
+                                    pluginOption.Name = option.ToString();
+                                }
+                                parsedOptions.Add(pluginOption);
+                            }
+                        }
+                        pluginProperty.Options = parsedOptions;
+                    }
                 }
 
                 if (dataMember && !exclude)
                 {
+                    if (pluginProperty.Type == "lookup" && pluginProperty.Value != null)
+                    {
+                        var currentValue = (from o in pluginProperty.Options
+                                              where o.Id.ToString() == pluginProperty.Value.ToString()
+                                              select o).FirstOrDefault();
+                        if (currentValue == null)
+                        {
+                            List<PluginOption> options = pluginProperty.Options as List<PluginOption>;
+                            options.Add(new PluginOption() { 
+                                Id = pluginProperty.Value, 
+                                Name = "Invalid! " + pluginProperty.Value.ToString() });
+                            pluginProperty.Options = options;
+                        }
+                    }
                     pluginProperties.Add(pluginProperty);
                 }
             }
@@ -806,10 +873,8 @@ namespace Afterglow.Web
             {
                 PropertyInfo objectProperty = pluginObjectType.GetProperty(pluginProperty.Name);
 
-                Type propertyType = objectProperty.PropertyType;
                 if (pluginProperty.Type == "text")
                 {
-                    string value = pluginProperty.Value as string;
                     objectProperty.SetValue(plugin, pluginProperty.Value, null);
                 }
                 else if (pluginProperty.Type == "number")
@@ -829,7 +894,23 @@ namespace Afterglow.Web
                     {
                         objectProperty.SetValue(plugin, value, null);
                     }
-                }                
+                }
+                else if (pluginProperty.Type == "text" || pluginProperty.Type == "lookup")
+                {
+                    int value = 0;
+                    Type propertyType = objectProperty.PropertyType;
+                    if (propertyType == typeof(string))
+                    {
+                        objectProperty.SetValue(plugin, pluginProperty.Value, null);
+                    }
+                    else if (propertyType == typeof(int) 
+                        && pluginProperty.Value != null
+                        && int.TryParse(pluginProperty.Value.ToString(), out value))
+                    {
+                        objectProperty.SetValue(plugin, value, null);
+                    }
+
+                }
             }
 
             return true;

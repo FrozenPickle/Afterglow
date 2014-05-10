@@ -60,6 +60,7 @@
     <Compile Include="Configuration\ConfigAttribute.cs" />
     <Compile Include="Configuration\ConfigCustomAttribute.cs" />
     <Compile Include="Configuration\ConfigLookupAttribute.cs" />
+    <Compile Include="Configuration\LookupItem.cs" />
     <Compile Include="Extensions\ExpressionExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FastBitmap.cs" />

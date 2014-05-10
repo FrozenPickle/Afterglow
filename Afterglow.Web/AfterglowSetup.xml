@@ -4,10 +4,10 @@
   <ConfiguredCapturePlugins>
     <CopyScreenCapture>
       <Id>1</Id>
-      <Screen>Screen 1</Screen>
+      <Screen>0</Screen>
       <DisplayName>Copy Screen Setup 1</DisplayName>
       <CaptureCorrection>3</CaptureCorrection>
-      <CaptureCorrectionIntervalType>Seconds</CaptureCorrectionIntervalType>
+      <CaptureCorrectionIntervalType>0</CaptureCorrectionIntervalType>
       <CaptureCorrectionInterval>1</CaptureCorrectionInterval>
       <PixelSkip>20</PixelSkip>
       <BlackSegmentHeight>1</BlackSegmentHeight>
@@ -15,9 +15,9 @@
     </CopyScreenCapture>
     <CopyScreenCapture>
       <Id>2</Id>
-      <Screen>Screen 1</Screen>
+      <Screen>0</Screen>
       <CaptureCorrection>3</CaptureCorrection>
-      <CaptureCorrectionIntervalType>Seconds</CaptureCorrectionIntervalType>
+      <CaptureCorrectionIntervalType>0</CaptureCorrectionIntervalType>
       <CaptureCorrectionInterval>1</CaptureCorrectionInterval>
       <PixelSkip>20</PixelSkip>
       <BlackSegmentHeight>1</BlackSegmentHeight>
@@ -999,9 +999,9 @@
       <CapturePlugins>
         <CopyScreenCapture>
           <Id>1</Id>
-          <Screen>Screen 1</Screen>
+          <Screen>0</Screen>
           <CaptureCorrection>3</CaptureCorrection>
-          <CaptureCorrectionIntervalType>Seconds</CaptureCorrectionIntervalType>
+          <CaptureCorrectionIntervalType>0</CaptureCorrectionIntervalType>
           <CaptureCorrectionInterval>1</CaptureCorrectionInterval>
           <PixelSkip>20</PixelSkip>
           <BlackSegmentHeight>1</BlackSegmentHeight>

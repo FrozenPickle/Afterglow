@@ -12,9 +12,9 @@
                 <div class="col-lg-10" ng-switch-when="number">
                     <input type="text" class="form-control" id="input{{property.name}}" ng-model="property.value">
                 </div>
-                <div class="col-lg-10" ng-switch-when="options">
+                <div class="col-lg-10" ng-switch-when="lookup">
                     <select class="form-control" id="input{{property.name}}" ng-model="property.value"
-                            ng-options="o.name for option in property.options"></select>
+                            ng-options="option.id as option.name for option in property.options"></select>
                 </div>
                 <div class="col-lg-10" ng-switch-when="boolean">
                     <input type="checkbox" class="form-control" id="input{{property.name}}" ng-model="property.value">

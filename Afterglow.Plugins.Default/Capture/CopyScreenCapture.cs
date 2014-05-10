@@ -24,12 +24,7 @@ namespace Afterglow.Plugins.Capture
         private Rectangle _dispBounds;
         private Timer _captureCorrectionTimer;
         private bool _captureCorrectionTimeElapsed = false;
-
-        public CopyScreenCapture()
-        {
-            SetupCaptureCorrectionTypes();
-        }
-
+        
         #region Read Only Properties
 
         [DataMember]
@@ -68,20 +63,25 @@ namespace Afterglow.Plugins.Capture
         [Required]
         [Display(Name = "Screen", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "Screens")]
-        public string Screen
+        public int Screen
         {
-            get { return Get(() => Screen, () => Screens[0]); }
+            get { return Get(() => Screen, () => 0); }
             set { Set(() => Screen, value); }
         }
 
-        [DataMember]
-        public string[] Screens
+        [XmlIgnore]
+        public LookupItem[] Screens
         {
             get
             {
-                var screens = new List<String>();
+                List<LookupItem> screens = new List<LookupItem>();
                 for (int i = 0; i < System.Windows.Forms.Screen.AllScreens.Length; i++)
-                    screens.Add("Screen " + (i + 1).ToString());
+                {
+                    LookupItem lookupItem = new LookupItem();
+                    lookupItem.Id =  i;
+                    lookupItem.Name = string.Format("Screen {0}", (i + 1));
+                    screens.Add(lookupItem);
+                }
                 return screens.ToArray();
             }
         }
@@ -91,25 +91,34 @@ namespace Afterglow.Plugins.Capture
 
         #region Capture Correction Types
         [XmlIgnore]
-        public ObservableCollection<string> CaptureCorrectionTypes;
+        private LookupItem[] _captureCorrectionTypes;
+        [XmlIgnore]
+        public LookupItem[] CaptureCorrectionTypes
+        {
+            get
+            {
+                if (_captureCorrectionTypes == null)
+                {
+                    List<LookupItem> captureCorrectionTypes = new List<LookupItem>();
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_TYPE_NONE, Name = "None" });
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_TYPE_TOP_BOTTOM, Name = "Remove Top and Bottom Black" });
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_TYPE_LEFT_RIGHT, Name = "Remove Left and Right Black" });
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_TYPE_ALL, Name = "Remove All Black" });
+                    _captureCorrectionTypes = captureCorrectionTypes.ToArray();
+                }
+                return _captureCorrectionTypes;
+            }
+        }
         public const int CAPTURE_CORRECTION_TYPE_NONE = 0;
         public const int CAPTURE_CORRECTION_TYPE_TOP_BOTTOM = 1;
         public const int CAPTURE_CORRECTION_TYPE_LEFT_RIGHT = 2;
         public const int CAPTURE_CORRECTION_TYPE_ALL = 3;
 
-        public void SetupCaptureCorrectionTypes()
-        {
-            CaptureCorrectionTypes = new ObservableCollection<string>();
-            CaptureCorrectionTypes.Add("None");
-            CaptureCorrectionTypes.Add("Remove Top and Bottom Black");
-            CaptureCorrectionTypes.Add("Remove Left and Right Black");
-            CaptureCorrectionTypes.Add("Remove All Black");
-        }
         #endregion
 
         [DataMember]
         [Required]
-        [Display(Name = "Screen", Order = 100)]
+        [Display(Name = "Capture Correction", Order = 100)]
         [ConfigLookup(RetrieveValuesFrom = "CaptureCorrectionTypes")]
         public int CaptureCorrection
         {
@@ -117,18 +126,36 @@ namespace Afterglow.Plugins.Capture
             set { Set(() => CaptureCorrection, value); }
         }
 
-        public enum CaptureCorrectionIntervalTypeEnum
+        #region Capture Correction Interval Types
+        [XmlIgnore]
+        private LookupItem[] _captureCorrectionIntervalTypes;
+        [XmlIgnore]
+        public LookupItem[] CaptureCorrectionIntervalTypes
         {
-            Seconds,
-            Minutes
+            get
+            {
+                if (_captureCorrectionIntervalTypes == null)
+                {
+                    List<LookupItem> captureCorrectionTypes = new List<LookupItem>();
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_INTERVAL_TYPE_SECONDS, Name = "Seconds" });
+                    captureCorrectionTypes.Add(new LookupItem() { Id = CAPTURE_CORRECTION_INTERVAL_TYPE_MINUTES, Name = "Minutes" });
+                    _captureCorrectionIntervalTypes = captureCorrectionTypes.ToArray();
+                }
+                return _captureCorrectionIntervalTypes;
+            }
         }
+        public const int CAPTURE_CORRECTION_INTERVAL_TYPE_SECONDS = 0;
+        public const int CAPTURE_CORRECTION_INTERVAL_TYPE_MINUTES = 1;
+
+        #endregion
 
         [DataMember]
         [Required]
         [Display(Name = "Capture Correction Interval Type", Order = 200)]
-        public CaptureCorrectionIntervalTypeEnum CaptureCorrectionIntervalType
+        [ConfigLookup(RetrieveValuesFrom = "CaptureCorrectionIntervalTypes")]
+        public int CaptureCorrectionIntervalType
         {
-            get { return Get(() => CaptureCorrectionIntervalType, () => CaptureCorrectionIntervalTypeEnum.Minutes); }
+            get { return Get(() => CaptureCorrectionIntervalType, () => CAPTURE_CORRECTION_INTERVAL_TYPE_MINUTES); }
             set { Set(() => CaptureCorrectionIntervalType, value); }
         }
 
@@ -172,7 +199,7 @@ namespace Afterglow.Plugins.Capture
 
         public override void Start()
         {
-            System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.AllScreens[this.Screens.ToList().IndexOf(Screen)];
+            System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.AllScreens[this.Screen];
 
             _dispBounds = new Rectangle(screen.Bounds.X, screen.Bounds.Y, screen.Bounds.Width, screen.Bounds.Height);
 
@@ -183,8 +210,8 @@ namespace Afterglow.Plugins.Capture
 
             if (this.CaptureCorrection != CAPTURE_CORRECTION_TYPE_NONE)
             {
-                int minutes = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Minutes ? this.CaptureCorrectionInterval : 0);
-                int seconds = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Seconds ? this.CaptureCorrectionInterval : 0);
+                int minutes = (this.CaptureCorrectionIntervalType == CAPTURE_CORRECTION_INTERVAL_TYPE_MINUTES ? this.CaptureCorrectionInterval : 0);
+                int seconds = (this.CaptureCorrectionIntervalType == CAPTURE_CORRECTION_INTERVAL_TYPE_SECONDS ? this.CaptureCorrectionInterval : 0);
                 _captureCorrectionTimer = new Timer(new TimeSpan(0, minutes, seconds).TotalMilliseconds);
                 _captureCorrectionTimer.Elapsed += delegate(object sender, ElapsedEventArgs e)
                 {
