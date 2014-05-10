@@ -17,11 +17,6 @@ namespace Afterglow.Core.Plugins
         /// This is unique accross a plugin type
         /// </summary>
         int Id { get; set; }
-
-        /// <summary>
-        /// The name of the plugin given by a user.
-        /// </summary>
-        string DisplayName { get; set; }
         
         /// <summary>
         /// The name of the plugin.

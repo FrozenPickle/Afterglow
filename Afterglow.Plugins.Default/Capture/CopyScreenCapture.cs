@@ -135,7 +135,7 @@ namespace Afterglow.Plugins.Capture
         [DataMember]
         [Display(Name = "Capture Correction Interval", Order = 300)]
         [Range(0, 10000)]
-        public int? CaptureCorrectionInterval
+        public int CaptureCorrectionInterval
         {
             get { return Get(() => CaptureCorrectionInterval, () => 1); }
             set { Set(() => CaptureCorrectionInterval, value); }
@@ -154,7 +154,7 @@ namespace Afterglow.Plugins.Capture
         [DataMember]
         [Display(Name = "Black Segment - Height %", Order = 500)]
         [Range(0, 100)]
-        public int? BlackSegmentHeight
+        public int BlackSegmentHeight
         {
             get { return Get(() => BlackSegmentHeight, () => 1); }
             set { Set(() => BlackSegmentHeight, value); }
@@ -163,7 +163,7 @@ namespace Afterglow.Plugins.Capture
         [DataMember]
         [Display(Name = "Darkness Threshold", Order = 600)]
         [Range(0, 50)]
-        public int? DarknessThreshold
+        public int DarknessThreshold
         {
             get { return Get(() => DarknessThreshold, () => 5); }
             set { Set(() => DarknessThreshold, value); }
@@ -183,8 +183,8 @@ namespace Afterglow.Plugins.Capture
 
             if (this.CaptureCorrection != CAPTURE_CORRECTION_TYPE_NONE)
             {
-                int minutes = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Minutes ? this.CaptureCorrectionInterval.Value : 0);
-                int seconds = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Seconds ? this.CaptureCorrectionInterval.Value : 0);
+                int minutes = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Minutes ? this.CaptureCorrectionInterval : 0);
+                int seconds = (this.CaptureCorrectionIntervalType == CaptureCorrectionIntervalTypeEnum.Seconds ? this.CaptureCorrectionInterval : 0);
                 _captureCorrectionTimer = new Timer(new TimeSpan(0, minutes, seconds).TotalMilliseconds);
                 _captureCorrectionTimer.Elapsed += delegate(object sender, ElapsedEventArgs e)
                 {
@@ -234,10 +234,8 @@ namespace Afterglow.Plugins.Capture
         {
             if (this.CaptureCorrection != CAPTURE_CORRECTION_TYPE_NONE &&
                 this._captureCorrectionTimeElapsed &&
-                this.BlackSegmentHeight != null &&
-                this.BlackSegmentHeight.Value != 100 &&
-                this.DarknessThreshold != null &&
-                this.DarknessThreshold.Value <= 50)
+                this.BlackSegmentHeight != 100 &&
+                this.DarknessThreshold <= 50)
             {
                 this._captureCorrectionTimeElapsed = false;
 
@@ -285,7 +283,7 @@ namespace Afterglow.Plugins.Capture
 
         private int GetTopBandingHeight()
         {
-            double segmentHeightPercent = this.BlackSegmentHeight.Value / 100.00;
+            double segmentHeightPercent = this.BlackSegmentHeight / 100.00;
 
             int topHeight = _captureHeight / 2;
             int segmentHeightPixels = Convert.ToInt32(_captureHeight * segmentHeightPercent);
@@ -332,7 +330,7 @@ namespace Afterglow.Plugins.Capture
 
         private int GetLeftBandingWidth()
         {
-            double segmentWidthPercent = this.BlackSegmentHeight.Value / 100.00;
+            double segmentWidthPercent = this.BlackSegmentHeight / 100.00;
 
             int leftHalfWidth = _captureWidth / 2;
             int segmentWidthPixels = Convert.ToInt32(_captureWidth * segmentWidthPercent);

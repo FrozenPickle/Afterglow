@@ -17,25 +17,7 @@ namespace Afterglow.Core.Plugins
     {
         public override string ToString()
         {
-            if (this.Name == this.DisplayName)
-            {
-                return this.Name;
-            }
-            else
-            {
-                return string.Format("{0} ({1})", this.DisplayName, this.Name);
-            }
-        }
-
-        /// <summary>
-        /// A Display Name for this Plugin 
-        /// </summary>
-        [DataMember]
-        [Display(Name = "Display Name", Order = -100)]
-        public string DisplayName
-        {
-            get { return Get(() => DisplayName, () => this.Name); }
-            set { Set(() => DisplayName, value); }
+            return this.Name;
         }
 
         /// <summary>
