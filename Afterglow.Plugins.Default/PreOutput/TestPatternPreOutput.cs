@@ -17,7 +17,7 @@ namespace Afterglow.Plugins.PreOutput
         [DataMember]
         public override string Name
         {
-            get { return "Colour Correction Plugin"; }
+            get { return "Test Pattern"; }
         }
         /// <summary>
         /// A description of this plugin
@@ -25,7 +25,7 @@ namespace Afterglow.Plugins.PreOutput
         [DataMember]
         public override string Description
         {
-            get { return "Adjust the colours to your room"; }
+            get { return "Brown and Black test pattern"; }
         }
         /// <summary>
         /// The author of this plugin
@@ -33,7 +33,7 @@ namespace Afterglow.Plugins.PreOutput
         [DataMember]
         public override string Author
         {
-            get { return "Jono C."; }
+            get { return "Justin S"; }
         }
 
         [DataMember]

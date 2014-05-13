@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="AfterglowRuntime.cs" />
     <Compile Include="AfterglowSetup.cs" />
+    <Compile Include="AvailablePluginDetails.cs" />
     <Compile Include="BaseModel.cs" />
     <Compile Include="Configuration\ConfigAttribute.cs" />
     <Compile Include="Configuration\ConfigCustomAttribute.cs" />

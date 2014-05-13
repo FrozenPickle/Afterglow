@@ -7,6 +7,7 @@ using Afterglow.Core.Plugins;
 using Afterglow.Core.Load;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace Afterglow.Core
 {
@@ -27,46 +28,53 @@ namespace Afterglow.Core
             int result = 0;
 
             //Each query gets the last/largest Id used
-            if (typeof(T) == typeof(Profile))
+            try
             {
-                if (this.Profiles.Any())
-                    result = this.Profiles.Max(profile => profile.Id);
+                if (typeof(T) == typeof(Profile))
+                {
+                    if (this.Profiles.Any())
+                        result = this.Profiles.Max(profile => profile.Id);
+                }
+                else if (typeof(T) == typeof(ICapturePlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.CapturePlugins
+                              select plugin.Id).Max(p => p);
+                }
+                else if (typeof(T) == typeof(IColourExtractionPlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.ColourExtractionPlugins
+                              select plugin.Id).Max(p => p);
+                }
+                else if (typeof(T) == typeof(ILightSetupPlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.LightSetupPlugins
+                              select plugin.Id).Max(p => p);
+                }
+                else if (typeof(T) == typeof(IPostProcessPlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.PostProcessPlugins
+                              select plugin.Id).Max(p => p);
+                }
+                else if (typeof(T) == typeof(IPreOutputPlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.PreOutputPlugins
+                              select plugin.Id).Max(p => p);
+                }
+                else if (typeof(T) == typeof(IOutputPlugin))
+                {
+                    result = (from profile in this.Profiles
+                              from plugin in profile.OutputPlugins
+                              select plugin.Id).Max(p => p);
+                }
             }
-            else if (typeof(T) == typeof(ICapturePlugin))
+            catch (Exception)
             {
-                result = (from profile in this.Profiles
-                            from plugin in profile.CapturePlugins
-                            select plugin.Id).Max(p => p);
-            }
-            else if (typeof(T) == typeof(IColourExtractionPlugin))
-            {
-                result = (from profile in this.Profiles
-                          from plugin in profile.ColourExtractionPlugins
-                          select plugin.Id).Max(p => p);
-            }
-            else if (typeof(T) == typeof(ILightSetupPlugin))
-            {
-                result = (from profile in this.Profiles
-                          from plugin in profile.LightSetupPlugins
-                          select plugin.Id).Max(p => p);
-            }
-            else if (typeof(T) == typeof(IPostProcessPlugin))
-            {
-                result = (from profile in this.Profiles
-                          from plugin in profile.PostProcessPlugins
-                          select plugin.Id).Max(p => p);
-            }
-            else if (typeof(T) == typeof(IPreOutputPlugin))
-            {
-                result = (from profile in this.Profiles
-                          from plugin in profile.PreOutputPlugins
-                          select plugin.Id).Max(p => p);
-            }
-            else if (typeof(T) == typeof(IOutputPlugin))
-            {
-                result = (from profile in this.Profiles
-                          from plugin in profile.OutputPlugins
-                          select plugin.Id).Max(p => p);
+                result = 0;
             }
             return ++result;
         }
@@ -176,6 +184,41 @@ namespace Afterglow.Core
             get { return PluginLoader.Loader.GetPlugins<IOutputPlugin>(); }
         }
         #endregion
+
+
+        /// <summary>
+        /// Gets the details of list of a afterglow plugin types
+        /// </summary>
+        /// <param name="pluginTypes">An array of IAfterglowPlugin types</param>
+        public static IEnumerable<AvailablePluginDetails> GetAvailblePlugins(Type[] pluginTypes)
+        {
+            List<AvailablePluginDetails> result = new List<AvailablePluginDetails>();
+
+            foreach (Type pluginType in pluginTypes)
+            {
+                AvailablePluginDetails availablePlugin = new AvailablePluginDetails();
+
+                availablePlugin.Type = pluginType.Name;
+
+                IAfterglowPlugin newObject = Activator.CreateInstance(pluginType) as IAfterglowPlugin;
+                if (newObject != null)
+                {
+                    PropertyInfo nameProperty = pluginType.GetProperty("Name");
+                    if (nameProperty != null)
+                    {
+                        availablePlugin.Name = nameProperty.GetValue(newObject, null) as string;
+                    }
+                    PropertyInfo descriptionProperty = pluginType.GetProperty("Description");
+                    if (descriptionProperty != null)
+                    {
+                        availablePlugin.Description = descriptionProperty.GetValue(newObject, null) as string;
+                    }
+                }
+                result.Add(availablePlugin);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Gets the default plugins used when a new plugin is created

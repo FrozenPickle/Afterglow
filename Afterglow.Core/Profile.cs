@@ -240,6 +240,11 @@ namespace Afterglow.Core
                 throw new ValidationException("Post Process Plugins cannot be null");
             #endregion
 
+            #region PreOutputPlugin Validation
+            if (this.PreOutputPlugins == null)
+                throw new ValidationException("Pre Output Plugins cannot be null");
+            #endregion
+
             #region OutputPlugin Validation
             if (OutputPlugins == null)
                 throw new ValidationException("Output Plugins cannot be null");
