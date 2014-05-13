@@ -209,10 +209,11 @@ function PluginsController($scope, $route, $routeParams, $http) {
     $scope.refresh();
 }
 
-function ProfileController($scope, $route, $routeParams, $http) {
+function ProfileController($scope, $location, $routeParams, $http) {
     $scope.id = $routeParams.id;
 
     $scope.profile = null;
+    $scope.modal = null;
 
     $scope.refresh = function () {
         $http.post('/profile?format=json',{id : $scope.id}).success(
@@ -235,18 +236,48 @@ function ProfileController($scope, $route, $routeParams, $http) {
             $scope.profile = data;
         });
     }
+
+    $scope.add = function (pluginType, modalTitle) {
+        $scope.modal = {
+            title: modalTitle,
+            plugins: [],
+            pluginType: pluginType
+        };
+        $http.post('/pluginTypes?format=json', {
+            pluginType: pluginType
+        }).success(
+        function (data, textStatus, jqXHR) {
+            $scope.modal.plugins = data.plugins;
+            $('#pluginTypeSelectionModal').modal('show');
+        });
+    }
+
+    $scope.confirmAdd = function (pluginType, plugin) {
+        $('#pluginTypeSelectionModal').modal('hide');
+        $location.path('/plugin/'+ $scope.id + '/' + pluginType + '/new/' + plugin);
+    }
 }
 
 function PluginController($scope, $route, $routeParams, $http) {
     $scope.id = $routeParams.id;
 
+    $scope.new = false;
+    $scope.allowDelete = false;
+
     $scope.plugin = null;
 
     $scope.refresh = function () {
+        $scope.new = ($scope.id == undefined);
+
+        if ($routeParams.pluginType > 3) {
+            $scope.allowDelete = true;
+        }
+
         $http.post('/plugin?format=json', {
             id: $routeParams.id,
             profileId: $routeParams.profileId,
-            pluginType: $routeParams.pluginType
+            pluginType: $routeParams.pluginType,
+            type: $routeParams.type
         }).success(
         function (data, textStatus, jqXHR) {
             $scope.plugin = data;
@@ -260,10 +291,25 @@ function PluginController($scope, $route, $routeParams, $http) {
             id: $scope.id,
             profileId: $scope.plugin.profileId,
             pluginType: $scope.plugin.pluginType,
-            properties: $scope.plugin.properties
+            properties: $scope.plugin.properties,
+            type: $routeParams.type
         }).success(
         function (data, textStatus, jqXHR) {
             $scope.plugin = data;
+            $scope.id = data.id;
+            $scope.new = false;
+        });
+    }
+
+    $scope.delete = function () {
+        $http.post('/deletePlugin?format=json', {
+            id: $scope.id,
+            profileId: $scope.plugin.profileId,
+            pluginType: $scope.plugin.pluginType,
+            type: $routeParams.type
+        }).success(
+        function (data, textStatus, jqXHR) {
+            window.history.back();
         });
     }
 }

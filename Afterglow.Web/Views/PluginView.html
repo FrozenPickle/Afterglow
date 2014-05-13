@@ -1,5 +1,11 @@
-﻿<h1>{{plugin.title}}</h1>
-<button type="button" class="btn btn-primary" ng-click="update()">Save</button>
+﻿
+<span ng-if="new" class="label label-danger">New</span><h1>{{plugin.title}}</h1>
+
+<ul class="nav nav-pills">
+    <li><button type="button" class="btn btn-primary" ng-click="update()">Save</button></li>
+    <li ng-if="allowDelete"><button type="button" class="btn btn-primary" ng-click="delete()">Delete</button></li>
+    
+</ul>
 
 <form class="form-horizontal">
     <fieldset>

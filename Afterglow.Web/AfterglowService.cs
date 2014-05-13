@@ -166,30 +166,22 @@ namespace Afterglow.Web
     public class AvailablePluginsResult
     {
         [DataMember(Name = "availableLightSetupPlugins")]
-        public IEnumerable<AvailablePlugin> AvailableLightSetupPlugins { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailableLightSetupPlugins { get; set; }
 
         [DataMember(Name = "availableCapturePlugins")]
-        public IEnumerable<AvailablePlugin> AvailableCapturePlugins { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailableCapturePlugins { get; set; }
 
         [DataMember(Name = "availableColourExtractionPlugins")]
-        public IEnumerable<AvailablePlugin> AvailableColourExtractionPlugins { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailableColourExtractionPlugins { get; set; }
 
         [DataMember(Name = "availablePostProcessPlugins")]
-        public IEnumerable<AvailablePlugin> AvailablePostProcessPlugins { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailablePostProcessPlugins { get; set; }
 
         [DataMember(Name = "availablePreOutputPlugins")]
-        public IEnumerable<AvailablePlugin> AvailablePreOutputPlugins { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailablePreOutputPlugins { get; set; }
 
         [DataMember(Name = "availableOutputPlugins")]
-        public IEnumerable<AvailablePlugin> AvailableOutputPlugins { get; set; }
-    }
-    [DataContract]
-    public class AvailablePlugin
-    {
-        [DataMember(Name="name")]
-        public string Name { get; set; }
-        [DataMember(Name="description")]
-        public string Description { get; set; }
+        public IEnumerable<AvailablePluginDetails> AvailableOutputPlugins { get; set; }
     }
     #endregion
 
@@ -284,6 +276,21 @@ namespace Afterglow.Web
         [DataMember(Name = "outputFrequency")]
         public int OutputFrequency { get; set; }
     }
+
+    [Route("/pluginTypes")]
+    [DataContract]
+    public class PluginTypesRequest
+    {
+        [DataMember(Name = "pluginType")]
+        public int PluginType { get; set; }
+    }
+
+    [DataContract]
+    public class PluginTypesResponse
+    {
+        [DataMember(Name = "plugins")]
+        public IEnumerable<AvailablePluginDetails> Plugins { get; set; }
+    }
     #endregion
 
     #region Settings Controller
@@ -325,6 +332,8 @@ namespace Afterglow.Web
         public int ProfileId { get; set; }
         [DataMember(Name = "pluginType")]
         public int PluginType { get; set; }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
     }
     [DataContract]
     public class PluginResponse
@@ -392,10 +401,24 @@ namespace Afterglow.Web
         public int ProfileId { get; set; }
         [DataMember(Name = "pluginType")]
         public int PluginType { get; set; }
+        [DataMember(Name = "type")]
+        public string Type { get; set; }
         [DataMember(Name = "name")]
         public string Name { get; set; }
         [DataMember(Name = "properties")]
         public IEnumerable<PluginProperty> Properties { get; set; }
+    }
+
+    [Route("/deletePlugin")]
+    [DataContract]
+    public class DeletePluginRequest
+    {
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
+        [DataMember(Name = "profileId")]
+        public int ProfileId { get; set; }
+        [DataMember(Name = "pluginType")]
+        public int PluginType { get; set; }
     }
     #endregion
 
@@ -451,46 +474,17 @@ namespace Afterglow.Web
         #endregion
 
         #region Plugins Controller
+
         public object Get(AvailablePluginsRequest request)
         {
             AvailablePluginsResult result = new AvailablePluginsResult();
-            
-            result.AvailableLightSetupPlugins = (from p in Program.Runtime.Setup.AvailableLightSetupPlugins
-                                     select new AvailablePlugin
-                                     {
-                                         Name = p.Name,
-                                         Description = p.ToString()
-                                     });
-            result.AvailableCapturePlugins = (from p in Program.Runtime.Setup.AvailableCapturePlugins
-                                              select new AvailablePlugin
-                                              {
-                                                  Name = p.Name,
-                                                  Description = p.ToString()
-                                              });
-            result.AvailableColourExtractionPlugins = (from p in Program.Runtime.Setup.AvailableColourExtractionPlugins
-                                              select new AvailablePlugin
-                                              {
-                                                  Name = p.Name,
-                                                  Description = p.ToString()
-                                              });
-            result.AvailablePostProcessPlugins = (from p in Program.Runtime.Setup.AvailablePostProcessPlugins
-                                              select new AvailablePlugin
-                                              {
-                                                  Name = p.Name,
-                                                  Description = p.ToString()
-                                              });
-            result.AvailablePreOutputPlugins = (from p in Program.Runtime.Setup.AvailablePreOutputPlugins
-                                              select new AvailablePlugin
-                                              {
-                                                  Name = p.Name,
-                                                  Description = p.ToString()
-                                              });
-            result.AvailableOutputPlugins = (from p in Program.Runtime.Setup.AvailableOutputPlugins
-                                              select new AvailablePlugin
-                                              {
-                                                  Name = p.Name,
-                                                  Description = p.ToString()
-                                              });
+
+            result.AvailableLightSetupPlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableLightSetupPlugins);
+            result.AvailableCapturePlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableCapturePlugins);
+            result.AvailableColourExtractionPlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableColourExtractionPlugins);
+            result.AvailablePostProcessPlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailablePostProcessPlugins);
+            result.AvailablePreOutputPlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailablePreOutputPlugins);
+            result.AvailableOutputPlugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableOutputPlugins);
 
             return result;
         }
@@ -605,6 +599,37 @@ namespace Afterglow.Web
             return response;
         }
 
+        public object Post(PluginTypesRequest request)
+        {
+            PluginTypesResponse result = new PluginTypesResponse();
+
+            switch (request.PluginType)
+            {
+                case 1:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableLightSetupPlugins);
+                    break;
+                case 2:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableCapturePlugins);
+                    break;
+                case 3:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableColourExtractionPlugins);
+                    break;
+                case 4:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailablePostProcessPlugins);
+                    break;
+                case 5:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailablePreOutputPlugins);
+                    break;
+                case 6:
+                    result.Plugins = AfterglowSetup.GetAvailblePlugins(Program.Runtime.Setup.AvailableOutputPlugins);
+                    break;
+                default:
+                    result.Plugins = (new List<AvailablePluginDetails>()).AsEnumerable();
+                    break;
+            }
+
+            return result;
+        }
         #endregion
 
         #region Settings Controller
@@ -645,34 +670,83 @@ namespace Afterglow.Web
                 return response;
             }
 
+            bool newPlugin = request.Id == 0;
+            Type type = null;
+
             IAfterglowPlugin plugin = null;
 
             switch (request.PluginType)
             {
                 case 1:
-                    plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableLightSetupPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 2:
-                    plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableCapturePlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 3:
-                    plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableColourExtractionPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 4:
-                    plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailablePostProcessPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 5:
-                    plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailablePreOutputPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 6:
-                    plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableOutputPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                    }
+                    else
+                    {
+                        plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 default:
                     plugin = null;
                     break;
             }
 
-            if (plugin == null)
+            if (newPlugin && type != null)
+            {
+                plugin = Activator.CreateInstance(type) as IAfterglowPlugin;
+            }
+            else if (plugin == null)
             {
                 return response;
             }
@@ -823,35 +897,120 @@ namespace Afterglow.Web
                                where p.Id == request.ProfileId
                                select p).FirstOrDefault();
 
+            bool newPlugin = request.Id == 0;
+            int newId = 0;
             IAfterglowPlugin plugin = null;
+            Type type = null;
 
             switch (request.PluginType)
             {
                 case 1:
-                    plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableLightSetupPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<ILightSetupPlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.LightSetupPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 2:
-                    plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableCapturePlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<ICapturePlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.CapturePlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 3:
-                    plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableColourExtractionPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<IColourExtractionPlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.ColourExtractionPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 4:
-                    plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailablePostProcessPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<IPostProcessPlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 5:
-                    plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailablePreOutputPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<IPreOutputPlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 case 6:
-                    plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    if (newPlugin)
+                    {
+                        type = Program.Runtime.Setup.AvailableOutputPlugins.Where(a => a.Name == request.Type).FirstOrDefault();
+                        newId = Program.Runtime.Setup.GetNewId<IOutputPlugin>();
+                    }
+                    else
+                    {
+                        plugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault();
+                    }
                     break;
                 default:
                     plugin = null;
                     break;
             }
 
+            if (newPlugin && type != null)
+            {
+                plugin = Activator.CreateInstance(type) as IAfterglowPlugin;
+            }
+
             if (SetPluginProperties(plugin, request.Properties))
             {
+                if (newPlugin)
+                {
+                    plugin.Id = newId;
+                    switch (request.PluginType)
+                    {
+                        case 1:
+                            profile.LightSetupPlugins[0] = plugin as ILightSetupPlugin;
+                            break;
+                        case 2:
+                            profile.CapturePlugins[0] = plugin as ICapturePlugin;
+                            break;
+                        case 3:
+                            profile.ColourExtractionPlugins[0] = plugin as IColourExtractionPlugin;
+                            break;
+                        case 4:
+                            profile.PostProcessPlugins.Add(plugin as IPostProcessPlugin);
+                            break;
+                        case 5:
+                            profile.PreOutputPlugins.Add(plugin as IPreOutputPlugin);
+                            break;
+                        case 6:
+                            profile.OutputPlugins.Add(plugin as IOutputPlugin);
+                            break;
+                        default:
+                            plugin = null;
+                            break;
+                    }
+                }
+
                 Program.Runtime.Save();
 
                 // Load the saved version
@@ -915,6 +1074,57 @@ namespace Afterglow.Web
 
             return true;
         }
+
+        public object Post(DeletePluginRequest request)
+        {
+            PluginResponse response = new PluginResponse();
+            Profile profile = (from p in Program.Runtime.Setup.Profiles
+                               where p.Id == request.ProfileId
+                               select p).FirstOrDefault();
+
+            if (request.Id == 0)
+            {
+                return true;
+            }
+
+            bool updated = false;
+
+            switch (request.PluginType)
+            {
+                case 4:
+                    IPostProcessPlugin postProcessPlugin = profile.PostProcessPlugins.Where(l => l.Id == request.Id).FirstOrDefault() as IPostProcessPlugin;
+                    if (postProcessPlugin != null)
+                    {
+                        profile.PostProcessPlugins.Remove(postProcessPlugin);
+                        updated = true;
+                    }
+                    break;
+                case 5:
+                    IPreOutputPlugin preOutputPlugin = profile.PreOutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault() as IPreOutputPlugin;
+                    if (preOutputPlugin != null)
+                    {
+                        profile.PreOutputPlugins.Remove(preOutputPlugin);
+                        updated = true;
+                    }
+                    break;
+                case 6:
+                    IOutputPlugin outputPlugin = profile.OutputPlugins.Where(l => l.Id == request.Id).FirstOrDefault() as IOutputPlugin;
+                    if (outputPlugin != null)
+                    {
+                        profile.OutputPlugins.Remove(outputPlugin);
+                        updated = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (updated)
+            {
+                Program.Runtime.Save();
+            }
+            return true;
+        }
+
         #endregion
 
         public object Get(Runtime request)

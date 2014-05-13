@@ -36,6 +36,11 @@ afterglowApp.config(function ($routeProvider) {
             templateUrl: 'Views/PluginView.html',
             controller: 'PluginController'
         })
+    .when('/plugin/:profileId/:pluginType/new/:type',
+        {
+            templateUrl: 'Views/PluginView.html',
+            controller: 'PluginController'
+        })
     .when(
         '/profile/:id',
         {

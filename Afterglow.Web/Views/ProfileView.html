@@ -33,7 +33,11 @@
     </form>
 
     <div class="panel panel-success">
-        <div class="panel-heading">Light Setup Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">Light Setup Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(1 ,'Light Setup Plugin')">Replace</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.lightSetupPlugins">
@@ -50,7 +54,12 @@
     </div>
 
     <div class="panel panel-info">
-        <div class="panel-heading">Capture Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Capture Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(2 ,'Capture Plugin')">Replace</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.capturePlugins">
@@ -67,7 +76,12 @@
     </div>
 
     <div class="panel panel-success">
-        <div class="panel-heading">Colour Extraction Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Colour Extraction Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(3 ,'Colur Extraction Plugin')">Replace</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.colourExtractionPlugins">
@@ -84,7 +98,12 @@
     </div>
 
     <div class="panel panel-info">
-        <div class="panel-heading">Post Process Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Post Process Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(4 ,'Post Process Plugin')">Add</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.postProcessPlugins">
@@ -101,7 +120,12 @@
     </div>
 
     <div class="panel panel-success">
-        <div class="panel-heading">Pre Output Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Pre Output Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(5 ,'Pre Output Plugin')">Add</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.preOutputPlugins">
@@ -117,7 +141,12 @@
         </div>
     </div>
     <div class="panel panel-info">
-        <div class="panel-heading">Output Plugins</div>
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Output Plugins
+                <button type="button" class="btn btn-primary btn-xs pull-right" ng-click="add(6 ,'Output Plugin')">Add</button>
+            </h3>
+        </div>
 
         <div class="list-group">
             <div class="list-group-item" ng-repeat="plugin in profile.outputPlugins">
@@ -129,6 +158,32 @@
                         {{plugin.description}}
                     </div>
                 </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pluginTypeSelectionModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">{{modal.title}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    <div class="list-group-item" ng-repeat="plugin in modal.plugins" ng-click="confirmAdd(modal.pluginType, plugin.type)">
+                        <div class="list-group-item-heading">
+                            {{plugin.name}}
+                        </div>
+                        <div class="list-group-item-text">
+                            {{plugin.description}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
