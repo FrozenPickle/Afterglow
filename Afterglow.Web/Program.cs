@@ -22,14 +22,35 @@ namespace Afterglow.Web
                 
         static void Main(string[] args)
         {
-            _runtime = new AfterglowRuntime();
-            
-            //LogManager.LogFactory = new ConsoleLogFactory();
+
 
             using (var appHost = new AppHost())
             {
+                //Copy settings to user profile, this will stop overriding settings when getting new versions
+                string environmentPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Afterglow");
+                if (!System.IO.Directory.Exists(environmentPath))
+                {
+                    System.IO.Directory.CreateDirectory(environmentPath);
+                }
+                string filePath = System.IO.Path.Combine(environmentPath, "AfterglowSetup.xml");
+                string existingPath = System.IO.Path.Combine(Environment.CurrentDirectory, "AfterglowSetup.xml");
+                if (!System.IO.File.Exists(filePath) && System.IO.File.Exists(existingPath))
+                {
+                    System.IO.File.Copy(existingPath, filePath);
+                }
+
+                if (!System.IO.File.Exists(filePath))
+                {
+                    Console.WriteLine("Settings not found");
+                    Console.WriteLine("Press <enter> to exit.");
+                    Console.ReadLine();
+                    appHost.Stop();
+                }
+
+                Console.WriteLine("Loading Afterglow settings...");
+                _runtime = new AfterglowRuntime(filePath);
+            
                 Console.WriteLine("Starting Afterglow runtime...");
-                //_runtime.Start();
 
                 Console.WriteLine("Afterglow runtime started.");
 
