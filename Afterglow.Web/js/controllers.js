@@ -62,7 +62,7 @@ function HomeController($scope, $route, $routeParams, $location) {
     $scope.timer = null;
     $scope.previewRunning = false;
 
-    $scope.$watch('running', function (newValue, oldValue) {
+    $scope.$watch('previewRunning', function (newValue, oldValue) {
         if (newValue) {
             $('#previewOnLabel').addClass('active');
             $('#previewOffLabel').removeClass('active');
@@ -281,10 +281,86 @@ function PluginController($scope, $route, $routeParams, $http) {
         }).success(
         function (data, textStatus, jqXHR) {
             $scope.plugin = data;
+            watchLightProperties();
         });
     }
 
     $scope.refresh();
+
+    function watchLightProperties() {
+
+        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.type == 'lights');
+        });
+        if (lightsProperty.length == 0) {
+            return;
+        }
+
+        for (var propertyIndex = 0; propertyIndex < $scope.plugin.properties.length; propertyIndex++) {
+            var property = $scope.plugin.properties[propertyIndex];
+            if (property.name == 'NumberOfLightsWide' || property.name == 'NumberOfLightsHigh') {
+                $scope.$watch('plugin.properties[' + propertyIndex + '].value', function (newValue, oldValue) {
+                    if (newValue != null && oldValue != null && newValue != oldValue) {
+                        rebuildLights();
+                    }
+                });
+            }
+        }
+    }
+    function rebuildLights() {
+        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.type == 'lights');
+        });
+        var widthProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.name == 'NumberOfLightsWide');
+        });
+        var heightProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.name == 'NumberOfLightsHigh');
+        });
+
+        if (lightsProperty[0] == null || widthProperty[0] == null || heightProperty[0] == null){
+            return;
+        }
+
+        //todo validate values
+
+        lightsProperty[0].value.firstRowIndex = 0;
+        lightsProperty[0].value.firstColumnIndex = 0;
+        lightsProperty[0].value.lightRows = [];
+        
+        var colourClasses = ["btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger" ];
+        var colourPosition = 0;
+
+        for (var row = 0; row <= heightProperty[0].value - 1; row++)
+        {
+            var lightRow = {};
+            lightRow.rowIndex = row;
+            lightRow.lightColumns = [];
+
+            for (var column = 0; column <= widthProperty[0].value - 1; column++)
+            {
+                var lightColumn = {};
+                lightColumn.columnIndex = column;
+                lightColumn.id = null;
+                if (column == 0 || column == widthProperty[0].value - 1
+                    || row == 0 || row == heightProperty[0].value - 1)
+                    {
+                    lightColumn.colourClass = colourClasses[colourPosition++];
+                    
+                    lightColumn.enabled = true;
+                    
+                    if (colourPosition >= colourClasses.length)
+                    {
+                        colourPosition = 0;
+                    }
+                } else {
+                    lightColumn.colourClass = "disabled";
+                }
+                lightRow.lightColumns.push(lightColumn);
+            }
+            lightsProperty[0].value.lightRows.push(lightRow);
+        }
+    }
 
     $scope.update = function () {
         $http.post('/updatePlugin?format=json', {
@@ -312,4 +388,127 @@ function PluginController($scope, $route, $routeParams, $http) {
             window.history.back();
         });
     }
+
+    //Light Setup Specific funtions
+    $scope.first = function(columnIndex, rowIndex, clockwise){
+
+        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.type == 'lights');
+        });
+        
+        lightsProperty[0].value.firstColumnIndex = columnIndex;
+        lightsProperty[0].value.firstRowIndex = rowIndex;
+        lightsProperty[0].value.clockwise = clockwise;
+
+        setupLights(lightsProperty[0].value, false);
+    }
+    $scope.disable = function (columnIndex, rowIndex) {
+        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.type == 'lights');
+        });
+
+        lightsProperty[0].value.lightRows[rowIndex].lightColumns[columnIndex].enabled = false;
+        setupLights(lightsProperty[0].value, true);
+    }
+    $scope.enable = function (columnIndex, rowIndex) {
+        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+            return (property.type == 'lights');
+        });
+
+        lightsProperty[0].value.lightRows[rowIndex].lightColumns[columnIndex].enabled = true;
+        setupLights(lightsProperty[0].value, false);
+    }
+
+    function setupLights(lightSetup, disable) {
+
+        var completed = false;
+        var numberOfRows = 0;
+        var numberOfColumns = 0;
+        var currentRowIndex = lightSetup.firstRowIndex;
+        var currentColumnIndex = lightSetup.firstColumnIndex;
+        var currentIndex = 1;
+
+        //ensure the lights array is populated
+        if (lightSetup == null || lightSetup.lightRows.length == 0) {
+            completed = true;
+        } else if (lightSetup.lightRows[0] == null || lightSetup.lightRows[0].length == 0) {
+            completed = true;
+        } else {
+            numberOfRows = lightSetup.lightRows.length - 1;
+            numberOfColumns = lightSetup.lightRows[0].lightColumns.length - 1;
+        }
+
+        while (!completed) {
+            //Each iteration of the while sets one light index
+
+            //setting first light
+            if (currentRowIndex == lightSetup.firstRowIndex && currentColumnIndex == lightSetup.firstColumnIndex &&
+                currentIndex != 1) {
+                completed = true;
+            }
+            else if (currentIndex == 1) {
+                if (disable && !lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled) {
+                    //do nothing
+                } else {
+                    if (disable){
+                        lightSetup.firstRowIndex = currentRowIndex;
+                        lightSetup.firstColumnIndex = currentColumnIndex;
+                    }
+                    lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentIndex++;
+                    lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled = true;
+                }
+            } else if (lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled) {
+                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentIndex++;
+            } else {
+                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = null;
+            }
+
+
+            if (completed) {
+                break;
+            } else if (lightSetup.clockwise) {
+                //Clockwise
+                if (currentRowIndex == 0 && currentColumnIndex == 0) {
+                    currentColumnIndex++; // move right along top
+                } else if (currentRowIndex == 0 && currentColumnIndex < numberOfColumns) {
+                    currentColumnIndex++; // move right along top
+                } else if (currentRowIndex == 0 && currentColumnIndex == numberOfColumns) {
+                    currentRowIndex++; //move down along right
+                } else if (currentRowIndex < numberOfRows && currentColumnIndex == numberOfColumns) {
+                    currentRowIndex++; //move down along right
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex == numberOfColumns) {
+                    currentColumnIndex--; //move left along bottom
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex > 0) {
+                    currentColumnIndex--; //move left along bottom
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex == 0) {
+                    currentRowIndex--; //move up along left
+                } else if (currentRowIndex < numberOfRows && currentColumnIndex == 0) {
+                    currentRowIndex--; //move up along left
+                }
+
+            } else if (!lightSetup.clockwise) {
+
+                //Anit-Clockwise
+                if (currentRowIndex == 0 && currentColumnIndex == 0) {
+                    currentRowIndex++; //move Down along left
+                } else if (currentRowIndex < numberOfRows && currentColumnIndex == 0) {
+                    currentRowIndex++; //move Down along Left
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex == 0) {
+                    currentColumnIndex++; //move Right along bottom
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex < numberOfColumns) {
+                    currentColumnIndex++; //move right along bottom
+                } else if (currentRowIndex == numberOfRows && currentColumnIndex == numberOfColumns) {
+                    currentRowIndex--; //move up along right
+                } else if (currentRowIndex > 0 && currentColumnIndex == numberOfColumns) {
+                    currentRowIndex--; //move up along right
+                } else if (currentRowIndex == 0 && currentColumnIndex == numberOfColumns) {
+                    currentColumnIndex--; //move left along top
+                } else if (currentRowIndex == 0 && currentColumnIndex < numberOfColumns) {
+                    currentColumnIndex--; //move left along top
+                }
+            }
+        }
+        return lightSetup;
+    }
+    
 }

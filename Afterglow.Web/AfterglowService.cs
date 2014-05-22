@@ -36,32 +36,6 @@ namespace Afterglow.Web
     {
         public Afterglow.Core.AfterglowSetup Setup { get; set; }
     }
-
-    [Route("/updateProfile")]
-    public class UpdateProfile
-    {
-        public int profileId { get; set; }
-        public int pluginId { get; set; }
-        public string pluginType { get; set; }
-        public string actionType { get; set; }
-        
-        public string name { get; set; }
-        public string description { get; set; }
-        public int captureFrequency { get; set; }
-        public int outputFrequency { get; set; }
-
-        public const string ActionType_AddProfile = "addProfile";
-        public const string ActionType_RemoveProfile = "removeProfile";
-        public const string ActionType_Update = "update";
-        public const string ActionType_Add = "add";
-        public const string ActionType_Remove = "remove";
-
-        public const string PluginType_LightSetup = "lightSetup";
-        public const string PluginType_Capture = "capture";
-        public const string PluginType_ColourExtraction = "colourExtraction";
-        public const string PluginType_PostProcess = "postProcess";
-        public const string PluginType_Output = "output";
-    }
     
     [Route("/preview")]
     public class Preview
@@ -419,6 +393,46 @@ namespace Afterglow.Web
         public int ProfileId { get; set; }
         [DataMember(Name = "pluginType")]
         public int PluginType { get; set; }
+    }
+
+    [DataContract]
+    public class LightSetup
+    {
+        [DataMember(Name = "clockwise")]
+        public bool Clockwise { get; set; }
+
+        [DataMember(Name = "firstRowIndex")]
+        public int FirstRowIndex { get; set; }
+
+        [DataMember(Name = "firstColumnIndex")]
+        public int FirstColumnIndex { get; set; }
+
+        [DataMember(Name = "lightRows")]
+        public List<LightRow> LightRows { get; set; }
+    }
+    [DataContract]
+    public class LightRow
+    {
+        [DataMember(Name = "rowIndex")]
+        public int RowIndex { get; set; }
+
+        [DataMember(Name="lightColumns")]
+        public List<LightColumn> LightColumns { get; set; }
+    }
+    [DataContract]
+    public class LightColumn
+    {
+        [DataMember(Name = "id")]
+        public string Id { get; set; }
+
+        [DataMember(Name = "columnIndex")]
+        public int ColumnIndex { get; set; }
+
+        [DataMember(Name = "colourClass")]
+        public string ColourClass { get; set; }
+
+        [DataMember(Name = "enabled")]
+        public bool Enabled { get; set; }
     }
     #endregion
 
@@ -805,6 +819,66 @@ namespace Afterglow.Web
                 {
                     pluginProperty.Type = "boolean";
                 }
+                else if (propertyType == typeof(List<Core.Light>))
+                {
+                    pluginProperty.Type = "lights";
+                    
+                    string[] colourClasses = new string[] { "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger" };
+                    int colourPosition = 0;
+
+                    List<Core.Light> lights = pluginProperty.Value as List<Core.Light>;
+                    if (lights != null && lights.Any())
+                    {
+                        LightSetup lightSetup = new LightSetup();
+
+                        //convert back to 2d array for setup
+                        lightSetup.LightRows = new List<LightRow>();
+
+                        int numberOfRows = lights.Max(l => l.Top);
+                        int numberOfColumns = lights.Max(l => l.Left);
+
+                        for (int row = 0; row <= numberOfRows; row++)
+                        {
+                            LightRow lightRow = new LightRow();
+                            lightRow.RowIndex = row;
+                            lightRow.LightColumns = new List<LightColumn>();
+                            for (int column = 0; column <= numberOfColumns; column++)
+                            {
+                                LightColumn lightColumn = new LightColumn();
+                                lightColumn.ColumnIndex = column;
+                                lightColumn.Id = (from l in lights
+                                                  where l.Top == row
+                                                      && l.Left == column
+                                                  select l.Id.ToString()).FirstOrDefault();
+                                if (column == 0 || column == numberOfColumns
+                                    || row == 0 || row == numberOfRows)
+                                {
+                                    lightColumn.ColourClass = colourClasses[colourPosition++];
+                                    
+                                    lightColumn.Enabled = !string.IsNullOrEmpty(lightColumn.Id);
+
+                                    if (lightColumn.Id == "1")
+                                    {
+                                        lightSetup.FirstColumnIndex = column;
+                                        lightSetup.FirstRowIndex = row;
+                                    }
+                                }
+                                else
+                                {
+                                    lightColumn.ColourClass = "disabled";
+                                    lightColumn.Enabled = false;
+                                }
+                                if (colourPosition >= colourClasses.Length)
+                                {
+                                    colourPosition = 0;
+                                }
+                                lightRow.LightColumns.Add(lightColumn);
+                            }
+                            lightSetup.LightRows.Add(lightRow);
+                        }
+                        pluginProperty.Value = lightSetup;
+                    }
+                }
 
                 foreach (System.Attribute attr in objectProperty.GetCustomAttributes(true))
                 {
@@ -1069,6 +1143,26 @@ namespace Afterglow.Web
                         objectProperty.SetValue(plugin, value, null);
                     }
 
+                }
+                else if (pluginProperty.Type == "lights")
+                {
+                    LightSetup lightSetup = pluginProperty.Value as LightSetup;
+                    List<Core.Light> lights = new List<Core.Light>();
+
+                    if (lightSetup != null)
+                    {
+                        lights = (from lightRow in lightSetup.LightRows
+                                       from lightColumn in lightRow.LightColumns
+                                       where !string.IsNullOrEmpty(lightColumn.Id)
+                                       select new Core.Light()
+                                       {
+                                           Id = Convert.ToInt32(lightColumn.Id),
+                                           Index = Convert.ToInt32(lightColumn.Id),
+                                           Left = lightColumn.ColumnIndex,
+                                           Top = lightRow.RowIndex
+                                       }).ToList();
+                    }
+                    objectProperty.SetValue(plugin, lights, null);
                 }
             }
 
