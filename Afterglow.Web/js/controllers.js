@@ -118,8 +118,8 @@ function HomeController($scope, $route, $routeParams, $location) {
     }
 
     function generatePreviewGrid(setup) {
-        var cellHeight = 20;
-        var cellWidth = 20;
+        var cellHeight = 30;
+        var cellWidth = 30;
 
         var numberHigh = setup.NumberOfLightsHigh;
         var numberWide = setup.NumberOfLightsWide;
@@ -129,12 +129,12 @@ function HomeController($scope, $route, $routeParams, $location) {
         var height = cellHeight * numberHigh;
         var width = cellWidth * numberWide;
 
-        $("#previewScreen").attr('style', 'position:relative;width:' + width + 'px; height:' + height + 'px;');
+        $("#previewScreen").attr('style', 'position:relative;width:' + width + 'px; height:' + height + 'px');
 
         var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
         var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
 
-        $("#previewScreen").append('<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth + 'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;" ></div>');
+        $("#previewScreen").append('<div style="display:inline-block;border: 1px solid transparent;border-radius: 4px;position: absolute;background-color:#6495ed;height:' + (centreDivHeight-3) + 'px; width:' + (centreDivWidth-3) + 'px; top:' + (cellHeight+1) + 'px; left:' + (cellWidth+1) + 'px; float:left;" ></div>');
 
         for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
             for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
@@ -142,7 +142,7 @@ function HomeController($scope, $route, $routeParams, $location) {
                 if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
                     var top = cellHeight * topPosition;
                     var left = cellWidth * leftPosition;
-                    $("#previewScreen").append('<div id="previewLight_' + topPosition + '_' + leftPosition + '" style="display:inline-block;position: absolute;background-color:#b0c4de;height:' + cellHeight + 'px; width:' + cellWidth + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
+                    $("#previewScreen").append('<div id="previewLight_' + topPosition + '_' + leftPosition + '" style="display:inline-block;border: 1px solid transparent;border-radius: 4px;position: absolute;background-color:#b0c4de;height:' + (cellHeight-1) + 'px; width:' + (cellWidth-1) + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
                 }
             }
         }
