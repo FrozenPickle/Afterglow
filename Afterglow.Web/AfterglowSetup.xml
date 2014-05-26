@@ -443,6 +443,7 @@
           <BaudRate>115200</BaudRate>
           <MagicWord>Glo</MagicWord>
         </ArduinoOutput>
+        <DebugOutput></DebugOutput>
       </OutputPlugins>
     </Profile>
   </Profiles>
