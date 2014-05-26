@@ -13,20 +13,24 @@
             <label for="input{{property.name}}" class="col-lg-2 control-label">{{property.displayName}}</label>
             <div ng-switch="property.type">
                 <div class="col-lg-10" ng-switch-when="text">
-                    <input type="text" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                    <input type="text" class="form-control" id="input{{property.name}}"
+                           ng-model="property.value">
                 </div>
                 <div class="col-lg-10" ng-switch-when="number">
-                    <input type="number" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                    <input type="number" class="form-control" id="input{{property.name}}" 
+                           ng-model="property.value"
+                           min="{{property.minValue}}"
+                           max="{{property.maxValue}}">
                 </div>
                 <div class="col-lg-10" ng-switch-when="lookup">
                     <select class="form-control" id="input{{property.name}}" ng-model="property.value"
                             ng-options="option.id as option.name for option in property.options"></select>
                 </div>
                 <div class="col-lg-10" ng-switch-when="boolean">
-                    <input type="checkbox" class="form-control" id="input{{property.name}}" ng-model="property.value">
+                    <input type="checkbox" class="form-control" id="input{{property.name}}" 
+                           ng-model="property.value">
                 </div>
                 <div class="col-lg-10 ag-light-container" ng-switch-when="lights" id="input{{property.name}}">
-                    <!--<div style="display:inline-block;position: absolute;background-color:#6495ed;height:' + centreDivHeight + 'px; width:' + centreDivWidth + 'px; top:' + cellHeight + 'px; left:' + cellWidth + 'px; float:left;"></div>');-->
                     <div ng-repeat="lightRow in property.value.lightRows" class="ag-light-row">
                         <div ng-repeat="lightColumn in lightRow.lightColumns" id="{{lightColumn.id}}" class="btn-group ag-light-column">
                             <button type="button" class="btn {{lightColumn.colourClass}} ag-light dropdown-toggle" data-toggle="dropdown">{{lightColumn.id}}</button>
@@ -49,6 +53,7 @@
                 <div ng-switch-default>
                     <label>Error: Could not render {{property.displayName}}, data type:{{property.type}} is not currently supported</label>
                 </div>
+                <span ng-if="property.discription != '' && property.description != null" class="help-block">{{property.description}}</span>
             </div>
         </div>
     </fieldset>
