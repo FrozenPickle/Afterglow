@@ -12,6 +12,8 @@ using Afterglow.Core;
 using System.IO;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.Management;
+using System.Xml.Serialization;
 
 namespace Afterglow.Plugins.Output
 {
@@ -19,7 +21,7 @@ namespace Afterglow.Plugins.Output
     /// Arduino Output
     /// </summary>
     [DataContract]
-    public class ArduinoOutput: BasePlugin, IOutputPlugin
+    public class ArduinoOutput: BasePlugin, IOutputPlugin, IDisposable
     {
         private SerialPort _port;
         private byte[] _serialData;
@@ -73,20 +75,80 @@ namespace Afterglow.Plugins.Output
         [ConfigLookup(RetrieveValuesFrom = "Ports")]
         public string Port
         {
-            get { return Get(() => Port, () => Ports[0]); }
+            get { return Get(() => Port, () => GetDefaultPort()); }
             set { Set(() => Port, value); }
+        }
+
+        /// <summary>
+        /// Gets the first port found
+        /// </summary>
+        /// <returns>Port Name</returns>
+        public string GetDefaultPort()
+        {
+            LookupItemString[] ports = this.Ports;
+
+            if (ports.Any())
+            {
+                string id = (from p in ports
+                             where p.Name.Contains("Arduino")
+                             select p.Id).FirstOrDefault();
+                if (string.IsNullOrEmpty(id))
+                {
+                    return ports.FirstOrDefault().Id;
+                }
+                else
+                {
+                    return id;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Gets the available Serial/USB ports that
         /// If none are found it is possible the driver is not installed
         /// </summary>
-        [DataMember]
-        public string[] Ports
+        [XmlIgnore]
+        public LookupItemString[] Ports
         {
             get
             {
-                return SerialPort.GetPortNames();
+                string[] portNames = SerialPort.GetPortNames();
+
+                try
+                {
+                    if (portNames.Any())
+                    {
+                        using (var searcher = new ManagementObjectSearcher("SELECT * FROM WIN32_SerialPort"))
+                        {
+                            var ports = searcher.Get().Cast<ManagementBaseObject>().ToList();
+                            return (from n in portNames
+                                    join p in ports on n equals p["DeviceID"].ToString()
+                                    select new LookupItemString()
+                                    {
+                                        Id = n,
+                                        Name = n + " - " + p["Caption"]
+                                    }).ToArray();
+                        }
+                    }
+                    else
+                    {
+                        return new LookupItemString[0];
+                    }
+                }
+                catch (Exception)
+                {
+                    return (from p in portNames
+                            select new LookupItemString()
+                            {
+                                Id = p,
+                                Name = p
+                            }).ToArray();
+                }
+
             }
         }
 
@@ -198,7 +260,10 @@ namespace Afterglow.Plugins.Output
                 // Issue data to Arduino
                 try
                 {
-                    if (_port != null) _port.Write(_serialData, 0, _serialData.Length);
+                    if (_port != null)
+                    {
+                        _port.Write(_serialData, 0, _serialData.Length);
+                    }
                 }
                 catch (Exception)
                 {
@@ -223,6 +288,11 @@ namespace Afterglow.Plugins.Output
                 _port.Dispose();
                 _port = null;
             }
+        }
+
+        public void Dispose()
+        {
+            this.Stop();
         }
     }
 }
