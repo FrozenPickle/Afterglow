@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="Capture\CopyScreenCapture.cs" />
     <Compile Include="ColourExtraction\AverageColourExtraction.cs" />
-    <Compile Include="LightSetup\BasicLightSetupPlugin\BasicLightSetup.cs" />
+    <Compile Include="LightSetup\BasicLightSetup.cs" />
     <Compile Include="Output\ArduinoOutput.cs" />
     <Compile Include="Output\DebugOutput.cs" />
     <Compile Include="PostProcess\ColourCorrectionPostProcess.cs" />

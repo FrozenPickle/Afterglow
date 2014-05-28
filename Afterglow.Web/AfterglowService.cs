@@ -1160,13 +1160,16 @@ namespace Afterglow.Web
                         lights = (from lightRow in lightSetup.LightRows
                                        from lightColumn in lightRow.LightColumns
                                        where !string.IsNullOrEmpty(lightColumn.Id)
-                                       select new Core.Light()
+                                  orderby Convert.ToInt32(lightColumn.Id)
+                                  select new Core.Light()
                                        {
                                            Id = Convert.ToInt32(lightColumn.Id),
-                                           Index = Convert.ToInt32(lightColumn.Id),
+                                           Index = Convert.ToInt32(lightColumn.Id) - 1,
                                            Left = lightColumn.ColumnIndex,
                                            Top = lightRow.RowIndex
-                                       }).ToList();
+                                       }
+                                       
+                                       ).ToList();
                     }
                     objectProperty.SetValue(plugin, lights, null);
                 }
