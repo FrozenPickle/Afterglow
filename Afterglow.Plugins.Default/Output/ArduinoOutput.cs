@@ -216,6 +216,7 @@ namespace Afterglow.Plugins.Output
 
             try
             {
+                Stop();
                 Start();
             }
             catch (Exception ex)
