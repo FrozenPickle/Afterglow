@@ -267,7 +267,7 @@ namespace Afterglow.Core
         {
             Stop();
 
-            if (this.Setup.Profiles.Any())
+            if (this.CurrentProfile == null && this.Setup.Profiles.Any())
                 CurrentProfile = this.Setup.Profiles.First();
 
             if (CurrentProfile == null)
