@@ -16,10 +16,12 @@ using System.ComponentModel.DataAnnotations;
 using Capture;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.DirectX.Plugin
 {
     [DataContract]
+    [Export(typeof(ICapturePlugin))]
     public class Direct3DCapture : BasePlugin, ICapturePlugin
     {
         [DataMember]

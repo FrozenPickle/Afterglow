@@ -8,10 +8,12 @@ using Afterglow.Core.Configuration;
 using System.Drawing;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.PostProcess
 {
     [DataContract]
+    [Export(typeof(IPostProcessPlugin))]
     public class ColourCorrectionPostProcess : BasePlugin, IPostProcessPlugin
     {
         #region Read Only Properties

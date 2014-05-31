@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Afterglow.Core.Plugins;
-using Afterglow.Core.Load;
+using Afterglow.Core.IO;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Reflection;
@@ -136,7 +136,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailableLightSetupPlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<ILightSetupPlugin>(); }
+            get { return PluginLoader.Loader.LightSetupPluginTypes; }
         }
         /// <summary>
         /// Available Capture Plugin Types
@@ -145,7 +145,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailableCapturePlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<ICapturePlugin>(); }
+            get { return PluginLoader.Loader.CapturePluginTypes; }
         }
         /// <summary>
         /// Available Colour Extraction Plugin Types
@@ -154,7 +154,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailableColourExtractionPlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<IColourExtractionPlugin>(); }
+            get { return PluginLoader.Loader.ColourExtractionPluginTypes; }
         }
         /// <summary>
         /// Available Post Process Plugin Types
@@ -163,7 +163,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailablePostProcessPlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<IPostProcessPlugin>(); }
+            get { return PluginLoader.Loader.PostProcessPluginTypes; }
         }
         /// <summary>
         /// Available Pre Output Plugin Types
@@ -172,7 +172,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailablePreOutputPlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<IPreOutputPlugin>(); }
+            get { return PluginLoader.Loader.PreOutputPluginTypes; }
         }
         /// <summary>
         /// Available Available Output Plugin Types
@@ -181,7 +181,7 @@ namespace Afterglow.Core
         [XmlIgnore]
         public Type[] AvailableOutputPlugins
         {
-            get { return PluginLoader.Loader.GetPlugins<IOutputPlugin>(); }
+            get { return PluginLoader.Loader.OutputPluginTypes; }
         }
         #endregion
 

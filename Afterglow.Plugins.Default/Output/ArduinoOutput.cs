@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Management;
 using System.Xml.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.Output
 {
@@ -21,6 +22,7 @@ namespace Afterglow.Plugins.Output
     /// Arduino Output
     /// </summary>
     [DataContract]
+    [Export(typeof(IOutputPlugin))]
     public class ArduinoOutput: BasePlugin, IOutputPlugin, IDisposable
     {
         private SerialPort _port;

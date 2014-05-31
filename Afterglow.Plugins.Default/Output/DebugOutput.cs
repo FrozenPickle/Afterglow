@@ -6,10 +6,12 @@ using Afterglow.Core.Plugins;
 using System.Diagnostics;
 using Afterglow.Core;
 using System.Runtime.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.Output
 {
     [DataContract]
+    [Export(typeof(IOutputPlugin))]
     public class DebugOutput : BasePlugin, IOutputPlugin
     {
         #region Read Only Properties

@@ -8,12 +8,12 @@ using System.Collections.ObjectModel;
 using Afterglow.Core.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 {
-    //This Class requires a custom UI
     [DataContract]
-    [ConfigCustom(CustomControlName = "Afterglow.Plugins.LightSetup.BasicLightSetupPlugin.BasicLightSetupUserControl")]
+    [Export(typeof(ILightSetupPlugin))]
     public class BasicLightSetup : BasePlugin, ILightSetupPlugin
     {
         #region Read Only Properties

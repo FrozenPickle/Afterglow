@@ -11,10 +11,12 @@ using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.Capture
 {
     [DataContract]
+    [Export(typeof(ICapturePlugin))]
     public class CopyScreenCapture : BasePlugin, ICapturePlugin
     {
 

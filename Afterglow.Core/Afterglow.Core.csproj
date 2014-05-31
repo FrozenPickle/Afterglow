@@ -43,6 +43,7 @@
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -66,16 +67,17 @@
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="FastBitmap.cs" />
     <Compile Include="FpsCalculator.cs" />
+    <Compile Include="IO\GenericListDeSerializer.cs" />
+    <Compile Include="IO\GenericListSerializer.cs" />
+    <Compile Include="IO\SerializationHelper.cs" />
     <Compile Include="LightData.cs" />
-    <Compile Include="Load\ILoader.cs" />
-    <Compile Include="Load\PluginLoader.cs" />
+    <Compile Include="IO\PluginLoader.cs" />
     <Compile Include="Log\ILogger.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Log\Log4netProxy.cs" />
     <Compile Include="PixelReader.cs" />
     <Compile Include="Plugins\IPreOutputPlugin.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="SerializableInterfaceList.cs" />
+    <Compile Include="IO\SerializableInterfaceList.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
     <Compile Include="Plugins\IAfterglowPlugin.cs" />
     <Compile Include="Plugins\ICapturePlugin.cs" />

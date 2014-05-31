@@ -8,7 +8,7 @@ using System.Threading;
 using System.Drawing;
 using System.Diagnostics;
 using Afterglow.Core.Log;
-using Afterglow.Core.Load;
+using Afterglow.Core.IO;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
@@ -89,6 +89,8 @@ namespace Afterglow.Core
         public AfterglowRuntime(string SetupFileName)
         {
             this._setupFileName = SetupFileName;
+
+            PluginLoader.Loader.Load();
 
             //If nothing could be loaded create a new setup file in the location specified
             if (!this.Load())
@@ -174,10 +176,10 @@ namespace Afterglow.Core
                 try
                 {
                     //Gets all possibly used IAfterglowPlugins
-                    Type[] extraTypes = PluginLoader.Loader.GetPlugins<IAfterglowPlugin>();
+                    Type[] extraTypes = PluginLoader.Loader.AllPlugins;
                     
                     XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
-
+                    
                     StreamWriter writer = new StreamWriter(saveFilePath);
                     serializer.Serialize(writer.BaseStream, this.Setup);
                     writer.Dispose();
@@ -204,7 +206,10 @@ namespace Afterglow.Core
         {
             if (File.Exists(_setupFileName))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup));
+                //Gets all possibly used IAfterglowPlugins
+                Type[] extraTypes = PluginLoader.Loader.AllPlugins;
+
+                XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
 
                 //Good for debugging
                 //serializer.UnknownNode += new XmlNodeEventHandler(serializer_UnknownNode);

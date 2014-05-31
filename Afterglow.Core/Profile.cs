@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-
+using Afterglow.Core.IO;
 
 namespace Afterglow.Core
 {

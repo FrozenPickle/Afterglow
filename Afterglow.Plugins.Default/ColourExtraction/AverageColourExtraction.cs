@@ -8,10 +8,12 @@ using Afterglow.Core.Configuration;
 using Afterglow.Core;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using System.ComponentModel.Composition;
 
 namespace Afterglow.Plugins.ColourExtraction
 {
     [DataContract]
+    [Export(typeof(IColourExtractionPlugin))]
     public class AverageColourExtraction : BasePlugin, IColourExtractionPlugin
     {
         #region Read Only Properties

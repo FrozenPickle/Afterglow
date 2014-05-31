@@ -1,6 +1,7 @@
 ﻿using Afterglow.Core.Plugins;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Text;
 namespace Afterglow.Plugins.PreOutput
 {
     [DataContract]
+    [Export(typeof(IPreOutputPlugin))]
     public class TestPatternPreOutput: BasePlugin, IPreOutputPlugin
     {
         #region Read Only Properties
