@@ -31,7 +31,7 @@ namespace Afterglow.Plugins.PostProcess
         [DataMember]
         public override string Description
         {
-            get { return "Adjust the colours to your room"; }
+            get { return "Adjust the colours to achieve best visual experience"; }
         }
         /// <summary>
         /// The author of this plugin
@@ -39,7 +39,7 @@ namespace Afterglow.Plugins.PostProcess
         [DataMember]
         public override string Author
         {
-            get { return "Jono C."; }
+            get { return "Jono C. and Silas Mariusz"; }
         }
 
         [DataMember]
@@ -51,9 +51,19 @@ namespace Afterglow.Plugins.PostProcess
         [DataMember]
         public override Version Version
         {
-            get { return new Version(1, 0, 0); }
+            get { return new Version(1, 0, 2); }
         }
         #endregion
+
+        [DataMember]
+        [Required]
+        [Display(Name = "Gamma", Description = "Adjust the luminance of the back LED lights to relative bright and dark value of the image on the LCD screen")]
+        [Range(1, 400)]
+        public int Gamma
+        {
+            get { return Get(() => Gamma, () => 100); }
+            set { Set(() => Gamma, value); }
+        }
 
         [DataMember]
         [Required]
@@ -94,10 +104,40 @@ namespace Afterglow.Plugins.PostProcess
             get { return Get(() => BlueSaturation, () => 100); }
             set { Set(() => BlueSaturation, value); }
         }
-
+        
+        private byte[] _gammaArray = new byte[256];
+ 
+        public void BuildGammaTable(double gammaLevel)
+        {
+            if (gammaLevel < 0.1)
+                gammaLevel = 0.1;
+ 
+            for (int i = 0; i < 256; ++i)
+            {
+                this._gammaArray[i] = (byte)Math.Min(255, (int)((255.0 * Math.Pow(i / 255.0, 1.0 / gammaLevel)) + 0.5));
+            }
+ 
+            string gammaArray = "";
+            byte c = 0;
+            for (int i = 0; i < 256; ++i)
+            {
+                gammaArray += this._gammaArray[i].ToString("000");
+                if (i < 255) gammaArray += " ";
+                if (c >= 15)
+                {
+                    gammaArray += "\r\n";
+                    c = 0;
+                }
+                else
+                {
+                    c++;
+                }
+            }
+        }
 
         public override void Start()
         {
+            BuildGammaTable((double)this.Gamma / 100.0);
         }
 
         public override void Stop()
@@ -117,8 +157,19 @@ namespace Afterglow.Plugins.PostProcess
                 double blue = lightColour.B;
 
                 bool coloursChanged = false;
+                 
+                 // Apply Gamma first...
+                 // Ref: http://www.cambridgeincolour.com/tutorials/gamma-correction.htm
+                 if (this.Gamma != 100)
+                 {
+                     red = this._gammaArray[(int) red];
+                     green = this._gammaArray[(int) green];
+                     blue = this._gammaArray[(int) blue];
+ 
+                     coloursChanged = true;
+                 }
 
-                //Change brightness first
+                //Change brightness second
                 if (this.Brightness != 100)
                 {
                     double percent = Brightness / 100.00;

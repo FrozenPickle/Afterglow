@@ -281,6 +281,11 @@ namespace Afterglow.Core
             }
             else
             {
+                //Reset current profile incase there has been any setting changes
+                this.CurrentProfile = (from p in this.Setup.Profiles
+                                       where p.Id == this.CurrentProfile.Id
+                                       select p).First();
+
                 CurrentProfile.Validate();
 
                 if (!Active)
