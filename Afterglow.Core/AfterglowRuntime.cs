@@ -78,18 +78,7 @@ namespace Afterglow.Core
         /// Creates an instance of the Afterglow Runtime using the current execution path to save/load the configuration
         /// </summary>
         public AfterglowRuntime()
-            : this("AfterglowSetup.xml")
         {
-        }
-        
-        /// <summary>
-        /// Creates an instance of the Afterglow Runtime using the supplied configuration file
-        /// </summary>
-        /// <param name="SetupFileName">File path of xml configuration</param>
-        public AfterglowRuntime(string SetupFileName)
-        {
-            this._setupFileName = SetupFileName;
-
             PluginLoader.Loader.Load();
 
             //If nothing could be loaded create a new setup file in the location specified
@@ -204,7 +193,39 @@ namespace Afterglow.Core
         /// <returns>true - successfull or false - unsucessfull load</returns>
         public bool Load()
         {
-            if (File.Exists(_setupFileName))
+
+            //Copy settings to user profile, this will stop overriding settings when getting new versions
+            string environmentPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Afterglow");
+            if (!System.IO.Directory.Exists(environmentPath))
+            {
+                System.IO.Directory.CreateDirectory(environmentPath);
+            }
+            _setupFileName = System.IO.Path.Combine(environmentPath, "AfterglowSetup.xml");
+            string existingPath = System.IO.Path.Combine(Environment.CurrentDirectory, "AfterglowSetup.xml");
+
+            if (!File.Exists(_setupFileName) && File.Exists(existingPath))
+            {
+                if (!IsFileLocked(existingPath))
+                {
+                    File.Copy(existingPath, _setupFileName);
+                }
+                else
+                {
+                    Console.WriteLine("Existing file in use");
+                }
+            }
+
+            if (!File.Exists(_setupFileName))
+            {
+                Console.WriteLine("Settings not found");
+                return false;
+            }
+            else if (IsFileLocked(_setupFileName))
+            {
+                Console.WriteLine("Settings file in use");
+                return false;
+            }
+            else
             {
                 //Gets all possibly used IAfterglowPlugins
                 Type[] extraTypes = PluginLoader.Loader.AllPlugins;
@@ -225,10 +246,33 @@ namespace Afterglow.Core
                 this.Setup.OnDeserialized();
                 return true;
             }
-            else
+            
+        }
+
+        private bool IsFileLocked(string filePath)
+        {
+            FileStream stream = null;
+
+            try
             {
-                return false;
+                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
         }
 
         //TODO implement logging

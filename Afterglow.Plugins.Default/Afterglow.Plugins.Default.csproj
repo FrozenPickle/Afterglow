@@ -61,6 +61,7 @@
     <ProjectReference Include="..\Afterglow.Core\Afterglow.Core.csproj">
       <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
       <Name>Afterglow.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
