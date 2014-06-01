@@ -279,6 +279,10 @@ namespace Afterglow.Web
         public string UserName { get; set; }
         [DataMember(Name = "password")]
         public string Password { get; set; }
+        [DataMember(Name = "logLevel")]
+        public int LogLevel { get; set; }
+        [DataMember(Name = "logLevels")]
+        public IEnumerable<SelectOption> LogLevels { get; set; }
     }
     [Route("/updateSettings")]
     [DataContract]
@@ -290,6 +294,8 @@ namespace Afterglow.Web
         public string UserName { get; set; }
         [DataMember(Name = "password")]
         public string Password { get; set; }
+        [DataMember(Name = "logLevel")]
+        public int LogLevel { get; set; }
     }
 
 
@@ -353,11 +359,11 @@ namespace Afterglow.Web
         [DataMember(Name = "value")]
         public object Value { get; set; }
         [DataMember(Name = "options")]
-        public IEnumerable<PluginOption> Options { get; set; }
+        public IEnumerable<SelectOption> Options { get; set; }
     }
 
     [DataContract]
-    public class PluginOption
+    public class SelectOption
     {
         [DataMember(Name = "id")]
         public object Id { get; set; }
@@ -443,9 +449,13 @@ namespace Afterglow.Web
         {
             MenuSetupResponse response = new MenuSetupResponse();
             response.Profiles = Get(new ProfilesRequest()).Profiles;
-            response.CurrentProfile = (from p in response.Profiles
-                                       where p.Id == Program.Runtime.CurrentProfile.Id
-                                       select p).FirstOrDefault();
+
+            if (Program.Runtime.CurrentProfile != null)
+            {
+                response.CurrentProfile = (from p in response.Profiles
+                                           where p.Id == Program.Runtime.CurrentProfile.Id
+                                           select p).FirstOrDefault();
+            }
             return response;
         }
         public object Get(IsRunningRequest request)
@@ -653,7 +663,14 @@ namespace Afterglow.Web
             {
                 Port = Program.Runtime.Setup.Port,
                 UserName = Program.Runtime.Setup.UserName,
-                Password = Program.Runtime.Setup.Password
+                Password = Program.Runtime.Setup.Password,
+                LogLevel = Program.Runtime.Setup.LogLevel,
+                LogLevels = (from ll in Program.Runtime.Setup.LoggingLevels
+                             select new SelectOption()
+                             {
+                                 Id = ll.Id,
+                                 Name = ll.Name
+                             }).ToArray()
             };
         }
         public object Post(UpdateSettingsRequest request)
@@ -662,6 +679,7 @@ namespace Afterglow.Web
             setup.Port = request.Port;
             setup.UserName = request.UserName;
             setup.Password = request.Password;
+            setup.LogLevel = request.LogLevel;
 
             Program.Runtime.Save();
 
@@ -916,14 +934,14 @@ namespace Afterglow.Web
                         PropertyInfo optionsProperty = pluginObjectType.GetProperty(lookup.RetrieveValuesFrom);
 
                         IEnumerable<object> options = optionsProperty.GetValue(plugin, null) as IEnumerable<object>;
-                        List<PluginOption> parsedOptions = new List<PluginOption>();
+                        List<SelectOption> parsedOptions = new List<SelectOption>();
                         if (options.Any())
                         {
                             foreach (object option in options)
                             {
                                 LookupItem lookupItem = option as LookupItem;
                                 LookupItemString lookupItemString = option as LookupItemString;
-                                PluginOption pluginOption = new PluginOption();
+                                SelectOption pluginOption = new SelectOption();
 
                                 if (lookupItem != null)
                                 {
@@ -956,8 +974,8 @@ namespace Afterglow.Web
                                               select o).FirstOrDefault();
                         if (currentValue == null)
                         {
-                            List<PluginOption> options = pluginProperty.Options as List<PluginOption>;
-                            options.Add(new PluginOption() { 
+                            List<SelectOption> options = pluginProperty.Options as List<SelectOption>;
+                            options.Add(new SelectOption() { 
                                 Id = pluginProperty.Value, 
                                 Name = "Invalid! " + pluginProperty.Value.ToString() });
                             pluginProperty.Options = options;

@@ -12,8 +12,8 @@ using Afterglow.Core.IO;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
-using Afterglow.Log;
 using System.Text.RegularExpressions;
+using log4net;
 
 namespace Afterglow.Core
 {
@@ -40,6 +40,17 @@ namespace Afterglow.Core
         private FpsCalculator _captureLoopFPS = new FpsCalculator();
         private FpsCalculator _outputLoopFPS = new FpsCalculator();
 
+        public const string APPLICATION_DATA_FOLDER = "Afterglow";
+        public const string SETUP_FILE_NAME = "AfterglowSetup.xml";
+        public const string LOGGING_FILE = "Logs\\Log.txt";
+        /// <summary>
+        /// This log level is used until settings can be loaded
+        /// </summary>
+#if DEBUG
+        public const int DEFAULT_LOG_LEVEL = LoggingLevels.LOG_LEVEL_DEBUG;
+#else
+        public const int DEFAULT_LOG_LEVEL = LoggingLevels.LOG_LEVEL_ERROR;
+#endif
         /// <summary>
         /// Synchronisation object
         /// </summary>
@@ -79,16 +90,32 @@ namespace Afterglow.Core
         /// </summary>
         public AfterglowRuntime()
         {
-            PluginLoader.Loader.Load();
+            Logger.Info("Runtime Initializing...");
 
-            //If nothing could be loaded create a new setup file in the location specified
+            Logger.Info("Loading Plugins...");
+            PluginLoader.Loader.Load();
+            Logger.Info("Plugins Loaded");
+
             if (!this.Load())
             {
-                this.Setup = new AfterglowSetup();
+                return;
             }
 
+            //Set the logging level from user configuration
+            Logger.LoggingLevel = this.Setup.LogLevel;
+
             if (this.Setup.Profiles.Any())
-                CurrentProfile = this.Setup.Profiles.First();
+            {
+                this.CurrentProfile = (from p in this.Setup.Profiles
+                                      where p.Id == this.Setup.CurrentProfileId
+                                      select p).FirstOrDefault();
+            }
+            if (this.CurrentProfile == null)
+            {
+                Logger.Warn("No current profile set");
+            }
+
+            Logger.Info("Runtime Initialized");
         }
 
         private AfterglowSetup _setup;
@@ -126,14 +153,18 @@ namespace Afterglow.Core
             }
             set
             {
+                Logger.Info("Setting current profile...");
                 if (value == null)
                 {
                     _currentProfile = value;
+                    this.Setup.CurrentProfileId = -1; //Set to invalid profile id
                 }
                 else
                 {
                     try
                     {
+                        this.Setup.CurrentProfileId = value.Id;
+
                         using (var stream = new MemoryStream())
                         {
                             XmlSerializer serializer = new XmlSerializer(typeof(Profile));
@@ -143,12 +174,12 @@ namespace Afterglow.Core
                             _currentProfile = (Profile)serializer.Deserialize(stream);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        //TODO log exception
-                        //exception may occur from plugins not created by frozen pickle or we did a bad job :(
+                        this.Logger.Fatal(ex, "Setting AfterglowRuntime.CurrentProfile failed");
                     }
                 }
+                Logger.Info("Current profile set");
             }
         }
 
@@ -193,15 +224,16 @@ namespace Afterglow.Core
         /// <returns>true - successfull or false - unsucessfull load</returns>
         public bool Load()
         {
+            Logger.Info("Loading Settings...");
 
             //Copy settings to user profile, this will stop overriding settings when getting new versions
-            string environmentPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Afterglow");
+            string environmentPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), APPLICATION_DATA_FOLDER);
             if (!System.IO.Directory.Exists(environmentPath))
             {
                 System.IO.Directory.CreateDirectory(environmentPath);
             }
-            _setupFileName = System.IO.Path.Combine(environmentPath, "AfterglowSetup.xml");
-            string existingPath = System.IO.Path.Combine(Environment.CurrentDirectory, "AfterglowSetup.xml");
+            _setupFileName = System.IO.Path.Combine(environmentPath, SETUP_FILE_NAME);
+            string existingPath = System.IO.Path.Combine(Environment.CurrentDirectory, SETUP_FILE_NAME);
 
             if (!File.Exists(_setupFileName) && File.Exists(existingPath))
             {
@@ -211,18 +243,19 @@ namespace Afterglow.Core
                 }
                 else
                 {
-                    Console.WriteLine("Existing file in use");
+                    Logger.Fatal("Existing file in use");
+                    return false;
                 }
             }
 
             if (!File.Exists(_setupFileName))
             {
-                Console.WriteLine("Settings not found");
+                Logger.Fatal("Settings not found");
                 return false;
             }
             else if (IsFileLocked(_setupFileName))
             {
-                Console.WriteLine("Settings file in use");
+                Logger.Fatal("Settings file in use");
                 return false;
             }
             else
@@ -244,6 +277,8 @@ namespace Afterglow.Core
                 reader.Dispose();
 
                 this.Setup.OnDeserialized();
+
+                Logger.Info("Settings Loaded");
                 return true;
             }
             
@@ -275,19 +310,25 @@ namespace Afterglow.Core
             return false;
         }
 
-        //TODO implement logging
-        //private ILogger _logger;
-        //public ILogger Logger
-        //{
-        //    get
-        //    {
-        //        if (_logger == null)
-        //        {
-        //            this._logger = new Log4NetProxy(log4net.LogManager.GetLogger("LoggingSystem"));
-        //        }
-        //        return _logger;
-        //    }
-        //}
+        private ILogger _logger;
+        public ILogger Logger
+        {
+            get
+            {
+                if (_logger == null)
+                {
+                    try
+                    {
+                        this._logger = new Afterglow.Core.Log.AfterglowLogger(APPLICATION_DATA_FOLDER, LOGGING_FILE, DEFAULT_LOG_LEVEL);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(string.Format("Creating logger failed {0}"), ex);
+                    }
+                }
+                return _logger;
+            }
+        }
 
         LightData _nextLightData;
         LightData _prevLightData;
@@ -315,20 +356,37 @@ namespace Afterglow.Core
         public void Start()
         {
             Stop();
+            Logger.Info("Starting...");
 
-            if (this.CurrentProfile == null && this.Setup.Profiles.Any())
-                CurrentProfile = this.Setup.Profiles.First();
+            bool profileJustSet = false;
+            if (this.CurrentProfile == null)
+            {
+                this.CurrentProfile = (from p in this.Setup.Profiles
+                                       where p.Id == this.Setup.CurrentProfileId
+                                       select p).FirstOrDefault();
+                profileJustSet = true;
+            }
+
+            if (this.CurrentProfile == null)
+            {
+                CurrentProfile = this.Setup.Profiles.FirstOrDefault();
+                profileJustSet = true;
+            }
 
             if (CurrentProfile == null)
             {
-                throw new InvalidOperationException("No profile has been selected");
+                Logger.Error("No profile has been selected");
+                return;
             }
             else
             {
                 //Reset current profile incase there has been any setting changes
-                this.CurrentProfile = (from p in this.Setup.Profiles
-                                       where p.Id == this.CurrentProfile.Id
-                                       select p).First();
+                if (!profileJustSet)
+                {
+                    this.CurrentProfile = (from p in this.Setup.Profiles
+                                           where p.Id == this.CurrentProfile.Id
+                                           select p).First();
+                }
 
                 CurrentProfile.Validate();
 
@@ -379,6 +437,7 @@ namespace Afterglow.Core
         /// </summary>
         public void Stop()
         {
+            Logger.Info("Stopping...");
             if (Active)
             {
                 Active = false;

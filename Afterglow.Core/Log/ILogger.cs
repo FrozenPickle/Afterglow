@@ -5,15 +5,13 @@ using System.Text;
 
 namespace Afterglow.Core.Log
 {
-    public enum Level
+    public static class LoggingLevels
     {
-        All,
-        Debug,
-        Information,
-        Warning,
-        Error,
-        Fatal,
-        Off
+        public const int LOG_LEVEL_DEBUG = 0;
+        public const int LOG_LEVEL_INFORMATION = 1;
+        public const int LOG_LEVEL_WARNING = 2;
+        public const int LOG_LEVEL_ERROR = 3;
+        public const int LOG_LEVEL_FATAL = 4;
     }
 
     /// <summary>
@@ -21,6 +19,7 @@ namespace Afterglow.Core.Log
     /// </summary>
     public interface ILogger
     {
+
         /* Log a message object */
         void Debug(string message);
         void Info(string message);
@@ -41,5 +40,7 @@ namespace Afterglow.Core.Log
         void Warn(string format, params object[] args);
         void Error(string format, params object[] args);
         void Fatal(string format, params object[] args);
+
+        int LoggingLevel { set; }
     }
 }

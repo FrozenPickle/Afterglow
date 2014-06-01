@@ -11,6 +11,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="inputLogLevel" class="col-lg-2 control-label">Log Level</label>
+                <div class="col-lg-10">
+                    <select class="form-control" id="inputLogLevel" ng-model="settings.logLevel"
+                            ng-options="option.id as option.name for option in settings.logLevels"></select>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="inputUserName" class="col-lg-2 control-label">User Name</label>
                 <div class="col-lg-10">
                     <input type="text" class="form-control" id="inputUserName" ng-model="settings.userName">

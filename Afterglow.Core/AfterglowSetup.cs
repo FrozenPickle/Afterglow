@@ -8,6 +8,7 @@ using Afterglow.Core.IO;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Reflection;
+using Afterglow.Core.Configuration;
 
 namespace Afterglow.Core
 {
@@ -185,7 +186,6 @@ namespace Afterglow.Core
         }
         #endregion
 
-
         /// <summary>
         /// Gets the details of list of a afterglow plugin types
         /// </summary>
@@ -356,11 +356,46 @@ namespace Afterglow.Core
         /// </summary>
         [DataMember]
         [Required]
+        [Display(Name = "Port", Order = 100)]
         public int Port
         {
             get { return Get(() => Port, 8080); }
             set { Set(() => Port, value); }
         }
+
+        [DataMember]
+        [Required]
+        [Display(Name = "Logging Level", Order = 200)]
+        [ConfigLookup(RetrieveValuesFrom = "LoggingLevels")]
+        public int LogLevel
+        {
+            get { return Get(() => LogLevel, () => Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_ERROR); }
+            set { Set(() => LogLevel, value); }
+        }
+
+        #region Logging Levels
+        [XmlIgnore]
+        private LookupItem[] _loggingLevels;
+        [XmlIgnore]
+        public LookupItem[] LoggingLevels
+        {
+            get
+            {
+                if (_loggingLevels == null)
+                {
+                    List<LookupItem> loggingLevels = new List<LookupItem>();
+                    loggingLevels.Add(new LookupItem() { Id = Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_DEBUG, Name = "Debug" });
+                    loggingLevels.Add(new LookupItem() { Id = Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_INFORMATION, Name = "Information" });
+                    loggingLevels.Add(new LookupItem() { Id = Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_WARNING, Name = "Warning" });
+                    loggingLevels.Add(new LookupItem() { Id = Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_ERROR, Name = "Error" });
+                    loggingLevels.Add(new LookupItem() { Id = Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_FATAL, Name = "Fatal" });
+                    _loggingLevels = loggingLevels.ToArray();
+                }
+                return _loggingLevels;
+            }
+        }
+
+
         /// <summary>
         /// Gets and Sets the UserName for the web interface, default is Afterglow
         /// </summary>
@@ -382,6 +417,7 @@ namespace Afterglow.Core
         }
         #endregion
 
+        #endregion
         /// <summary>
         /// When this object has been deserialized this will get called and set sub object settings
         /// </summary>

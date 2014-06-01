@@ -22,27 +22,36 @@ namespace Afterglow.Web
                 
         static void Main(string[] args)
         {
-            using (var appHost = new AppHost())
+            try
             {
-                Console.WriteLine("Loading Afterglow settings...");
-                _runtime = new AfterglowRuntime();
-            
-                Console.WriteLine("Starting Afterglow runtime...");
+                using (var appHost = new AppHost())
+                {
 
-                Console.WriteLine("Afterglow runtime started.");
+                    Console.WriteLine("Loading Afterglow settings...");
+                    _runtime = new AfterglowRuntime();
 
-                appHost.Init();
-                string host = String.Format("http://localhost:{0}/", _runtime.Setup.Port);
-                if (args.Length > 0)
-                    host = String.Format("http://{0}:{1}/", args[0], _runtime.Setup.Port);
-                
-                appHost.Start(host);
+                    Console.WriteLine("Starting Afterglow runtime...");
 
-                Console.WriteLine(host);
-                
-                Console.WriteLine("Press <enter> to exit.");
-                Console.ReadLine();
-                appHost.Stop();
+                    Console.WriteLine("Afterglow runtime started.");
+
+                    appHost.Init();
+                    string host = String.Format("http://localhost:{0}/", _runtime.Setup.Port);
+                    if (args.Length > 0)
+                        host = String.Format("http://{0}:{1}/", args[0], _runtime.Setup.Port);
+
+                    _runtime.Logger.Info("Afterglow running on host {0}", host);
+                    appHost.Start(host);
+
+                    Console.WriteLine(host);
+
+                    Console.WriteLine("Press <enter> to exit.");
+                    Console.ReadLine();
+                    appHost.Stop();
+                }
+            }
+            finally
+            {
+                _runtime.Logger.Info("Exit Application");
             }
         }
     }
