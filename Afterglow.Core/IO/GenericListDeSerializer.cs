@@ -50,7 +50,7 @@ namespace Afterglow.Core.IO
                 if (!serializers.TryGetValue(assemblyQualifiedName, out slzr))
                 {
                     AfterglowRuntime.Logger.Fatal("Could not deserialize plugin of type: {0}", assemblyQualifiedName);
-                    throw new Exception();
+                    throw new Exception(string.Format("Could not deserialize plugin of type: {0}", assemblyQualifiedName));
                 }
 
                 object item = slzr.Deserialize(inputStream);

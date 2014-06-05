@@ -262,7 +262,7 @@ namespace Afterglow.Core
                 Type[] extraTypes = PluginLoader.Loader.AllPlugins;
 
                 XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
-
+                
                 serializer.UnknownNode += serializer_UnknownNode;
 
                 StreamReader reader = new StreamReader(_setupFileName);
@@ -283,7 +283,10 @@ namespace Afterglow.Core
 
         private void serializer_UnknownNode(object sender, XmlNodeEventArgs e)
         {
-            Logger.Fatal("Unknown Node {0}", e);
+            if (!string.IsNullOrEmpty(e.Text))
+            {
+                Logger.Error("Unknown Node {0}", e.Name);
+            }
         }
 
         private bool IsFileLocked(string filePath)
