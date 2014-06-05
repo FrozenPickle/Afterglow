@@ -9,6 +9,7 @@ using System.Collections;
 using Afterglow.Core.Plugins;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using Afterglow.Core.Log;
 
 namespace Afterglow.Core.IO
 {
@@ -18,16 +19,13 @@ namespace Afterglow.Core.IO
     public static class PluginLoader
     {
         private static AfterglowPluginLoader _loader;
+
         /// <summary>
         /// Loads/Reloads all plugins types
         /// </summary>
         public static void Load()
         {
-            if (_loader == null)
-            {
-                _loader = new AfterglowPluginLoader();
-            }
-            _loader.Load();
+            Loader.Load();
         }
 
         /// <summary>
@@ -37,7 +35,11 @@ namespace Afterglow.Core.IO
         {
             get
             {
-                Load();
+                if (_loader == null)
+                {
+                    _loader = new AfterglowPluginLoader();
+                    _loader.Load();
+                }
                 return _loader;
             }
         }
@@ -176,11 +178,78 @@ namespace Afterglow.Core.IO
 
         private void Compose()
         {
+            AfterglowRuntime.Logger.Info("Loading Plugins...");
             string folder = Path.Combine(Environment.CurrentDirectory, PLUGINS_DIRECTORY);
 
             var catalog = new DirectoryCatalog(folder);
             var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
+
+            try
+            {
+                container.ComposeParts(this);
+
+                AfterglowRuntime.Logger.Info("The following plugins were loaded");
+                if (LightSetupPlugins != null && LightSetupPlugins.Any())
+                {
+                    LightSetupPluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Light Setup Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Fatal("No Light Setup Plugins were loaded");
+                }
+                if (CapturePlugins != null && CapturePlugins.Any())
+                {
+                    CapturePluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Capture Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Fatal("No Capture Plugins were loaded");
+                }
+                if (ColourExtractionPlugins != null && ColourExtractionPlugins.Any())
+                {
+                    ColourExtractionPluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Colour Extraction Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Info("No Colour Extraction Plugins were loaded");
+                }
+                if (PostProcessPlugins != null && PostProcessPlugins.Any())
+                {
+                    PostProcessPluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Post Process Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Info("No Post Process Plugins were loaded");
+                }
+                if (PreOutputPlugins != null && PreOutputPlugins.Any())
+                {
+                    PreOutputPluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Pre Output Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Info("No Pre Output Plugins were loaded");
+                }
+                if (OutputPlugins != null && OutputPlugins.Any())
+                {
+                    OutputPluginTypes.ToList().ForEach(p => AfterglowRuntime.Logger.Info("Type: Output Plugin Name: {0}", p.Name));
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Fatal("No Output Plugins were loaded");
+                }
+
+            }
+            catch (System.Reflection.ReflectionTypeLoadException reflectionTypeLoadException)
+            {
+                foreach (Exception exception in reflectionTypeLoadException.LoaderExceptions)
+	            {
+                    AfterglowRuntime.Logger.Fatal(exception, "Plugin Loader");
+	            }                
+            }
+            finally
+            {
+                AfterglowRuntime.Logger.Info("Plugin Loading Complete");
+            }
         }
     }
 }

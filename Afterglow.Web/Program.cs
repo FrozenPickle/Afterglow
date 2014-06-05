@@ -39,7 +39,7 @@ namespace Afterglow.Web
                     if (args.Length > 0)
                         host = String.Format("http://{0}:{1}/", args[0], _runtime.Setup.Port);
 
-                    _runtime.Logger.Info("Afterglow running on host {0}", host);
+                    AfterglowRuntime.Logger.Info("Afterglow running on host {0}", host);
                     appHost.Start(host);
 
                     Console.WriteLine(host);
@@ -51,7 +51,7 @@ namespace Afterglow.Web
             }
             finally
             {
-                _runtime.Logger.Info("Exit Application");
+                AfterglowRuntime.Logger.Info("Exit Application");
             }
         }
     }

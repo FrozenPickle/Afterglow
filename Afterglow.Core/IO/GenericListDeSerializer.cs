@@ -45,41 +45,20 @@ namespace Afterglow.Core.IO
                 //read the input stream name
                 string assemblyQualifiedName = inputStream.Name;
 
-                XmlSerializer slzr = GetSerializerByTypeName(assemblyQualifiedName);
+                XmlSerializer slzr = null;
+                
+                if (!serializers.TryGetValue(assemblyQualifiedName, out slzr))
+                {
+                    AfterglowRuntime.Logger.Fatal("Could not deserialize plugin of type: {0}", assemblyQualifiedName);
+                    throw new Exception();
+                }
+
                 object item = slzr.Deserialize(inputStream);
                 interfaceList.Add((T)item);
 
                 //read next node if it is an end element
                 if (inputStream.NodeType == XmlNodeType.EndElement) inputStream.Read();
             }
-        }
-
-        /// <summary>
-        /// Gets serializer by type name from internal XML serializers list
-        /// If specific serializers doesn't exists adds it and returns it
-        /// </summary>
-        /// <param name="typeName">Class type name</param>
-        /// <returns>XmlSerializer</returns>
-        private XmlSerializer GetSerializerByTypeName(string typeName)
-        {
-            XmlSerializer returnSerializer = null;
-
-            //Check if existing already
-            if (serializers.ContainsKey(typeName))
-            {
-                returnSerializer = serializers[typeName];
-            }
-
-            //If doesn't exist in list create a new and add it to list
-            /*    if (returnSerializer == null)
-                {
-                    Type type = PluginLoader.Loader.GetObjectType(typeName);
-                    returnSerializer = new XmlSerializer(type);
-                    serializers.Add(typeName, returnSerializer);
-                }*/
-
-            //Return the retrived XmlSerializer
-            return returnSerializer;
         }
     }
 }

@@ -92,9 +92,7 @@ namespace Afterglow.Core
         {
             Logger.Info("Runtime Initializing...");
 
-            Logger.Info("Loading Plugins...");
             PluginLoader.Loader.Load();
-            Logger.Info("Plugins Loaded");
 
             if (!this.Load())
             {
@@ -176,7 +174,7 @@ namespace Afterglow.Core
                     }
                     catch (Exception ex)
                     {
-                        this.Logger.Fatal(ex, "Setting AfterglowRuntime.CurrentProfile failed");
+                        Logger.Fatal(ex, "Setting AfterglowRuntime.CurrentProfile failed");
                     }
                 }
                 Logger.Info("Current profile set");
@@ -265,8 +263,7 @@ namespace Afterglow.Core
 
                 XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
 
-                //Good for debugging
-                //serializer.UnknownNode += new XmlNodeEventHandler(serializer_UnknownNode);
+                serializer.UnknownNode += serializer_UnknownNode;
 
                 StreamReader reader = new StreamReader(_setupFileName);
                 
@@ -282,6 +279,11 @@ namespace Afterglow.Core
                 return true;
             }
             
+        }
+
+        private void serializer_UnknownNode(object sender, XmlNodeEventArgs e)
+        {
+            Logger.Fatal("Unknown Node {0}", e);
         }
 
         private bool IsFileLocked(string filePath)
@@ -310,8 +312,8 @@ namespace Afterglow.Core
             return false;
         }
 
-        private ILogger _logger;
-        public ILogger Logger
+        private static ILogger _logger;
+        public static ILogger Logger
         {
             get
             {
@@ -319,7 +321,7 @@ namespace Afterglow.Core
                 {
                     try
                     {
-                        this._logger = new Afterglow.Core.Log.AfterglowLogger(APPLICATION_DATA_FOLDER, LOGGING_FILE, DEFAULT_LOG_LEVEL);
+                        _logger = new Afterglow.Core.Log.AfterglowLogger(APPLICATION_DATA_FOLDER, LOGGING_FILE, DEFAULT_LOG_LEVEL);
                     }
                     catch (Exception ex)
                     {
