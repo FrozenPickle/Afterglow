@@ -3,7 +3,7 @@
 */bin
 */obj
 /bin
-/*.suo
+*.suo
 
 # NuGet Packages Directory
 packages/*
