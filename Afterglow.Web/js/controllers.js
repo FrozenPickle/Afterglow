@@ -18,13 +18,13 @@
     });
 
     $scope.refresh = function () {
-        $http.get('/menuSetup?format=json').success(
+        $http.get('/menuSetup').success(
         function (data) {
             $scope.profiles = data.profiles;
             $scope.currentProfile = data.currentProfile;
         });
 
-        $http.get('/isRunning?format=json').success(
+        $http.get('/isRunning').success(
         function (data, textStatus, jqXHR) {
             $scope.running = data.active;
         });
@@ -33,21 +33,21 @@
     $scope.refresh();
 
     $scope.startAfterglow = function () {
-        $http.get('/start?format=json').success(
+        $http.get('/start').success(
         function (data, textStatus, jqXHR) {
             $scope.running = data.active;
         });
     }
 
     $scope.stopAfterglow = function () {
-        $http.get('/stop?format=json').success(
+        $http.get('/stop').success(
         function (data, textStatus, jqXHR) {
             $scope.running = data.active;
         });
     }
 
     $scope.selectProfile = function (profileId) {
-        $http.post('/setProfile?format=json', { profileId: profileId }).success(
+        $http.post('/setProfile', { profileId: profileId }).success(
         function (data) {
             $scope.currentProfile = data;
         })
@@ -76,7 +76,7 @@ function HomeController($scope, $route, $routeParams, $location) {
 
         $('#onLabel').click();
 
-        $.post('/runtime?format=json', { Start: true },
+        $.post('/runtime', { Start: true },
         function (data, textStatus, jqXHR) {
 
             $scope.previewRunning = data.Active;
@@ -90,7 +90,7 @@ function HomeController($scope, $route, $routeParams, $location) {
     }
 
     $scope.stopPreview = function () {
-        $.post('/runtime?format=json', { Start: true },
+        $.post('/runtime', { Start: true },
         function (data, textStatus, jqXHR) {
             $scope.previewRunning = data.Active;
 
@@ -106,7 +106,7 @@ function HomeController($scope, $route, $routeParams, $location) {
     var firstPreview = true;
     function getPreview() {
 
-        $.get("/preview?format=json", {}, function (data, status, xhr) {
+        $.get("/preview", {}, function (data, status, xhr) {
             clearInterval(timer);
             timer = null;
             $(data.Lights).each(function (index, item) {
@@ -153,7 +153,7 @@ function SettingsController($scope, $route, $routeParams, $http) {
     $scope.settings = null;
 
     $scope.refresh = function () {
-        $http.post('/settings?format=json', {}).success(
+        $http.get('/settings', {}).success(
         function (data, textStatus, jqXHR) {
             $scope.settings = data;
         });
@@ -162,7 +162,7 @@ function SettingsController($scope, $route, $routeParams, $http) {
     $scope.refresh();
 
     $scope.update = function () {
-        $http.post('/updateSettings?format=json', {
+        $http.post('/updateSettings', {
             id: $scope.id,
             port: $scope.settings.port,
             userName: $scope.settings.userName,
@@ -179,7 +179,7 @@ function ProfilesController($scope, $route, $location, $http) {
     $scope.profiles = [];
 
     $scope.refresh = function () {
-        $http.get('/profiles?format=json').success(
+        $http.get('/profiles').success(
         function (data) {
             $scope.profiles = data.profiles;
         });
@@ -188,7 +188,7 @@ function ProfilesController($scope, $route, $location, $http) {
     $scope.refresh();
 
     $scope.addProfile = function () {
-        $http.get('/addProfile?format=json').success(
+        $http.get('/addProfile').success(
         function (data) {
             $location.path('/profile/' + data);
         });
@@ -200,7 +200,7 @@ function PluginsController($scope, $route, $routeParams, $http) {
     $scope.availablePlugins = [];
     
     $scope.refresh = function () {
-        $http.get('/availablePlugins?format=json').success(
+        $http.get('/availablePlugins').success(
         function (data) {
             $scope.availablePlugins = data;
         });
@@ -216,7 +216,7 @@ function ProfileController($scope, $location, $routeParams, $http) {
     $scope.modal = null;
 
     $scope.refresh = function () {
-        $http.post('/profile?format=json',{id : $scope.id}).success(
+        $http.post('/profile',{id : $scope.id}).success(
         function (data, textStatus, jqXHR) {
             $scope.profile = data;
         });
@@ -225,7 +225,7 @@ function ProfileController($scope, $location, $routeParams, $http) {
     $scope.refresh();
 
     $scope.update = function (){
-        $http.post('/updateProfile?format=json', {
+        $http.post('/updateProfile', {
             id: $scope.id,
             name: $scope.profile.name,
             description: $scope.profile.description,
@@ -243,7 +243,7 @@ function ProfileController($scope, $location, $routeParams, $http) {
             plugins: [],
             pluginType: pluginType
         };
-        $http.post('/pluginTypes?format=json', {
+        $http.post('/pluginTypes', {
             pluginType: pluginType
         }).success(
         function (data, textStatus, jqXHR) {
@@ -273,7 +273,7 @@ function PluginController($scope, $route, $routeParams, $http) {
             $scope.allowDelete = true;
         }
 
-        $http.post('/plugin?format=json', {
+        $http.post('/plugin', {
             id: $routeParams.id,
             profileId: $routeParams.profileId,
             pluginType: $routeParams.pluginType,
@@ -363,7 +363,7 @@ function PluginController($scope, $route, $routeParams, $http) {
     }
 
     $scope.update = function () {
-        $http.post('/updatePlugin?format=json', {
+        $http.post('/updatePlugin', {
             id: $scope.id,
             profileId: $scope.plugin.profileId,
             pluginType: $scope.plugin.pluginType,
@@ -378,7 +378,7 @@ function PluginController($scope, $route, $routeParams, $http) {
     }
 
     $scope.delete = function () {
-        $http.post('/deletePlugin?format=json', {
+        $http.post('/deletePlugin', {
             id: $scope.id,
             profileId: $scope.plugin.profileId,
             pluginType: $scope.plugin.pluginType,

@@ -3,43 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using ServiceStack.WebHost.Endpoints;
-using ServiceStack.Logging;
-using ServiceStack.Logging.Support.Logging;
-using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceInterface.Auth;
-using ServiceStack.CacheAccess;
-using ServiceStack.CacheAccess.Providers;
+using Owin;
+using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
+using System.Web.Http;
 
 namespace Afterglow.Web.Host
 {
-    public class AppHost : AppHostHttpListenerBase
+
+
+    public class AppHost
     {
-        public AppHost() : base("Afterglow Service", typeof(AppHost).Assembly) { }
-        
-        public override void Configure(Funq.Container container)
+        // This code configures Web API. The Startup class is specified as a type
+        // parameter in the WebApp.Start method.
+        public void Configuration(IAppBuilder appBuilder)
         {
-            //Plugins.Add(new AuthFeature(() => new AuthUserSession(), new IAuthProvider[] {
-            //    new AfterglowCredentialsAuthProvider()
-            //}));
 
+            appBuilder.UseFileServer(new FileServerOptions()
+            {
+                RequestPath = PathString.Empty,
+                FileSystem = new PhysicalFileSystem(@".\")
+            });
 
-            // The cache the host will use (in memory in this instance - but could be a distributed memory cache / disk etc...)
-            container.Register<ICacheClient>(new MemoryCacheClient());
+            appBuilder.UseStaticFiles("/Views");
+            appBuilder.UseStaticFiles("/Scripts");
+            appBuilder.UseStaticFiles("/js");
+            appBuilder.UseStaticFiles("/Content");
 
-            //RequestFilters.Add((req, resp, dto) =>
-            //    {
-            //        if (req.OperationName != "Auth")
-            //        {
-            //            var sessionId = req.GetSession();
-            //            if (!sessionId.IsAuthenticated)
-            //            {
-            //                new AuthenticateAttribute()
-            //                    .Execute(req, resp, dto);
-            //            }
-            //        }
-            //    });
+            // Configure Web API for self-host. 
+            HttpConfiguration config = new HttpConfiguration();
 
-        }
+            //  Enable attribute based routing
+            //  http://www.asp.net/web-api/overview/web-api-routing-and-actions/attribute-routing-in-web-api-2
+            config.MapHttpAttributeRoutes();
+
+            // Remove the XML formatter
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
+
+            config.Routes.MapHttpRoute(
+                name: "AfterglowAPI",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+
+            appBuilder.UseWebApi(config);
+        } 
     }
 }

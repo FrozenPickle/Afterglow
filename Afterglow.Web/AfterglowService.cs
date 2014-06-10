@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceHost;
+
 using System.Runtime.Serialization;
 using Afterglow.Core;
 using Afterglow.Core.Plugins;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Afterglow.Core.Configuration;
+using System.Web.Http;
+using System.IO;
+using System.Net;
 
 namespace Afterglow.Web
 {
-    [Route("/runtime")]
     public class Runtime
     {
         public bool? Start { get; set; }
@@ -26,7 +27,6 @@ namespace Afterglow.Web
         public int NumberOfLightsWide { get; set; }
     }
 
-    [Route("/setup")]
     public class Setup
     {
         public Afterglow.Core.AfterglowSetup UpdatedSetup { get; set; }
@@ -37,7 +37,6 @@ namespace Afterglow.Web
         public Afterglow.Core.AfterglowSetup Setup { get; set; }
     }
     
-    [Route("/preview")]
     public class Preview
     {
 
@@ -86,32 +85,14 @@ namespace Afterglow.Web
     }
 
     #region Index Controller
-    [Route("/isRunning")]
-    public class IsRunningRequest
-    {
-    }
-    [Route("/start")]
-    public class StartRequest
-    {
-    }
-    [Route("/stop")]
-    public class StopRequest
-    {
-    }
-    [Route("/toggleStartStop")]
-    public class ToggleStartStopRequest
-    {
-    }
+
     [DataContract]
     public class AfterglowActiveResponse
     {
         [DataMember(Name="active")]
         public bool Active { get; set; }
     }
-    [Route("/menuSetup")]
-    public class MenuSetupRequest
-    {
-    }
+    
     [DataContract]
     public class MenuSetupResponse
     {
@@ -121,7 +102,7 @@ namespace Afterglow.Web
         [DataMember(Name = "currentProfile")]
         public ProfilesProfileResponse CurrentProfile { get; set; }
     }
-    [Route("/setProfile")]
+    
     [DataContract]
     public class SetProfileRequest
     {
@@ -131,11 +112,7 @@ namespace Afterglow.Web
     #endregion
 
     #region Plugins Controller
-    [Route("/availablePlugins")]
-    [DataContract]
-    public class AvailablePluginsRequest
-    {
-    }
+    
     [DataContract]
     public class AvailablePluginsResult
     {
@@ -161,11 +138,6 @@ namespace Afterglow.Web
 
     #region Profiles Controller
 
-    [Route("/profiles")]
-    [DataContract]
-    public class ProfilesRequest
-    {
-    }
     [DataContract]
     public class ProfilesResponse
     {
@@ -183,16 +155,9 @@ namespace Afterglow.Web
         public string Description { get; set; }
     }
 
-    [Route("/addProfile")]
-    [DataContract]
-    public class AddProfileRequest
-    {
-    }
-
     #endregion
 
     #region Profile Controller
-    [Route("/profile")]
     [DataContract]
     public class ProfileRequest
     {
@@ -235,7 +200,6 @@ namespace Afterglow.Web
         [DataMember(Name = "description")]
         public string Description { get; set; }
     }
-    [Route("/updateProfile")]
     [DataContract]
     public class UpdateProfileRequest
     {
@@ -251,7 +215,6 @@ namespace Afterglow.Web
         public int OutputFrequency { get; set; }
     }
 
-    [Route("/pluginTypes")]
     [DataContract]
     public class PluginTypesRequest
     {
@@ -268,7 +231,6 @@ namespace Afterglow.Web
     #endregion
 
     #region Settings Controller
-    [Route("/settings")]
     public class SettingsRequest { }
     [DataContract]
     public class SettingsResponse
@@ -284,7 +246,6 @@ namespace Afterglow.Web
         [DataMember(Name = "logLevels")]
         public IEnumerable<SelectOption> LogLevels { get; set; }
     }
-    [Route("/updateSettings")]
     [DataContract]
     public class UpdateSettingsRequest
     {
@@ -302,7 +263,6 @@ namespace Afterglow.Web
     #endregion
 
     #region Plugin Controller
-    [Route("/plugin")]
     [DataContract]
     public class PluginRequest
     {
@@ -371,7 +331,6 @@ namespace Afterglow.Web
         public string Name { get; set; }
     }
 
-    [Route("/updatePlugin")]
     [DataContract]
     public class UpdatePluginRequest
     {
@@ -389,7 +348,6 @@ namespace Afterglow.Web
         public IEnumerable<PluginProperty> Properties { get; set; }
     }
 
-    [Route("/deletePlugin")]
     [DataContract]
     public class DeletePluginRequest
     {
@@ -442,13 +400,29 @@ namespace Afterglow.Web
     }
     #endregion
 
-    public class AfterglowService : Service
+    [RoutePrefix("")]
+    public class AfterglowServiceController : ApiController
     {
+        [Route("content/{path}")]
+        public System.Net.Http.HttpResponseMessage GetContent(string path)
+        {
+            using (var f = File.Open(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), path), FileMode.Open, FileAccess.Read))
+            {
+                var response = new System.Net.Http.HttpResponseMessage(HttpStatusCode.OK);
+                response.Content = new System.Net.Http.StreamContent(f);
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                return response;
+            }
+        }
+        
+        
+        
         #region Index Controller
-        public object Get(MenuSetupRequest request)
+        [Route("menuSetup")]
+        public MenuSetupResponse Get()
         {
             MenuSetupResponse response = new MenuSetupResponse();
-            response.Profiles = Get(new ProfilesRequest()).Profiles;
+            response.Profiles = GetProfiles().Profiles;
 
             if (Program.Runtime.CurrentProfile != null)
             {
@@ -458,21 +432,29 @@ namespace Afterglow.Web
             }
             return response;
         }
-        public object Get(IsRunningRequest request)
+
+        [Route("isRunning")]
+        public AfterglowActiveResponse GetIsRunning()
         {
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
-        public object Get(StartRequest request)
+        
+        [Route("start")]
+        public AfterglowActiveResponse GetStart()
         {
             Program.Runtime.Start();
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
-        public object Get(StopRequest request)
+        
+        [Route("stop")]
+        public AfterglowActiveResponse GetStop()
         {
             Program.Runtime.Stop();
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
-        public object Get(ToggleStartStopRequest request)
+
+        [Route("toggleStartStop")]
+        public AfterglowActiveResponse GetToggleStartStop()
         {
             if (!Program.Runtime.Active)
             {
@@ -484,7 +466,9 @@ namespace Afterglow.Web
             }
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
-        public object Post(SetProfileRequest request)
+
+        [Route("setProfile")]
+        public ProfilesProfileResponse Post(SetProfileRequest request)
         {
 
             Profile profile = (from p in Program.Runtime.Setup.Profiles
@@ -498,8 +482,8 @@ namespace Afterglow.Web
         #endregion
 
         #region Plugins Controller
-
-        public object Get(AvailablePluginsRequest request)
+        [Route("availablePlugins")]
+        public AvailablePluginsResult GetAvailablePlugins()
         {
             AvailablePluginsResult result = new AvailablePluginsResult();
 
@@ -515,7 +499,8 @@ namespace Afterglow.Web
         #endregion
 
         #region Profiles Controller
-        public ProfilesResponse Get(ProfilesRequest request)
+        [Route("profiles")]
+        public ProfilesResponse GetProfiles()
         {
             return new ProfilesResponse
             {
@@ -529,7 +514,8 @@ namespace Afterglow.Web
             };
         }
 
-        public object Get(AddProfileRequest request)
+        [Route("addProfile")]
+        public int GetAddProfile()
         {
             int id = Program.Runtime.Setup.AddNewProfile().Id;
             Program.Runtime.Save();
@@ -540,7 +526,8 @@ namespace Afterglow.Web
 
         #region Profile Controller
 
-        public object Post(ProfileRequest request)
+        [Route("profile")]
+        public ProfileResponse Post(ProfileRequest request)
         {
             ProfileResponse response = null;
             Profile profile = (from p in Program.Runtime.Setup.Profiles
@@ -602,9 +589,10 @@ namespace Afterglow.Web
             return response;
         }
 
-        public object Post(UpdateProfileRequest request)
+        [Route("updateProfile")]
+        public ProfileResponse Post(UpdateProfileRequest request)
         {
-            object response = null;
+            ProfileResponse response = null;
             Profile existingProfile = (from p in Program.Runtime.Setup.Profiles
                                where p.Id == request.Id
                                select p).FirstOrDefault();
@@ -623,7 +611,8 @@ namespace Afterglow.Web
             return response;
         }
 
-        public object Post(PluginTypesRequest request)
+        [Route("pluginTypes")]
+        public PluginTypesResponse Post(PluginTypesRequest request)
         {
             PluginTypesResponse result = new PluginTypesResponse();
 
@@ -657,7 +646,8 @@ namespace Afterglow.Web
         #endregion
 
         #region Settings Controller
-        public object Post(SettingsRequest request)
+        [Route("settings")]
+        public SettingsResponse GetSettings()
         {
             return new SettingsResponse
             {
@@ -673,7 +663,8 @@ namespace Afterglow.Web
                              }).ToArray()
             };
         }
-        public object Post(UpdateSettingsRequest request)
+        [Route("updateSettings")]
+        public SettingsResponse Post(UpdateSettingsRequest request)
         {
             AfterglowSetup setup = Program.Runtime.Setup;
             setup.Port = request.Port;
@@ -684,14 +675,15 @@ namespace Afterglow.Web
             Program.Runtime.Save();
 
             // Load the saved version
-            return Post(new SettingsRequest());
+            return GetSettings();
         }
 
         #endregion
 
         #region Plugin Settings
 
-        public object Post(PluginRequest request)
+        [Route("plugin")]
+        public PluginResponse Post(PluginRequest request)
         {
             PluginResponse response = new PluginResponse();
             Profile profile = (from p in Program.Runtime.Setup.Profiles
@@ -988,7 +980,8 @@ namespace Afterglow.Web
             return pluginProperties.ToArray();
         }
 
-        public object Post(UpdatePluginRequest request)
+        [Route("updatePlugin")]
+        public PluginResponse Post(UpdatePluginRequest request)
         {
             PluginResponse response = new PluginResponse();
             Profile profile = (from p in Program.Runtime.Setup.Profiles
@@ -1196,7 +1189,8 @@ namespace Afterglow.Web
             return true;
         }
 
-        public object Post(DeletePluginRequest request)
+        [Route("deletePlugin")]
+        public bool Post(DeletePluginRequest request)
         {
             PluginResponse response = new PluginResponse();
             Profile profile = (from p in Program.Runtime.Setup.Profiles
@@ -1248,7 +1242,8 @@ namespace Afterglow.Web
 
         #endregion
 
-        public object Get(Runtime request)
+        [Route("runtime")]
+        public RuntimeResponse Get(Runtime request)
         {
             return new RuntimeResponse
             {
@@ -1258,7 +1253,8 @@ namespace Afterglow.Web
             };
         }
 
-        public object Post(Runtime request)
+        [Route("runtime")]
+        public RuntimeResponse Post(Runtime request)
         {
             if (!request.Start.HasValue)
             {
@@ -1282,7 +1278,8 @@ namespace Afterglow.Web
             };
         }
 
-        public object Get(Setup request)
+        [Route("setup")]
+        public SetupResponse GetSetup()
         {
             return new SetupResponse
             {
@@ -1290,7 +1287,8 @@ namespace Afterglow.Web
             };
         }
 
-        public object Post(Setup request)
+        [Route("setup")]
+        public SetupResponse Post(Setup request)
         {
             if (request.UpdatedSetup != null)
             {
@@ -1302,7 +1300,8 @@ namespace Afterglow.Web
             };
         }
 
-        public object Get(Preview request)
+        [Route("preview")]
+        public PreviewResponse GetPreview()
         {
             List<LightPreview> lights = new List<LightPreview>(Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count);
             // Retrieve previous final light output data
