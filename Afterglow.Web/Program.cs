@@ -27,16 +27,26 @@ namespace Afterglow.Web
                 Console.WriteLine("Loading Afterglow settings...");
                 _runtime = new AfterglowRuntime();
                 Console.WriteLine("Afterglow runtime loaded.");
-                //Console.WriteLine("Starting Afterglow runtime...");
-                //Console.WriteLine("Afterglow runtime started.");
 
-                string host = String.Format("http://localhost:{0}/", _runtime.Setup.Port);
-                if (args.Length > 0)
-                    host = String.Format("http://{0}:{1}/", args[0], _runtime.Setup.Port);
-                using (WebApp.Start<AppHost>(url: host))
+                Console.WriteLine("Starting Afterglow site...");
+                
+                StartOptions startOptions = new StartOptions();
+                startOptions.Urls.Add(string.Format("http://localhost:{0}", _runtime.Setup.Port));
+                startOptions.Urls.Add(string.Format("http://{0}:{1}", Environment.MachineName.ToLower(), _runtime.Setup.Port));
+                foreach (IPAddress addr in Dns.GetHostAddresses(Dns.GetHostName()))
                 {
-                    //HttpConfiguration.EnsureInitialized();
-                    AfterglowRuntime.Logger.Info("Afterglow running on host {0}", host);
+                    if (addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        startOptions.Urls.Add(string.Format("http://{0}:{1}", addr, _runtime.Setup.Port));
+                    }
+                }
+
+                using (WebApp.Start<AppHost>(startOptions))
+                {
+                    foreach (string url in startOptions.Urls)
+                    {
+                        Console.WriteLine("Afterglow running on host {0}", url);
+                    }
 
                     Console.WriteLine("Press <enter> to exit.");
                     Console.ReadLine();
