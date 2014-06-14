@@ -398,10 +398,7 @@ namespace Afterglow.Core
                 if (!Active)
                 {
                     Active = true;
-
-                    _captureLoopTask = new Task(CaptureLoop);
-                    _outputLoopTask = new Task(OutputLoop);
-
+                    
                     // Prepare light data buffer
                     _nextLightData = new LightData(CurrentProfile.LightSetupPlugin.Lights.Count);
                     _prevLightData = new LightData(CurrentProfile.LightSetupPlugin.Lights.Count); ;
@@ -419,10 +416,11 @@ namespace Afterglow.Core
                         if (!outputPlugin.TryStart(out errorMessage))
                         {
                             outputFailures++;
-                            ErrorMessage = errorMessage;
+                            AfterglowRuntime.Logger.Error(errorMessage);
                         }
                     }
 
+                    //If all output plugins are in error then stop
                     if (outputFailures == CurrentProfile.OutputPlugins.Count())
                     {
                         Stop();
@@ -430,8 +428,8 @@ namespace Afterglow.Core
                     else
                     {
                         // Commence capture and output threads
-                        _captureLoopTask.Start();
-                        _outputLoopTask.Start();
+                        _captureLoopTask = Task.Factory.StartNew(CaptureLoop);
+                        _outputLoopTask = Task.Factory.StartNew(OutputLoop);
                     }
                 }
             }
@@ -446,12 +444,35 @@ namespace Afterglow.Core
             if (Active)
             {
                 Active = false;
-
-                //TODO the wait sometimes never finishes executing
-                Task.WaitAll(_captureLoopTask, _outputLoopTask);
-                _captureLoopTask.Dispose();
-                _outputLoopTask.Dispose();
             }
+            if (_captureLoopTask != null)
+            {
+                _captureLoopTask.Wait();
+
+                if (_captureLoopTask.IsCompleted)
+                {
+                    Logger.Debug("Capture Loop Completed");
+                }
+                else
+                {
+                    Logger.Info("Capture Loop did not complete");
+                }
+            }
+
+            if (_outputLoopTask != null)
+            {
+                _outputLoopTask.Wait();
+
+                if (_outputLoopTask.IsCompleted)
+                {
+                    Logger.Debug("Output Loop Completed");
+                }
+                else
+                {
+                    Logger.Info("Output Loop did not complete");
+                }
+            }
+            Logger.Info("Stopped");
         }
 
         private void CaptureLoop()
@@ -512,7 +533,7 @@ namespace Afterglow.Core
                     // Throttle Capture Frequency
                     while ((timer.ElapsedTicks - lastTicks) * freq < waitTicks)
                     {
-                        Thread.Sleep(5);
+                        Task.Delay(5);
                     }
 
                     // Update capture FPS counter
@@ -524,7 +545,7 @@ namespace Afterglow.Core
                 lock (sync)
                 {
                     Active = false;
-                    ErrorMessage = e.ToString();
+                    AfterglowRuntime.Logger.Error(e, "Afterglow Runtime - Capture Loop");
                 }
             }
             finally
@@ -585,7 +606,7 @@ namespace Afterglow.Core
                     // Throttle Output Frequency
                     while (timer.ElapsedTicks * freq < waitTicks)
                     {
-                        Thread.Sleep(5);
+                        Task.Delay(5);
                     }
 
                     _outputLoopFPS.Tick();
@@ -596,7 +617,7 @@ namespace Afterglow.Core
                 lock (sync)
                 {
                     Active = false;
-                    ErrorMessage = e.ToString();
+                    AfterglowRuntime.Logger.Error(e, "Afterglow Runtime - Output Loop");
                 }
             }
             finally
