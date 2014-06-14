@@ -55,7 +55,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [DataMember]
         public override Version Version
         {
-            get { return new Version(1, 0, 0); }
+            get { return new Version(1, 0, 1); }
         }
         #endregion
 
@@ -65,7 +65,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Range(1, 999999)]
         public int NumberOfLightsHigh
         {
-            get { return Get(() => NumberOfLightsHigh, () => 1); }
+            get { return Get(() => NumberOfLightsHigh, () => 2); }
             set { Set(() => NumberOfLightsHigh, value); }
         }
 
@@ -75,7 +75,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Range(1, 999999)]
         public int NumberOfLightsWide
         {
-            get { return Get(() => NumberOfLightsWide, () => 1); }
+            get { return Get(() => NumberOfLightsWide, () => 2); }
             set { Set(() => NumberOfLightsWide, value); }
         }
 
@@ -83,8 +83,43 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Display(Name = "Lights", AutoGenerateField = false)]
         public List<Core.Light> Lights
         {
-            get { return Get(() => Lights); }
+            get { return Get(() => Lights, GetDefaultLights()); }
             set { Set(() => Lights, value); }
+        }
+
+        public List<Core.Light> GetDefaultLights()
+        {
+            List<Core.Light> lights = new List<Light>();
+
+            Light light1 = new Light();
+            light1.Id = 0;
+            light1.Index = 1;
+            light1.Left = 0;
+            light1.Top = 0;
+            lights.Add(light1);
+
+            Light light2 = new Light();
+            light2.Id = 1;
+            light2.Index = 2;
+            light2.Left = 1;
+            light2.Top = 0;
+            lights.Add(light2);
+
+            Light light3 = new Light();
+            light3.Id = 2;
+            light3.Index = 3;
+            light3.Left = 1;
+            light3.Top = 1;
+            lights.Add(light3);
+
+            Light light4 = new Light();
+            light4.Id = 3;
+            light4.Index = 4;
+            light4.Left = 0;
+            light4.Top = 1;
+            lights.Add(light4);
+
+            return lights;
         }
 
         /// <summary>
@@ -108,21 +143,29 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
 
         public IEnumerable<Light> GetLightsForBounds(int CaptureWidth, int CaptureHeight, int LeftOffset, int TopOffset)
         {
-            if (_height != CaptureHeight || _width != CaptureWidth)
+            try
             {
-                _width = CaptureWidth;
-                _height = CaptureHeight;
-
-                int segmentWidth = CaptureWidth / NumberOfLightsWide;
-                int segmentHight = CaptureHeight / NumberOfLightsHigh;
-                
-                foreach (Light light in this.Lights)
+                if (_height != CaptureHeight || _width != CaptureWidth)
                 {
-                    light.CalculateRegion(segmentWidth, segmentHight, LeftOffset, TopOffset);
-                }
-            }
+                    _width = CaptureWidth;
+                    _height = CaptureHeight;
 
-            return this.Lights.OrderBy(l => l.Index);
+                    int segmentWidth = CaptureWidth / NumberOfLightsWide;
+                    int segmentHight = CaptureHeight / NumberOfLightsHigh;
+
+                    foreach (Light light in this.Lights)
+                    {
+                        light.CalculateRegion(segmentWidth, segmentHight, LeftOffset, TopOffset);
+                    }
+                }
+
+                return this.Lights.OrderBy(l => l.Index);
+            }
+            catch (Exception ex)
+            {
+                AfterglowRuntime.Logger.Error(ex, "Basic Light Setup Plugin - GetLightsForBounds");
+                return new List<Light>();
+            }
         }
     }
 }

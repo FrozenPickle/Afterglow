@@ -12,6 +12,7 @@ using Afterglow.Core.Configuration;
 using System.Web.Http;
 using System.IO;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace Afterglow.Web
 {
@@ -1163,7 +1164,12 @@ namespace Afterglow.Web
                 }
                 else if (pluginProperty.Type == "lights")
                 {
-                    LightSetup lightSetup = pluginProperty.Value as LightSetup;
+                    LightSetup lightSetup = null;
+                    if (pluginProperty.Value != null)
+                    {
+                        lightSetup = JsonConvert.DeserializeObject<LightSetup>(pluginProperty.Value.ToString());
+                    }
+
                     List<Core.Light> lights = new List<Core.Light>();
 
                     if (lightSetup != null)
@@ -1181,6 +1187,10 @@ namespace Afterglow.Web
                                        }
                                        
                                        ).ToList();
+                    }
+                    else
+                    {
+                        AfterglowRuntime.Logger.Warn("Saving light setup failed");
                     }
                     objectProperty.SetValue(plugin, lights, null);
                 }

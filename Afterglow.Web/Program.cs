@@ -52,6 +52,10 @@ namespace Afterglow.Web
                     Console.ReadLine();
                 }
             }
+            catch (Exception ex)
+            {
+                AfterglowRuntime.Logger.Fatal(ex, "Application Error");
+            }
             finally
             {
                 AfterglowRuntime.Logger.Info("Exit Application");
