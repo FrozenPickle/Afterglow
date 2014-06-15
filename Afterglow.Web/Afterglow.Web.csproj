@@ -120,111 +120,6 @@
     <Content Include="js\app.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PluginView.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\PluginsView.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\ProfilesView.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\ProfileView.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\SettingsView.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Content\bootstrap-theme.css.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\bootstrap.css.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="fonts\glyphicons-halflings-regular.eot" />
-    <None Include="fonts\glyphicons-halflings-regular.ttf" />
-    <None Include="fonts\glyphicons-halflings-regular.woff" />
-    <None Include="packages.config" />
-    <None Include="Scripts\angular-animate.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\angular-cookies.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\angular-loader.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\angular-resource.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Content\Darkly\bootstrap.css" />
-    <Content Include="Content\Darkly\bootstrap.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\angular-route.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Scripts\angular-sanitize.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\angular-touch.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="Scripts\angular.min.js.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Scripts\errors.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\jquery-2.1.0.min.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\underscore-min.map">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Scripts\version.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Afterglow.Core\Afterglow.Core.csproj">
-      <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
-      <Name>Afterglow.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AfterglowSetup.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Content\bootstrap-theme.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\bootstrap-theme.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\bootstrap.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\bootstrap.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\img\glyphicons-halflings-white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\img\glyphicons-halflings.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Index.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="js\routes.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Scripts\angular-animate.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -276,16 +171,18 @@
     <Content Include="Scripts\angular-touch.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\angular.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\angular.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\bootstrap.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\bootstrap.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
@@ -439,6 +336,10 @@
     <Content Include="Scripts\i18n\angular-locale_fr-mq.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-ne.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-re.js" />
+    <Content Include="Scripts\i18n\angular-locale_fr-rw.js" />
+    <Content Include="Scripts\i18n\angular-locale_fr-sn.js" />
+    <Content Include="Scripts\i18n\angular-locale_fr-td.js" />
+    <Content Include="Scripts\i18n\angular-locale_fr-tg.js" />
     <Content Include="Scripts\i18n\angular-locale_fr-yt.js" />
     <Content Include="Scripts\i18n\angular-locale_fr.js" />
     <Content Include="Scripts\i18n\angular-locale_gl-es.js" />
@@ -460,6 +361,7 @@
     <Content Include="Scripts\i18n\angular-locale_in.js" />
     <Content Include="Scripts\i18n\angular-locale_is-is.js" />
     <Content Include="Scripts\i18n\angular-locale_is.js" />
+    <Content Include="Scripts\i18n\angular-locale_it-ch.js" />
     <Content Include="Scripts\i18n\angular-locale_it-it.js" />
     <Content Include="Scripts\i18n\angular-locale_it-sm.js" />
     <Content Include="Scripts\i18n\angular-locale_it.js" />
@@ -471,6 +373,7 @@
     <Content Include="Scripts\i18n\angular-locale_ko-kr.js" />
     <Content Include="Scripts\i18n\angular-locale_ko.js" />
     <Content Include="Scripts\i18n\angular-locale_ln-cd.js" />
+    <Content Include="Scripts\i18n\angular-locale_ln-cg.js" />
     <Content Include="Scripts\i18n\angular-locale_ln.js" />
     <Content Include="Scripts\i18n\angular-locale_lt-lt.js" />
     <Content Include="Scripts\i18n\angular-locale_lt.js" />
@@ -480,10 +383,13 @@
     <Content Include="Scripts\i18n\angular-locale_ml.js" />
     <Content Include="Scripts\i18n\angular-locale_mr-in.js" />
     <Content Include="Scripts\i18n\angular-locale_mr.js" />
+    <Content Include="Scripts\i18n\angular-locale_ms-bn.js" />
     <Content Include="Scripts\i18n\angular-locale_ms-my.js" />
     <Content Include="Scripts\i18n\angular-locale_ms.js" />
     <Content Include="Scripts\i18n\angular-locale_mt-mt.js" />
     <Content Include="Scripts\i18n\angular-locale_mt.js" />
+    <Content Include="Scripts\i18n\angular-locale_nl-aw.js" />
+    <Content Include="Scripts\i18n\angular-locale_nl-be.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-cw.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-nl.js" />
     <Content Include="Scripts\i18n\angular-locale_nl-sx.js" />
@@ -493,12 +399,19 @@
     <Content Include="Scripts\i18n\angular-locale_or.js" />
     <Content Include="Scripts\i18n\angular-locale_pl-pl.js" />
     <Content Include="Scripts\i18n\angular-locale_pl.js" />
+    <Content Include="Scripts\i18n\angular-locale_pt-ao.js" />
     <Content Include="Scripts\i18n\angular-locale_pt-br.js" />
+    <Content Include="Scripts\i18n\angular-locale_pt-gw.js" />
+    <Content Include="Scripts\i18n\angular-locale_pt-mz.js" />
     <Content Include="Scripts\i18n\angular-locale_pt-pt.js" />
+    <Content Include="Scripts\i18n\angular-locale_pt-st.js" />
     <Content Include="Scripts\i18n\angular-locale_pt.js" />
+    <Content Include="Scripts\i18n\angular-locale_ro-md.js" />
     <Content Include="Scripts\i18n\angular-locale_ro-ro.js" />
     <Content Include="Scripts\i18n\angular-locale_ro.js" />
+    <Content Include="Scripts\i18n\angular-locale_ru-md.js" />
     <Content Include="Scripts\i18n\angular-locale_ru-ru.js" />
+    <Content Include="Scripts\i18n\angular-locale_ru-ua.js" />
     <Content Include="Scripts\i18n\angular-locale_ru.js" />
     <Content Include="Scripts\i18n\angular-locale_sk-sk.js" />
     <Content Include="Scripts\i18n\angular-locale_sk.js" />
@@ -506,14 +419,23 @@
     <Content Include="Scripts\i18n\angular-locale_sl.js" />
     <Content Include="Scripts\i18n\angular-locale_sq-al.js" />
     <Content Include="Scripts\i18n\angular-locale_sq.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-cyrl-ba.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-cyrl-me.js" />
     <Content Include="Scripts\i18n\angular-locale_sr-cyrl-rs.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-cyrl.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-latn-ba.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-latn-me.js" />
     <Content Include="Scripts\i18n\angular-locale_sr-latn-rs.js" />
+    <Content Include="Scripts\i18n\angular-locale_sr-latn.js" />
     <Content Include="Scripts\i18n\angular-locale_sr.js" />
+    <Content Include="Scripts\i18n\angular-locale_sv-fi.js" />
     <Content Include="Scripts\i18n\angular-locale_sv-se.js" />
     <Content Include="Scripts\i18n\angular-locale_sv.js" />
+    <Content Include="Scripts\i18n\angular-locale_sw-ke.js" />
     <Content Include="Scripts\i18n\angular-locale_sw-tz.js" />
     <Content Include="Scripts\i18n\angular-locale_sw.js" />
     <Content Include="Scripts\i18n\angular-locale_ta-in.js" />
+    <Content Include="Scripts\i18n\angular-locale_ta-lk.js" />
     <Content Include="Scripts\i18n\angular-locale_ta.js" />
     <Content Include="Scripts\i18n\angular-locale_te-in.js" />
     <Content Include="Scripts\i18n\angular-locale_te.js" />
@@ -524,42 +446,113 @@
     <Content Include="Scripts\i18n\angular-locale_tr.js" />
     <Content Include="Scripts\i18n\angular-locale_uk-ua.js" />
     <Content Include="Scripts\i18n\angular-locale_uk.js" />
+    <Content Include="Scripts\i18n\angular-locale_ur-in.js" />
     <Content Include="Scripts\i18n\angular-locale_ur-pk.js" />
     <Content Include="Scripts\i18n\angular-locale_ur.js" />
     <Content Include="Scripts\i18n\angular-locale_vi-vn.js" />
     <Content Include="Scripts\i18n\angular-locale_vi.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-cn.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-hans-cn.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hans-hk.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hans-mo.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hans-sg.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hans.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hant-hk.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hant-mo.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hant-tw.js" />
+    <Content Include="Scripts\i18n\angular-locale_zh-hant.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-hk.js" />
     <Content Include="Scripts\i18n\angular-locale_zh-tw.js" />
     <Content Include="Scripts\i18n\angular-locale_zh.js" />
     <Content Include="Scripts\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\i18n\angular-locale_zu.js" />
-    <Content Include="Scripts\jquery-2.1.0.intellisense.js">
+    <Content Include="Scripts\jquery-2.1.1.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\jquery-2.1.0.js">
+    <Content Include="Scripts\jquery-2.1.1.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\jquery-2.1.0.min.js">
+    <Content Include="Scripts\jquery-2.1.1.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-0.10.0.js">
+    <Content Include="Views\PluginView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-0.10.0.min.js">
+    <Content Include="Views\PluginsView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.js">
+    <Content Include="Views\ProfilesView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.min.js">
+    <Content Include="Views\ProfileView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\underscore-min.js">
+    <Content Include="Views\SettingsView.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\underscore.js">
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <Content Include="Content\Darkly\bootstrap.css" />
+    <Content Include="Content\Darkly\bootstrap.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Scripts\angular-animate.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-cookies.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-loader.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-resource.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-route.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-sanitize.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular-touch.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\angular.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\errors.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\jquery-2.1.1.min.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Afterglow.Core\Afterglow.Core.csproj">
+      <Project>{79105162-F542-4FE4-96AA-F15AF989C540}</Project>
+      <Name>Afterglow.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AfterglowSetup.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\img\glyphicons-halflings-white.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\img\glyphicons-halflings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="js\routes.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\HomeView.html">

@@ -248,12 +248,12 @@ function ProfileController($scope, $location, $routeParams, $http) {
         }).success(
         function (data, textStatus, jqXHR) {
             $scope.modal.plugins = data.plugins;
-            $('#pluginTypeSelectionModal').modal('show');
+            $('#pluginTypeSelectionModal').show();
         });
     }
 
     $scope.confirmAdd = function (pluginType, plugin) {
-        $('#pluginTypeSelectionModal').modal('hide');
+        $('#pluginTypeSelectionModal').hide();
         $location.path('/plugin/'+ $scope.id + '/' + pluginType + '/new/' + plugin);
     }
 }
