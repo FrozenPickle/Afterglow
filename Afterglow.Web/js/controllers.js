@@ -50,7 +50,7 @@
         $http.post('/setProfile', { profileId: profileId }).success(
         function (data) {
             $scope.currentProfile = data;
-        })
+        });
     }
 }
 
@@ -342,6 +342,7 @@ function PluginController($scope, $route, $routeParams, $http) {
                 var lightColumn = {};
                 lightColumn.columnIndex = column;
                 lightColumn.id = null;
+                lightColumn.index = null;
                 if (column == 0 || column == widthProperty[0].value - 1
                     || row == 0 || row == heightProperty[0].value - 1)
                     {
@@ -426,7 +427,7 @@ function PluginController($scope, $route, $routeParams, $http) {
         var numberOfColumns = 0;
         var currentRowIndex = lightSetup.firstRowIndex;
         var currentColumnIndex = lightSetup.firstColumnIndex;
-        var currentIndex = 1;
+        var currentId = 1;
 
         //ensure the lights array is populated
         if (lightSetup == null || lightSetup.lightRows.length == 0) {
@@ -443,10 +444,10 @@ function PluginController($scope, $route, $routeParams, $http) {
 
             //setting first light
             if (currentRowIndex == lightSetup.firstRowIndex && currentColumnIndex == lightSetup.firstColumnIndex &&
-                currentIndex != 1) {
+                currentId != 1) {
                 completed = true;
             }
-            else if (currentIndex == 1) {
+            else if (currentId == 1) {
                 if (disable && !lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled) {
                     //do nothing
                 } else {
@@ -454,13 +455,16 @@ function PluginController($scope, $route, $routeParams, $http) {
                         lightSetup.firstRowIndex = currentRowIndex;
                         lightSetup.firstColumnIndex = currentColumnIndex;
                     }
-                    lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentIndex++;
+                    lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentId++;
+                    lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].index = currentId - 2;
                     lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled = true;
                 }
             } else if (lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].enabled) {
-                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentIndex++;
+                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = currentId++;
+                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].index = currentId - 2;
             } else {
                 lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].id = null;
+                lightSetup.lightRows[currentRowIndex].lightColumns[currentColumnIndex].index = null;
             }
 
 

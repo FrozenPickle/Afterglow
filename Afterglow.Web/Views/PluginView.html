@@ -32,14 +32,16 @@
                 </div>
                 <div class="col-lg-10 ag-light-container" ng-switch-when="lights" id="input{{property.name}}">
                     <div ng-repeat="lightRow in property.value.lightRows" class="ag-light-row">
-                        <div ng-repeat="lightColumn in lightRow.lightColumns" id="{{lightColumn.id}}" class="btn-group ag-light-column">
-                            <button type="button" class="btn {{lightColumn.colourClass}} ag-light dropdown-toggle" data-toggle="dropdown">{{lightColumn.id}}</button>
+                        <div ng-repeat="lightColumn in lightRow.lightColumns" id="{{lightColumn.id}}" class="dropdown ag-light-column">
+                            <button type="button" class="btn {{lightColumn.colourClass}} ag-light dropdown-toggle">
+                                {{lightColumn.id}}
+                            </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a ng-click="first(lightColumn.columnIndex, lightRow.rowIndex, true)">First Light Clockwise</a></li>
                                 <li><a ng-click="first(lightColumn.columnIndex, lightRow.rowIndex, false)">First Light Anti-Clockwise</a></li>
                                 <li><a ng-click="disable(lightColumn.columnIndex, lightRow.rowIndex)" ng-if="lightColumn.id != null">Disable</a></li>
                                 <li><a ng-click="enable(lightColumn.columnIndex, lightRow.rowIndex)" ng-if="lightColumn.id == null">Enable</a></li>
-                            </ul>         
+                            </ul>
                         </div>
                     </div>
                     <br />

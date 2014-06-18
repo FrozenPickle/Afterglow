@@ -83,43 +83,13 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Display(Name = "Lights", AutoGenerateField = false)]
         public List<Core.Light> Lights
         {
-            get { return Get(() => Lights, GetDefaultLights()); }
+            get { return Get(() => Lights, () => GetDefaultLights()); }
             set { Set(() => Lights, value); }
         }
 
         public List<Core.Light> GetDefaultLights()
         {
-            List<Core.Light> lights = new List<Light>();
-
-            Light light1 = new Light();
-            light1.Id = 0;
-            light1.Index = 1;
-            light1.Left = 0;
-            light1.Top = 0;
-            lights.Add(light1);
-
-            Light light2 = new Light();
-            light2.Id = 1;
-            light2.Index = 2;
-            light2.Left = 1;
-            light2.Top = 0;
-            lights.Add(light2);
-
-            Light light3 = new Light();
-            light3.Id = 2;
-            light3.Index = 3;
-            light3.Left = 1;
-            light3.Top = 1;
-            lights.Add(light3);
-
-            Light light4 = new Light();
-            light4.Id = 3;
-            light4.Index = 4;
-            light4.Left = 0;
-            light4.Top = 1;
-            lights.Add(light4);
-
-            return lights;
+            return new List<Light>();
         }
 
         /// <summary>
