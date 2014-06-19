@@ -65,7 +65,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Range(1, 999999)]
         public int NumberOfLightsHigh
         {
-            get { return Get(() => NumberOfLightsHigh, () => 2); }
+            get { return Get(() => NumberOfLightsHigh, () => 1); }
             set { Set(() => NumberOfLightsHigh, value); }
         }
 
@@ -75,7 +75,7 @@ namespace Afterglow.Plugins.LightSetup.BasicLightSetupPlugin
         [Range(1, 999999)]
         public int NumberOfLightsWide
         {
-            get { return Get(() => NumberOfLightsWide, () => 2); }
+            get { return Get(() => NumberOfLightsWide, () => 1); }
             set { Set(() => NumberOfLightsWide, value); }
         }
 

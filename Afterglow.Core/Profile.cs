@@ -52,8 +52,22 @@ namespace Afterglow.Core
         [Display(Name = "Name", Order = 100, GroupName = "General Settings")]
         public string Name
         {
-            get { return Get(() => Name, "Default Profile"); }
+            get { return Get(() => Name, () => DefaultName()); }
             set { Set(() => Name, value); }
+        }
+
+        private string DefaultName()
+        {
+            int profileNumber = 1;
+            if (this.Id != 0)
+            {
+                profileNumber = this.Id;
+            }
+            else if (this.Setup != null)
+            {
+                profileNumber = this.Setup.Profiles.Count();
+            }
+            return string.Format("New Profile {0}", profileNumber);
         }
 
         /// <summary>

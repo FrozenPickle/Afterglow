@@ -101,6 +101,7 @@ namespace Afterglow.Core
         {
             Profile newProfile = new Profile();
             newProfile.Id = GetNewId<Profile>();
+            newProfile.Setup = this;
             newProfile.LightSetupPlugins = DefaultLightSetupPlugins();
             newProfile.CapturePlugins = DefaultCapturePlugins();
             newProfile.ColourExtractionPlugins = DefaultColourExtractionPlugins();
@@ -236,12 +237,26 @@ namespace Afterglow.Core
             Type type = AvailableLightSetupPlugins.FirstOrDefault();
             if (type == null)
             {
-                //TODO log error
-                throw new ArgumentNullException("No ILightSetupPlugin's have been loaded, please check the install and try again");
+                AfterglowRuntime.Logger.Fatal("No ILightSetupPlugin's have been loaded, please check the install and try again");
             }
             else
             {
-                ILightSetupPlugin plugin = Activator.CreateInstance(type) as ILightSetupPlugin;
+                ILightSetupPlugin plugin = null;
+                if (this.Profiles.Any())
+                {
+                    plugin = this.Profiles.Last().LightSetupPlugin;
+                }
+                else
+                {
+                    plugin = Activator.CreateInstance(type) as ILightSetupPlugin;
+                }
+
+                //Add at least one light
+                if (!plugin.Lights.Any())
+                {
+                    plugin.Lights.Add(new Light() { Id = 1, Index = 0, Height = 1, Width = 1, Runtime = this.Runtime });
+                }
+
                 plugin.Id = this.GetNewId<ILightSetupPlugin>();
                 lightSetupPlugins.Add(plugin);
             }
@@ -266,8 +281,7 @@ namespace Afterglow.Core
 
             if (type == null)
             {
-                //TODO log error
-                throw new ArgumentNullException("No ICapturePlugin's have been loaded, please check the install and try again");
+                AfterglowRuntime.Logger.Fatal("No ICapturePlugin's have been loaded, please check the install and try again");
             }
             else
             {
@@ -291,8 +305,7 @@ namespace Afterglow.Core
             Type type = AvailableColourExtractionPlugins.FirstOrDefault();
             if (type == null)
             {
-                //TODO log error
-                throw new ArgumentNullException("No IColourExtractionPlugin's have been loaded, please check the install and try again");
+                AfterglowRuntime.Logger.Fatal("No IColourExtractionPlugin's have been loaded, please check the install and try again");
             }
             else
             {
@@ -333,8 +346,7 @@ namespace Afterglow.Core
             Type type = AvailableOutputPlugins.FirstOrDefault();
             if (type == null)
             {
-                //TODO log error
-                throw new ArgumentNullException("No IOutputPlugin's have been loaded, please check the install and try again");
+                AfterglowRuntime.Logger.Fatal("No IOutputPlugin's have been loaded, please check the install and try again");
             }
             else
             {
