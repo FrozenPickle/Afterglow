@@ -27,6 +27,7 @@ namespace Afterglow.Plugins.Output
     {
         private SerialPort _port;
         private byte[] _serialData;
+        private bool _running = false;
         
         #region Read Only Properties
         /// <summary>
@@ -71,6 +72,7 @@ namespace Afterglow.Plugins.Output
         }
         #endregion
 
+        #region Properties
         [DataMember]
         [Required]
         [Display(Name = "Serial Port", Order = 100)]
@@ -175,65 +177,85 @@ namespace Afterglow.Plugins.Output
             get { return Get(() => MagicWord, () => "Glo"); }
             set { Set(() => MagicWord, value); }
         }
+        #endregion
 
         /// <summary>
         /// Start this Plugin
         /// </summary>
         public override void Start()
         {
-            //TODO: error checking and configuration of port
-            //TODO: possibly check device manager and see if Arduino is founds just not installed
+            _startError = null;
+            _running = false;
+
             if (Ports.Length == 0)
             {
-                //Logger.Warn("No serial ports found");
+                StartError("No serial ports found");
                 _port = null;
-                //throw new Exception("No serial ports found");
             }
             else
             {
+                string[] portNames = SerialPort.GetPortNames();
+                if (!(from p in portNames
+                         where p == this.Port
+                         select p).Any())
+                {
+                    StartError(string.Format("Configured Port {0} was not found, please check the settings and connected devices", this.Port));
+                    return;
+                }
+
                 _port = new SerialPort(Port, BaudRate);
                 _port.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorReceived);
                 try
                 {
                     _port.Open();
+                    _running = true;
                 }
                 catch (IOException e)
                 {
-                    //TODO: try and reset the serial connection so the user does not need to disconnect and reattach the cable
-                    string message = "Please un plug and re attach the cable";
+                    //TODO: give different error messages based on different exceptions
+                    StartError(string.Format("Error connecting to the Arduino. Exception: {0}", e));
 
+                    //Call stop to try to clear the port for retry
                     Stop();
-
-                    throw new Exception(message, e);
-                    
-                    //Logger.Error(ex, "Arduino not found");
                 }
             }
+        }
+
+        private string _startError = null;
+        private void StartError(string message)
+        {
+            _startError = message;
+            _running = false;
+            AfterglowRuntime.Logger.Error(message);
         }
 
         public bool TryStart(out string errorMessage)
         {
-            bool result = true;
-            errorMessage = string.Empty;
-
-            try
-            {
-                Stop();
-                Start();
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                result = false;
-            }
-
-            return result;
-        }
-
-        void ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
-        {
             Stop();
             Start();
+
+            if (!_running)
+            {
+                errorMessage = _startError;
+                return false;
+            }
+
+            errorMessage = string.Empty;
+            return true;
+        }
+
+        /// <summary>
+        /// On COM error restart so user does not notice issue
+        /// </summary>
+        void ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        {
+            AfterglowRuntime.Logger.Warn("Arduino Output - Error Received - Attempting restart. {0}", e);
+            Stop();
+            Start();
+            if (!_running)
+            {
+                AfterglowRuntime.Logger.Error("Could not restart after error");
+            }
         }
 
         /// <summary>
@@ -268,9 +290,9 @@ namespace Afterglow.Plugins.Output
                         _port.Write(_serialData, 0, _serialData.Length);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //Logger.Warn("Adruino not found");
+                    AfterglowRuntime.Logger.Error(ex, "Arduino Output - Output - Write to port error");
                 }
             }
             else
@@ -291,8 +313,12 @@ namespace Afterglow.Plugins.Output
                 _port.Dispose();
                 _port = null;
             }
+            _running = false;
         }
 
+        /// <summary>
+        /// Dispose so COM port is closed correctly
+        /// </summary>
         public void Dispose()
         {
             this.Stop();

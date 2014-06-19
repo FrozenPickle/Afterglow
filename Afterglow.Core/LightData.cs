@@ -44,7 +44,15 @@ namespace Afterglow.Core
             get
             {
                 int lightIndex = i * 3;
-                return System.Drawing.Color.FromArgb(ColourData[lightIndex], ColourData[lightIndex + 1], ColourData[lightIndex + 2]);
+                if (lightIndex + 2 < ColourData.Length)
+                {
+                    return System.Drawing.Color.FromArgb(ColourData[lightIndex], ColourData[lightIndex + 1], ColourData[lightIndex + 2]);
+                }
+                else
+                {
+                    AfterglowRuntime.Logger.Warn("Light Data - Get colour for index failed as {0}, is greater than the colour data array length of {1}", lightIndex + 2, ColourData.Length);
+                    return System.Drawing.Color.Black;
+                }
             }
             set
             {

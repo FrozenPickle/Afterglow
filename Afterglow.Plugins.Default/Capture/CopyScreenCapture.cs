@@ -199,6 +199,7 @@ namespace Afterglow.Plugins.Capture
         }
         #endregion
 
+        private bool _running = false;
         public override void Start()
         {
             System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.AllScreens[this.Screen];
@@ -221,10 +222,12 @@ namespace Afterglow.Plugins.Capture
                 };
                 _captureCorrectionTimer.Start();
             }
+            _running = true;
         }
 
         public override void Stop()
         {
+            _running = false;
             if (_img != null)
             {
                 _img.Dispose();
@@ -243,6 +246,14 @@ namespace Afterglow.Plugins.Capture
         int _topOffset = 0;
         public IDictionary<Core.Light, Core.PixelReader> Capture(ILightSetupPlugin lightSetup)
         {
+            IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
+
+            if (!_running)
+            {
+                return dictionary;
+
+            }
+
             _graphics.CopyFromScreen(_dispBounds.Left, _dispBounds.Top, 0, 0, new Size(_dispBounds.Width, _dispBounds.Height));
 
             _fastBitmap = new FastBitmap(_img);
@@ -250,7 +261,6 @@ namespace Afterglow.Plugins.Capture
 
             GetCaptureSize();
 
-            IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
             foreach (Light light in lightSetup.GetLightsForBounds(_captureWidth, _captureHeight, _leftOffset, _topOffset))
             {
                 dictionary[light] = new PixelReader(_fastBitmap, light.Region);
@@ -410,8 +420,11 @@ namespace Afterglow.Plugins.Capture
         /// </summary>
         public void ReleaseCapture()
         {
-            _fastBitmap.Dispose();
-            _fastBitmap = null;
+            if (_fastBitmap != null)
+            {
+                _fastBitmap.Dispose();
+                _fastBitmap = null;
+            }
         }
     }
 }

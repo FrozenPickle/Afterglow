@@ -105,9 +105,15 @@ namespace Afterglow.Core
             if (this.Setup.Profiles.Any())
             {
                 this.CurrentProfile = (from p in this.Setup.Profiles
-                                      where p.Id == this.Setup.CurrentProfileId
-                                      select p).FirstOrDefault();
+                                       where p.Id == this.Setup.CurrentProfileId
+                                       select p).FirstOrDefault();
+
+                if (this.CurrentProfile == null)
+                {
+                    this.CurrentProfile = this.Setup.Profiles.FirstOrDefault();
+                }
             }
+            
             if (this.CurrentProfile == null)
             {
                 Logger.Warn("No current profile set");
@@ -197,16 +203,16 @@ namespace Afterglow.Core
                     Type[] extraTypes = PluginLoader.Loader.AllPlugins;
                     
                     XmlSerializer serializer = new XmlSerializer(typeof(AfterglowSetup), extraTypes);
-                    
-                    StreamWriter writer = new StreamWriter(saveFilePath);
-                    serializer.Serialize(writer.BaseStream, this.Setup);
-                    writer.Dispose();
+
+                    using (StreamWriter writer = new StreamWriter(saveFilePath))
+                    {
+                        serializer.Serialize(writer.BaseStream, this.Setup);
+                    }
                     return true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //TODO log exception
-                    //exception may occur from plugins not created by frozen pickle or we did a bad job :(
+                    Logger.Fatal(ex, "Afterglow Runtime - Save");
                     return false;
                 }
             }
@@ -265,13 +271,20 @@ namespace Afterglow.Core
                 
                 serializer.UnknownNode += serializer_UnknownNode;
 
-                StreamReader reader = new StreamReader(_setupFileName);
-                
-                object deserialized = serializer.Deserialize(reader.BaseStream);
+                using (StreamReader reader = new StreamReader(_setupFileName))
+                {
+                    try
+                    {
+                        object deserialized = serializer.Deserialize(reader.BaseStream);
 
-                this.Setup = (AfterglowSetup)deserialized;
-
-                reader.Dispose();
+                        this.Setup = (AfterglowSetup)deserialized;
+                    }
+                    catch(Exception ex)
+                    {
+                        Logger.Fatal(ex, "Afterglow Runtime - Load");
+                        return false;
+                    }
+                }
 
                 this.Setup.OnDeserialized();
 
@@ -411,12 +424,13 @@ namespace Afterglow.Core
 
                     string errorMessage = String.Empty;
                     int outputFailures = 0;
+                    List<IOutputPlugin> outputPluginsInError = new List<IOutputPlugin>();
                     foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
                     {
                         if (!outputPlugin.TryStart(out errorMessage))
                         {
                             outputFailures++;
-                            AfterglowRuntime.Logger.Error(errorMessage);
+                            outputPluginsInError.Add(outputPlugin);
                         }
                     }
 
@@ -427,6 +441,9 @@ namespace Afterglow.Core
                     }
                     else
                     {
+                        //Remove plugins in error and allow other plugins to continue to run
+                        outputPluginsInError.ForEach(o => this.CurrentProfile.OutputPlugins.Remove(o));
+                        
                         // Commence capture and output threads
                         _captureLoopTask = Task.Factory.StartNew(CaptureLoop);
                         _outputLoopTask = Task.Factory.StartNew(OutputLoop);

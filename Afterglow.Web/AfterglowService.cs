@@ -605,6 +605,10 @@ namespace Afterglow.Web
         [Route("preview")]
         public PreviewResponse GetPreview()
         {
+            if (Program.Runtime.CurrentProfile == null)
+            {
+                return null;
+            }
             List<LightPreview> lights = new List<LightPreview>(Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count);
             // Retrieve previous final light output data
             var lightData = Program.Runtime.GetPreviousLightData();
