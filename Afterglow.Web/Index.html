@@ -10,15 +10,15 @@
 
     <div ng-controller="IndexController">
         <div class="navbar navbar-default navbar-static-top">
-           <div class="container">
+            <div class="container">
                 <div class="navbar-header navbar-left">
                     <a class="navbar-brand" href="#">Afterglow</a>
-                    <div class="navbar-left navbar-btn btn-group" data-toggle="buttons">
-                        <label class="btn btn-primary" ng-click="startAfterglow()" id="onLabel">
-                            <input type="radio" value="true"> On
+                    <div class="navbar-left navbar-btn btn-group">
+                        <label class="btn btn-primary" ng-click="startAfterglow()" ng-model="running" btn-radio="true" uncheckable>
+                            On
                         </label>
-                        <label class="btn btn-primary" ng-click="stopAfterglow()" id="offLabel">
-                            <input type="radio" value="false"> Off
+                        <label class="btn btn-primary" ng-click="stopAfterglow()" ng-model="running" btn-radio="false" uncheckable>
+                            Off
                         </label>
                     </div>
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse">
@@ -53,15 +53,16 @@
             </div>
         </div>
 
-    </div>
-    <div class="container">
-        <div ng-view></div>
+        <div class="container">
+            <div ng-view></div>
+        </div>
     </div>
 
     <script src="Scripts/jquery-2.1.1.min.js"></script>
     <script src="Scripts/angular.min.js"></script>
     <script src="Scripts/angular-route.min.js"></script>
     <script src="Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
 
     <script src="js/controllers.js"></script>
     <script src="js/app.js"></script>

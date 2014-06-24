@@ -1,0 +1,18 @@
+﻿<div class="modal-header">
+    <h4 class="modal-title">{{title}}</h4>
+</div>
+<div class="modal-body">
+    <div class="list-group">
+        <div class="list-group-item" ng-repeat="plugin in plugins" ng-click="confirmAdd(plugin.type)">
+            <div class="list-group-item-heading">
+                {{plugin.name}}
+            </div>
+            <div class="list-group-item-text">
+                {{plugin.description}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+</div>

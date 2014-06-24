@@ -28,6 +28,7 @@ namespace Afterglow.Plugins.Output
         private SerialPort _port;
         private byte[] _serialData;
         private bool _running = false;
+        object runLock = new object();
         
         #region Read Only Properties
         /// <summary>
@@ -184,64 +185,57 @@ namespace Afterglow.Plugins.Output
         /// </summary>
         public override void Start()
         {
-            _startError = null;
-            _running = false;
-
-            if (Ports.Length == 0)
-            {
-                StartError("No serial ports found");
-                _port = null;
-            }
-            else
-            {
-                string[] portNames = SerialPort.GetPortNames();
-                if (!(from p in portNames
-                         where p == this.Port
-                         select p).Any())
-                {
-                    StartError(string.Format("Configured Port {0} was not found, please check the settings and connected devices", this.Port));
-                    return;
-                }
-
-                _port = new SerialPort(Port, BaudRate);
-                _port.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorReceived);
-                try
-                {
-                    _port.Open();
-                    _running = true;
-                }
-                catch (IOException e)
-                {
-                    //TODO: give different error messages based on different exceptions
-                    StartError(string.Format("Error connecting to the Arduino. Exception: {0}", e));
-
-                    //Call stop to try to clear the port for retry
-                    Stop();
-                }
-            }
+            TryStart();
         }
 
-        private string _startError = null;
-        private void StartError(string message)
-        {
-            _startError = message;
-            _running = false;
-            AfterglowRuntime.Logger.Error(message);
-        }
-
-        public bool TryStart(out string errorMessage)
+        public bool TryStart()
         {
             Stop();
-            Start();
+            lock (runLock)
+            {
+                if (Ports.Length == 0)
+                {
+                    AfterglowRuntime.Logger.Error("No serial ports found");
+                    _port = null;
+                }
+                else
+                {
+                    string[] portNames = SerialPort.GetPortNames();
+                    if (!(from p in portNames
+                          where p == this.Port
+                          select p).Any())
+                    {
+                        AfterglowRuntime.Logger.Error(string.Format("Configured Port {0} was not found, please check the settings and connected devices", this.Port));
+                    }
 
+                    _port = new SerialPort(Port, BaudRate);
+                    _port.ErrorReceived += new SerialErrorReceivedEventHandler(ErrorReceived);
+                    try
+                    {
+                        if (!_port.IsOpen)
+                        {
+                            _port.Open();
+                            _running = true;
+                        }
+                        else
+                        {
+                            AfterglowRuntime.Logger.Error("Another process or application is using the port:{0}", this.Port);
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        //TODO: give different error messages based on different exceptions
+                        AfterglowRuntime.Logger.Error(string.Format("Error connecting to the Arduino. Exception: {0}", e));
+                    }
+                }
+            }
             if (!_running)
             {
-                errorMessage = _startError;
-                return false;
+                //Call stop to try to clear the port for retry
+                Stop();
             }
 
-            errorMessage = string.Empty;
-            return true;
+            return _running;
         }
 
         /// <summary>
@@ -250,7 +244,7 @@ namespace Afterglow.Plugins.Output
         void ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
         {
             AfterglowRuntime.Logger.Warn("Arduino Output - Error Received - Attempting restart. {0}", e);
-            Stop();
+            
             Start();
             if (!_running)
             {
@@ -297,7 +291,6 @@ namespace Afterglow.Plugins.Output
             }
             else
             {
-                Stop();
                 Start();
             }
         }
@@ -307,13 +300,16 @@ namespace Afterglow.Plugins.Output
         /// </summary>
         public override void Stop()
         {
-            if (_port != null)
+            lock (runLock)
             {
-                _port.Close();
-                _port.Dispose();
-                _port = null;
+                if (_port != null)
+                {
+                    _port.Close();
+                    _port.Dispose();
+                    _port = null;
+                }
+                _running = false;
             }
-            _running = false;
         }
 
         /// <summary>

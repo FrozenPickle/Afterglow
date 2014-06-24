@@ -26,6 +26,12 @@ namespace Afterglow.Web
             {
                 Console.WriteLine("Loading Afterglow settings...");
                 _runtime = new AfterglowRuntime();
+
+                if (_runtime == null || _runtime.Setup == null)
+                {
+                    AfterglowRuntime.Logger.Fatal("Afterglow settings could not be loaded.");
+                    return;
+                }
                 Console.WriteLine("Afterglow runtime loaded.");
 
                 Console.WriteLine("Starting Afterglow site...");

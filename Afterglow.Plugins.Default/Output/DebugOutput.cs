@@ -63,14 +63,9 @@ namespace Afterglow.Plugins.Output
             Debug.WriteLine("DebugOutput: OnStop");
         }
 
-
-
-        public bool TryStart(out string errorMessage)
+        public bool TryStart()
         {
             Start();
-
-            errorMessage = string.Empty;
-
             return true;
         }
     }

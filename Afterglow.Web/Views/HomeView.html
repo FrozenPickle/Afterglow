@@ -3,11 +3,11 @@
 
     </div>
     <div class="navbar-left navbar-btn btn-group" data-toggle="buttons">
-        <label class="btn btn-primary" ng-click="startPreview()" id="previewOnLabel">
-            <input type="radio" name="options" id="previewOn" value="on"> On
+        <label class="btn btn-primary" ng-click="startPreview()" ng-model="previewRunning" btn-radio="true" uncheckable>
+            On
         </label>
-        <label class="btn btn-primary" ng-click="stopPreview()" id="previewOffLabel">
-            <input type="radio" name="options" id="previowOff" value="off"> Off
+        <label class="btn btn-primary" ng-click="stopPreview()" ng-model="previewRunning" btn-radio="false" uncheckable>
+            Off
         </label>
     </div>
 </div>

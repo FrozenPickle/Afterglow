@@ -19,8 +19,7 @@ namespace Afterglow.Core.Plugins
         /// <summary>
         /// Trys to start the output plugin
         /// </summary>
-        /// <param name="errorMessage">The error that has occured</param>
         /// <returns>Success or failure of starting this plugin</returns>
-        bool TryStart(out string errorMessage);
+        bool TryStart();
     }
 }

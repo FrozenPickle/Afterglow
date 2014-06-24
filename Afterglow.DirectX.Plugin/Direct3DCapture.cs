@@ -152,14 +152,22 @@ namespace Afterglow.DirectX.Plugin
         private Bitmap _capturedImage;
         public IDictionary<Core.Light, Core.PixelReader> Capture(ILightSetupPlugin lightSetup)
         {
-
-            var response = _capturedProcess.CaptureInterface.GetScreenshot();
-            if (response != null)
-                Interlocked.Increment(ref _captures);
-            Interlocked.Exchange(ref _currentResponse, response);
-
             IDictionary<Core.Light, Core.PixelReader> dictionary = new Dictionary<Core.Light, Core.PixelReader>();
 
+            Capture.Interface.Screenshot response = null;
+
+            if (_capturedProcess != null && _capturedProcess.CaptureInterface != null)
+            {
+                _capturedProcess.CaptureInterface.GetScreenshot();
+            }
+
+            if (response != null)
+            {
+                Interlocked.Increment(ref _captures);
+            }
+
+            Interlocked.Exchange(ref _currentResponse, response);
+            
             if (_currentResponse != null)
             {    
                 using (System.IO.MemoryStream ms = new System.IO.MemoryStream(_currentResponse.CapturedBitmap))
@@ -171,8 +179,11 @@ namespace Afterglow.DirectX.Plugin
                     dictionary[light] = new PixelReader(_fastBitmap, light.Region);
                 }
             }
+
             if (_captures > 0 && _captures % 10 == 0)
-                Debug.WriteLine("Time per capture: {0}", new TimeSpan(0, 0, 0, 0, (int)((DateTime.Now - _startTime).TotalMilliseconds / _captures)));
+            {
+                AfterglowRuntime.Logger.Debug("Time per capture: {0}", new TimeSpan(0, 0, 0, 0, (int)((DateTime.Now - _startTime).TotalMilliseconds / _captures)));
+            }
 
             return dictionary;
         }

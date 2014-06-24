@@ -427,7 +427,7 @@ namespace Afterglow.Core
                     List<IOutputPlugin> outputPluginsInError = new List<IOutputPlugin>();
                     foreach (IOutputPlugin outputPlugin in CurrentProfile.OutputPlugins)
                     {
-                        if (!outputPlugin.TryStart(out errorMessage))
+                        if (!outputPlugin.TryStart())
                         {
                             outputFailures++;
                             outputPluginsInError.Add(outputPlugin);

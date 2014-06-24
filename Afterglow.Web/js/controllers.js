@@ -7,16 +7,6 @@
     $scope.currentProfile = 'Default Profile';
     $scope.running = false;
 
-    $scope.$watch('running', function (newValue, oldValue) {
-        if (newValue) {
-            $('#onLabel').addClass('active');
-            $('#offLabel').removeClass('active');
-        } else {
-            $('#onLabel').removeClass('active');
-            $('#offLabel').addClass('active');
-        }
-    });
-
     $scope.refresh = function () {
         $http.get('/menuSetup').success(
         function (data) {
@@ -61,20 +51,10 @@ function HomeController($scope, $route, $routeParams, $location) {
 
     $scope.timer = null;
     $scope.previewRunning = false;
-
-    $scope.$watch('previewRunning', function (newValue, oldValue) {
-        if (newValue) {
-            $('#previewOnLabel').addClass('active');
-            $('#previewOffLabel').removeClass('active');
-        } else {
-            $('#previewOnLabel').removeClass('active');
-            $('#previewOffLabel').addClass('active');
-        }
-    });
-
+    
     $scope.startPreview = function () {
 
-        $('#onLabel').click();
+        $scope.startAfterglow();
 
         $.post('/runtime', { Start: true },
         function (data, textStatus, jqXHR) {
@@ -209,11 +189,11 @@ function PluginsController($scope, $route, $routeParams, $http) {
     $scope.refresh();
 }
 
-function ProfileController($scope, $location, $routeParams, $http) {
+function ProfileController($scope, $location, $routeParams, $http, $modal) {
     $scope.id = $routeParams.id;
 
     $scope.profile = null;
-    $scope.modal = null;
+    //$scope.modal = null;
 
     $scope.refresh = function () {
         $http.post('/profile',{id : $scope.id}).success(
@@ -238,25 +218,51 @@ function ProfileController($scope, $location, $routeParams, $http) {
     }
 
     $scope.add = function (pluginType, modalTitle) {
-        $scope.modal = {
+       /* $scope.modal = {
             title: modalTitle,
             plugins: [],
             pluginType: pluginType
-        };
+        };*/
         $http.post('/pluginTypes', {
             pluginType: pluginType
         }).success(
         function (data, textStatus, jqXHR) {
-            $scope.modal.plugins = data.plugins;
-            $('#pluginTypeSelectionModal').show();
+            var modalInstance = $modal.open({
+                templateUrl: 'Views/PluginTypeSelectionView.html',
+                controller: PluginTypeSelectionController,
+                resolve: {
+                    title: function() {
+                        return modalTitle;
+                    },
+                    pluginType: function(){
+                        return pluginType;
+                    },
+                    plugins: function () {
+                        return data.plugins;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (selectedItem) {
+                $location.path('/plugin/' + $scope.id + '/' + pluginType + '/new/' + selectedItem);
+            });
         });
     }
-
-    $scope.confirmAdd = function (pluginType, plugin) {
-        $('#pluginTypeSelectionModal').hide();
-        $location.path('/plugin/'+ $scope.id + '/' + pluginType + '/new/' + plugin);
-    }
 }
+function PluginTypeSelectionController($scope, $modalInstance, title, pluginType, plugins) {
+
+    $scope.title = title;
+    $scope.pluginType = pluginType;
+    $scope.plugins = plugins;
+    
+    $scope.confirmAdd = function (plugin) {
+        $modalInstance.close(plugin);
+    }
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+};
 
 function PluginController($scope, $route, $routeParams, $http) {
     $scope.id = $routeParams.id;
