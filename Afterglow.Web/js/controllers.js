@@ -4,7 +4,7 @@
     $scope.$routeParams = $routeParams;
 
     $scope.profiles = null;
-    $scope.currentProfile = 'Default Profile';
+    $scope.currentProfile = { name: 'Loading Settings' };
     $scope.running = false;
 
     $scope.refresh = function () {
@@ -44,87 +44,61 @@
     }
 }
 
-function HomeController($scope, $route, $routeParams, $location) {
-    $scope.$route = $route;
-    $scope.$location = $location;
-    $scope.$routeParams = $routeParams;
-
-    $scope.timer = null;
-    $scope.previewRunning = false;
+function HomeController($scope, $interval, $routeParams, $http) {
     
+    $scope.previewRunning = false;
+    $scope.promise = null;
+
+    var PREVIEW_INTERVAL = 100;
+
+    $scope.lightSetup = {};
+
+    $scope.refresh = function () {
+        $http.get('/previewSetup').success(
+        function (data) {
+            $scope.lightSetup = data.lightSetup;
+        });
+    }
+
+    $scope.refresh();
+
     $scope.startPreview = function () {
 
         $scope.startAfterglow();
+        $scope.runPreview();
+    }
+    $scope.runPreview = function () {
 
-        $.post('/runtime', { Start: true },
-        function (data, textStatus, jqXHR) {
+        if ($scope.promise != null) {
+            $interval.cancel($scope.promise);
+        }
+        $scope.promise = $interval(function () {
+            $http.get('/previewLights').success(function (data) {
 
-            $scope.previewRunning = data.Active;
+                $scope.lightSetup.captureFPS = data.captureFPS;
+                $scope.lightSetup.captureFrameTime = data.captureFrameTime;
+                $scope.lightSetup.outputFPS = data.outputFPS;
+                $scope.lightSetup.outputFrameTime = data.outputFrameTime;
 
-            generatePreviewGrid(data);
+                for (var lightIndex = 0; lightIndex < data.lights.length; lightIndex++) {
+                    var light = data.lights[lightIndex];
 
-            if ($($("#previewGroup").children()[1]).height() != 0) {
-                timer = setInterval(getPreview, 100);
-            }
-        }, 'json');
+                    if ($scope.lightSetup.lightRows.length > light.top &&
+                        $scope.lightSetup.lightRows[light.top].lightColumns.length > light.left) {
+                        $scope.lightSetup.lightRows[light.top].lightColumns[light.left].colour = light.colour;
+                    }
+                }
+            }).error(function () {
+                if ($scope.promise != null) {
+                    $interval.cancel($scope.promise);
+                }
+            });
+        }, PREVIEW_INTERVAL);
     }
 
     $scope.stopPreview = function () {
-        $.post('/runtime', { Start: true },
-        function (data, textStatus, jqXHR) {
-            $scope.previewRunning = data.Active;
-
-            generatePreviewGrid(data);
-
-            if (timer != null) {
-                clearInterval(timer);
-                timer = null;
-            }
-        }, 'json');
-    }
-
-    var firstPreview = true;
-    function getPreview() {
-
-        $.get("/preview", {}, function (data, status, xhr) {
-            clearInterval(timer);
-            timer = null;
-            $(data.Lights).each(function (index, item) {
-                $("#previewLight_" + item.Top + "_" + item.Left).css("background-color", "#" + item.Colour.R.toString(16) + item.Colour.G.toString(16) + item.Colour.B.toString(16));
-            });
-            timer = setInterval(getPreview, 100);
-        });
-
-    }
-
-    function generatePreviewGrid(setup) {
-        var cellHeight = 30;
-        var cellWidth = 30;
-
-        var numberHigh = setup.NumberOfLightsHigh;
-        var numberWide = setup.NumberOfLightsWide;
-
-        $("#previewScreen").children().remove();
-
-        var height = cellHeight * numberHigh;
-        var width = cellWidth * numberWide;
-
-        $("#previewScreen").attr('style', 'position:relative;width:' + width + 'px; height:' + height + 'px');
-
-        var centreDivHeight = cellHeight * (numberHigh > 2 ? numberHigh - 2 : 0);
-        var centreDivWidth = cellWidth * (numberWide > 2 ? numberWide - 2 : 0);
-
-        $("#previewScreen").append('<div style="display:inline-block;border: 1px solid transparent;border-radius: 4px;position: absolute;background-color:#6495ed;height:' + (centreDivHeight-3) + 'px; width:' + (centreDivWidth-3) + 'px; top:' + (cellHeight+1) + 'px; left:' + (cellWidth+1) + 'px; float:left;" ></div>');
-
-        for (var topPosition = 0; topPosition < numberHigh; topPosition++) {
-            for (var leftPosition = 0; leftPosition < numberWide; leftPosition++) {
-                //Only add 
-                if (topPosition == 0 || topPosition == numberHigh - 1 || leftPosition == 0 || leftPosition == numberWide - 1) {
-                    var top = cellHeight * topPosition;
-                    var left = cellWidth * leftPosition;
-                    $("#previewScreen").append('<div id="previewLight_' + topPosition + '_' + leftPosition + '" style="display:inline-block;border: 1px solid transparent;border-radius: 4px;position: absolute;background-color:#b0c4de;height:' + (cellHeight-1) + 'px; width:' + (cellWidth-1) + 'px; top:' + top + 'px; left:' + left + 'px; float:left;" ></div>');
-                }
-            }
+        if ($scope.promise != null) {
+            $interval.cancel($scope.promise);
         }
     }
 }
@@ -193,7 +167,6 @@ function ProfileController($scope, $location, $routeParams, $http, $modal) {
     $scope.id = $routeParams.id;
 
     $scope.profile = null;
-    //$scope.modal = null;
 
     $scope.refresh = function () {
         $http.post('/profile',{id : $scope.id}).success(
@@ -218,11 +191,6 @@ function ProfileController($scope, $location, $routeParams, $http, $modal) {
     }
 
     $scope.add = function (pluginType, modalTitle) {
-       /* $scope.modal = {
-            title: modalTitle,
-            plugins: [],
-            pluginType: pluginType
-        };*/
         $http.post('/pluginTypes', {
             pluginType: pluginType
         }).success(
@@ -249,6 +217,7 @@ function ProfileController($scope, $location, $routeParams, $http, $modal) {
         });
     }
 }
+
 function PluginTypeSelectionController($scope, $modalInstance, title, pluginType, plugins) {
 
     $scope.title = title;
@@ -271,6 +240,24 @@ function PluginController($scope, $route, $routeParams, $http) {
     $scope.allowDelete = false;
 
     $scope.plugin = null;
+
+    function findItem(items, callback) {
+        if (items == null)
+        {
+            return null;
+        }
+        var len = items.length;
+        var i = 0;
+        for (i; i < len; i++) {
+            var item = items[i];
+            var cond = callback(item);
+            if (cond) {
+                return item;
+            }
+        }
+
+        return null;
+    };
 
     $scope.refresh = function () {
         $scope.new = ($scope.id == undefined);
@@ -295,10 +282,10 @@ function PluginController($scope, $route, $routeParams, $http) {
 
     function watchLightProperties() {
 
-        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+        var lightsProperty = findItem($scope.plugin.properties, function (property) {
             return (property.type == 'lights');
         });
-        if (lightsProperty.length == 0) {
+        if (lightsProperty == null) {
             return;
         }
 
@@ -314,43 +301,43 @@ function PluginController($scope, $route, $routeParams, $http) {
         }
     }
     function rebuildLights() {
-        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+        var lightsProperty = findItem($scope.plugin.properties, function (property) {
             return (property.type == 'lights');
         });
-        var widthProperty = $.grep($scope.plugin.properties, function (property) {
+        var widthProperty = findItem($scope.plugin.properties, function (property) {
             return (property.name == 'NumberOfLightsWide');
         });
-        var heightProperty = $.grep($scope.plugin.properties, function (property) {
+        var heightProperty = findItem($scope.plugin.properties, function (property) {
             return (property.name == 'NumberOfLightsHigh');
         });
 
-        if (lightsProperty[0] == null || widthProperty[0] == null || heightProperty[0] == null){
+        if (lightsProperty == null || widthProperty == null || heightProperty == null){
             return;
         }
 
         //todo validate values
 
-        lightsProperty[0].value.firstRowIndex = 0;
-        lightsProperty[0].value.firstColumnIndex = 0;
-        lightsProperty[0].value.lightRows = [];
+        lightsProperty.value.firstRowIndex = 0;
+        lightsProperty.value.firstColumnIndex = 0;
+        lightsProperty.value.lightRows = [];
         
         var colourClasses = ["btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger" ];
         var colourPosition = 0;
 
-        for (var row = 0; row <= heightProperty[0].value - 1; row++)
+        for (var row = 0; row <= heightProperty.value - 1; row++)
         {
             var lightRow = {};
             lightRow.rowIndex = row;
             lightRow.lightColumns = [];
 
-            for (var column = 0; column <= widthProperty[0].value - 1; column++)
+            for (var column = 0; column <= widthProperty.value - 1; column++)
             {
                 var lightColumn = {};
                 lightColumn.columnIndex = column;
                 lightColumn.id = null;
                 lightColumn.index = null;
-                if (column == 0 || column == widthProperty[0].value - 1
-                    || row == 0 || row == heightProperty[0].value - 1)
+                if (column == 0 || column == widthProperty.value - 1
+                    || row == 0 || row == heightProperty.value - 1)
                     {
                     lightColumn.colourClass = colourClasses[colourPosition++];
                     
@@ -399,31 +386,31 @@ function PluginController($scope, $route, $routeParams, $http) {
     //Light Setup Specific funtions
     $scope.first = function(columnIndex, rowIndex, clockwise){
 
-        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+        var lightsProperty = findItem($scope.plugin.properties, function (property) {
             return (property.type == 'lights');
         });
         
-        lightsProperty[0].value.firstColumnIndex = columnIndex;
-        lightsProperty[0].value.firstRowIndex = rowIndex;
-        lightsProperty[0].value.clockwise = clockwise;
+        lightsProperty.value.firstColumnIndex = columnIndex;
+        lightsProperty.value.firstRowIndex = rowIndex;
+        lightsProperty.value.clockwise = clockwise;
 
-        setupLights(lightsProperty[0].value, false);
+        setupLights(lightsProperty.value, false);
     }
     $scope.disable = function (columnIndex, rowIndex) {
-        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+        var lightsProperty = findItem($scope.plugin.properties, function (property) {
             return (property.type == 'lights');
         });
 
-        lightsProperty[0].value.lightRows[rowIndex].lightColumns[columnIndex].enabled = false;
-        setupLights(lightsProperty[0].value, true);
+        lightsProperty.value.lightRows[rowIndex].lightColumns[columnIndex].enabled = false;
+        setupLights(lightsProperty.value, true);
     }
     $scope.enable = function (columnIndex, rowIndex) {
-        var lightsProperty = $.grep($scope.plugin.properties, function (property) {
+        var lightsProperty = findItem($scope.plugin.properties, function (property) {
             return (property.type == 'lights');
         });
 
         lightsProperty[0].value.lightRows[rowIndex].lightColumns[columnIndex].enabled = true;
-        setupLights(lightsProperty[0].value, false);
+        setupLights(lightsProperty.value, false);
     }
 
     function setupLights(lightSetup, disable) {

@@ -17,75 +17,6 @@ using Afterglow.Web.Models;
 
 namespace Afterglow.Web
 {
-    public class Runtime
-    {
-        public bool? Start { get; set; }
-    }
-
-    public class RuntimeResponse
-    {
-        public bool Active { get; set; }
-        public int NumberOfLightsHigh { get; set; }
-        public int NumberOfLightsWide { get; set; }
-    }
-
-    public class Setup
-    {
-        public Afterglow.Core.AfterglowSetup UpdatedSetup { get; set; }
-    }
-
-    public class SetupResponse
-    {
-        public Afterglow.Core.AfterglowSetup Setup { get; set; }
-    }
-    
-    public class Preview
-    {
-
-    }
-
-    public class PreviewResponse
-    {
-        public List<LightPreview> Lights { get; set; }
-
-        public double CaptureFPS { get; set; }
-        
-        public double CaptureFrameTime { get; set; }
-        
-        public double OutputFPS { get; set; }
-
-        public double OutputFrameTime { get; set; }
-            
-    }
-
-    [DataContract]
-    public class LightPreview
-    {
-        [DataMember]
-        public int Top { get; set; }
-        [DataMember]
-        public int Left { get; set; }
-        [DataMember]
-        public Color Colour { get; set; }
-    }
-
-    public class Color
-    {
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
-
-        public static implicit operator System.Drawing.Color(Color c)
-        {
-            return System.Drawing.Color.FromArgb(c.R, c.G, c.B);
-        }
-
-        public static implicit operator Color(System.Drawing.Color c)
-        {
-            return new Color() { R = c.R, G = c.G, B = c.B };
-        }
-    }
-
     #region Index Controller
 
     [DataContract]
@@ -279,8 +210,6 @@ namespace Afterglow.Web
             }
         }
         
-        
-        
         #region Index Controller
         [Route("menuSetup")]
         public MenuSetupResponse Get()
@@ -306,14 +235,20 @@ namespace Afterglow.Web
         [Route("start")]
         public AfterglowActiveResponse GetStart()
         {
-            Program.Runtime.Start();
+            if (!Program.Runtime.Active)
+            {
+                Program.Runtime.Start();
+            }
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
         
         [Route("stop")]
         public AfterglowActiveResponse GetStop()
         {
-            Program.Runtime.Stop();
+            if (Program.Runtime.Active)
+            {
+                Program.Runtime.Stop();
+            }
             return new AfterglowActiveResponse() { Active = Program.Runtime.Active };
         }
 
@@ -543,91 +478,6 @@ namespace Afterglow.Web
         }
 
         #endregion
-
-        [Route("runtime")]
-        public RuntimeResponse Get(Runtime request)
-        {
-            return new RuntimeResponse
-            {
-                Active = Program.Runtime.Active,
-                NumberOfLightsHigh = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh : 0),
-                NumberOfLightsWide = (Program.Runtime.CurrentProfile != null && Program.Runtime.CurrentProfile.LightSetupPlugin != null ? Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide : 0)
-            };
-        }
-
-        [Route("runtime")]
-        public RuntimeResponse Post(Runtime request)
-        {
-            if (!request.Start.HasValue)
-            {
-                request.Start = !Program.Runtime.Active;
-            }
-
-            if (request.Start.Value)
-            {
-                Program.Runtime.Start();
-            }
-            else
-            {
-                Program.Runtime.Stop();
-            }
         
-            return new RuntimeResponse
-            {
-                Active = Program.Runtime.Active,
-                NumberOfLightsHigh = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsHigh,
-                NumberOfLightsWide = Program.Runtime.CurrentProfile.LightSetupPlugin.NumberOfLightsWide
-            };
-        }
-
-        [Route("setup")]
-        public SetupResponse GetSetup()
-        {
-            return new SetupResponse
-            {
-                Setup = Program.Runtime.Setup
-            };
-        }
-
-        [Route("setup")]
-        public SetupResponse Post(Setup request)
-        {
-            if (request.UpdatedSetup != null)
-            {
-                // TODO: replace Program.Runtime.Setup with request.Setup
-            }
-            return new SetupResponse
-            {
-                Setup = Program.Runtime.Setup
-            };
-        }
-
-        [Route("preview")]
-        public PreviewResponse GetPreview()
-        {
-            if (Program.Runtime.CurrentProfile == null)
-            {
-                return null;
-            }
-            List<LightPreview> lights = new List<LightPreview>(Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count);
-            // Retrieve previous final light output data
-            var lightData = Program.Runtime.GetPreviousLightData();
-            if (lightData != null)
-            {
-                for (var i = 0; i < Program.Runtime.CurrentProfile.LightSetupPlugin.Lights.Count; i++)
-                {
-                    var light = Program.Runtime.CurrentProfile.LightSetupPlugin.Lights[i];
-                    lights.Add(new LightPreview() { Top = light.Top, Left = light.Left, Colour = lightData[i] });
-                }
-            }
-            return new PreviewResponse
-            {
-                Lights = lights,
-                CaptureFPS = Program.Runtime.CaptureLoopFPS,
-                CaptureFrameTime = Program.Runtime.CaptureLoopFrameTime,
-                OutputFPS = Program.Runtime.OutputLoopFPS,
-                OutputFrameTime = Program.Runtime.OutputLoopFrameTime
-            };
-        }
     }
 }

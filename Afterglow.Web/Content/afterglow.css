@@ -13,3 +13,34 @@ button.ag-light {
     height: 20px;
     padding: 0px 0px;
 }
+
+
+div.ag-preview-light-row
+{ 
+    height: 31px;
+}
+div.ag-preview-light-column
+{ 
+    display: inline-block;
+}
+div.ag-preview-light {
+    display:inline-block;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color:#b0c4de;
+    height:27px;
+    width:27px;
+    margin:1px;
+}
+
+div.ag-preview-light-placeholder {
+    display:inline-block;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color:#375a7f;
+    height:27px;
+    width:27px;
+    margin:1px;
+}
+
+

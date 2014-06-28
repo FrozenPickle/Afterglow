@@ -1,13 +1,63 @@
 ﻿<div class="jumbotron">
-    <div id="previewScreen">
 
+    <div class="row">
+        <div class="col-sm-2">
+            <h2>Preview</h2>
+        </div>
+        <div class="col-sm-7">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="btn-group">
+                <label class="btn btn-primary" ng-click="startPreview()" ng-model="previewRunning" btn-radio="true" uncheckable>
+                    On
+                </label>
+                <label class="btn btn-primary" ng-click="stopPreview()" ng-model="previewRunning" btn-radio="false" uncheckable>
+                    Off
+                </label>
+            </div>
+        </div>
     </div>
-    <div class="navbar-left navbar-btn btn-group" data-toggle="buttons">
-        <label class="btn btn-primary" ng-click="startPreview()" ng-model="previewRunning" btn-radio="true" uncheckable>
-            On
-        </label>
-        <label class="btn btn-primary" ng-click="stopPreview()" ng-model="previewRunning" btn-radio="false" uncheckable>
-            Off
-        </label>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div ng-repeat="lightRow in lightSetup.lightRows" class="ag-preview-light-row">
+                <div ng-repeat="lightColumn in lightRow.lightColumns" id="{{lightColumn.id}}" class="ag-preview-light-column">
+                    <div ng-class="{ 'ag-preview-light': lightColumn.enabled, 'ag-preview-light-placeholder': !lightColumn.enabled}"
+                         ng-style="{'background-color': lightColumn.colour, 'border-color': lightColumn.colour}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <br />
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="control-label">Capture FPS</label>
+                <input class="form-control" type="text" disabled="disabled" ng-model="lightSetup.captureFPS">
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="control-label">Output FPS</label>
+                <input class="form-control" type="text" disabled="disabled" ng-model="lightSetup.outputFPS">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="control-label">Capture Frame Time</label>
+                <input class="form-control" type="text" disabled="disabled" ng-model="lightSetup.captureFrameTime">
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label class="control-label">Output Frame Time</label>
+                <input class="form-control" type="text" disabled="disabled" ng-model="lightSetup.outputFrameTime">
+            </div>
+        </div>
     </div>
 </div>

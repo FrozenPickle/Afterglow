@@ -117,6 +117,12 @@ namespace Afterglow.Web.Models
 
         [DataMember(Name = "lightRows")]
         public List<LightRow> LightRows { get; set; }
+
+        [DataMember(Name = "numberOfRows")]
+        public int NumberOfRows { get; set; }
+
+        [DataMember(Name = "numberOfColumns")]
+        public int NumberOfColumns { get; set; }
     }
     [DataContract]
     public class LightRow
