@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Reflection;
 using Afterglow.Core.Configuration;
+using Microsoft.Win32;
 
 namespace Afterglow.Core
 {
@@ -254,7 +255,7 @@ namespace Afterglow.Core
                 //Add at least one light
                 if (!plugin.Lights.Any())
                 {
-                    plugin.Lights.Add(new Light() { Id = 1, Index = 0, Height = 1, Width = 1, Runtime = this.Runtime });
+                    plugin.Lights.Add(new Light() { Id = 1, Index = 0, Height = 1, Width = 1 });
                 }
 
                 plugin.Id = this.GetNewId<ILightSetupPlugin>();
@@ -383,6 +384,34 @@ namespace Afterglow.Core
         {
             get { return Get(() => LogLevel, () => Afterglow.Core.Log.LoggingLevels.LOG_LEVEL_ERROR); }
             set { Set(() => LogLevel, value); }
+        }
+
+
+        [XmlIgnore]
+        [Display(Name = "Run On Windows Startup", Order = 300)]
+        public bool RunOnWindowsStartup
+        {
+            get
+            {
+                RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                // Check to see the current state (running at startup or not)
+                return rkApp.GetValue(AfterglowRuntime.APPLICATION_NAME) != null;
+            }
+            set
+            {
+                RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                if (value)
+                {
+                    // Add the value in the registry so that the application runs at startup
+                    rkApp.SetValue(AfterglowRuntime.APPLICATION_NAME, System.Reflection.Assembly.GetEntryAssembly().Location);
+                }
+                else
+                {
+                    // Remove the value from the registry so that the application doesn't start
+                    rkApp.DeleteValue(AfterglowRuntime.APPLICATION_NAME, false);
+
+                }
+            }
         }
 
         #region Logging Levels

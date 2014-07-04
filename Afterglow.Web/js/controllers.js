@@ -117,7 +117,8 @@ function SettingsController($scope, $route, $routeParams, $http) {
 
     $scope.update = function () {
         $http.post('/updateSettings', {
-            id: $scope.id,
+            runOnWindowsStartup: $scope.settings.runOnWindowsStartup,
+            logLevel: $scope.settings.logLevel,
             port: $scope.settings.port,
             userName: $scope.settings.userName,
             password: $scope.settings.password

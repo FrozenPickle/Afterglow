@@ -38,7 +38,6 @@ namespace Afterglow.Core.IO
                 if (_loader == null)
                 {
                     _loader = new AfterglowPluginLoader();
-                    _loader.Load();
                 }
                 return _loader;
             }
@@ -179,7 +178,7 @@ namespace Afterglow.Core.IO
         private void Compose()
         {
             AfterglowRuntime.Logger.Info("Loading Plugins...");
-            string folder = Path.Combine(Environment.CurrentDirectory, PLUGINS_DIRECTORY);
+            string folder = Path.Combine((new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location)).Directory.FullName, PLUGINS_DIRECTORY);
 
             var catalog = new DirectoryCatalog(folder);
             var container = new CompositionContainer(catalog);

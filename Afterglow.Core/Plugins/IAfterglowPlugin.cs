@@ -42,12 +42,6 @@ namespace Afterglow.Core.Plugins
         /// The version of the plugin.
         /// </summary>
         Version Version { get; }
-        
-        /// <summary>
-        /// A reference to the runtime.
-        /// </summary>
-        [XmlIgnore]
-        Afterglow.Core.AfterglowRuntime Runtime { get; set; }
 
         /// <summary>
         /// Start this Plugin

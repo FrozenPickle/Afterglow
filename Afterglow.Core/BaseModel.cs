@@ -30,16 +30,6 @@ namespace Afterglow.Core
             set { Set(() => Id, value); }
         }
 
-        /// <summary>
-        /// A reference to the AfterglowRuntime
-        /// </summary>
-        [XmlIgnore]
-        public AfterglowRuntime Runtime
-        {
-            get { return Get(() => Runtime); }
-            set { Set(() => Runtime, value); }
-        }
-
         private IDictionary<string, object> _propertyMap;
         /// <summary>
         /// Stores the property name and it's value

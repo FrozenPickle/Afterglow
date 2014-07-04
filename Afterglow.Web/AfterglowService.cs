@@ -170,6 +170,8 @@ namespace Afterglow.Web
     {
         [DataMember(Name = "port")]
         public int Port { get; set; }
+        [DataMember(Name = "runOnWindowsStartup")]
+        public bool RunOnWindowsStartup { get; set; }
         [DataMember(Name = "userName")]
         public string UserName { get; set; }
         [DataMember(Name = "password")]
@@ -184,6 +186,8 @@ namespace Afterglow.Web
     {
         [DataMember(Name = "port")]
         public int Port { get; set; }
+        [DataMember(Name = "runOnWindowsStartup")]
+        public bool RunOnWindowsStartup { get; set; }
         [DataMember(Name = "userName")]
         public string UserName { get; set; }
         [DataMember(Name = "password")]
@@ -451,6 +455,7 @@ namespace Afterglow.Web
             return new SettingsResponse
             {
                 Port = Program.Runtime.Setup.Port,
+                RunOnWindowsStartup = Program.Runtime.Setup.RunOnWindowsStartup,
                 UserName = Program.Runtime.Setup.UserName,
                 Password = Program.Runtime.Setup.Password,
                 LogLevel = Program.Runtime.Setup.LogLevel,
@@ -467,6 +472,7 @@ namespace Afterglow.Web
         {
             AfterglowSetup setup = Program.Runtime.Setup;
             setup.Port = request.Port;
+            setup.RunOnWindowsStartup = request.RunOnWindowsStartup;
             setup.UserName = request.UserName;
             setup.Password = request.Password;
             setup.LogLevel = request.LogLevel;

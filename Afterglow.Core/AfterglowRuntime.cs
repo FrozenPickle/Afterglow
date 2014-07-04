@@ -41,6 +41,7 @@ namespace Afterglow.Core
         private FpsCalculator _outputLoopFPS = new FpsCalculator();
 
         public const string APPLICATION_DATA_FOLDER = "Afterglow";
+        public const string APPLICATION_NAME = "Afterglow";
         public const string SETUP_FILE_NAME = "AfterglowSetup.xml";
         public const string LOGGING_FILE = "Logs\\Log.txt";
         /// <summary>
@@ -134,10 +135,6 @@ namespace Afterglow.Core
             }
             set
             {
-                if (value != null)
-                {
-                    value.Runtime = this;
-                }
                 this._setup = value;
             }
         }
@@ -237,7 +234,7 @@ namespace Afterglow.Core
                 System.IO.Directory.CreateDirectory(environmentPath);
             }
             _setupFileName = System.IO.Path.Combine(environmentPath, SETUP_FILE_NAME);
-            string existingPath = System.IO.Path.Combine(Environment.CurrentDirectory, SETUP_FILE_NAME);
+            string existingPath = System.IO.Path.Combine((new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location)).Directory.FullName, SETUP_FILE_NAME);
 
             if (!File.Exists(_setupFileName) && File.Exists(existingPath))
             {
