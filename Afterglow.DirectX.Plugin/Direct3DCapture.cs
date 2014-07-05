@@ -158,7 +158,7 @@ namespace Afterglow.DirectX.Plugin
 
             if (_capturedProcess != null && _capturedProcess.CaptureInterface != null)
             {
-                _capturedProcess.CaptureInterface.GetScreenshot();
+                response = _capturedProcess.CaptureInterface.GetScreenshot();
             }
 
             if (response != null)

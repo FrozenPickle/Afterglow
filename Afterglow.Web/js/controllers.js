@@ -353,7 +353,7 @@ function PluginController($scope, $route, $routeParams, $http) {
                 }
                 lightRow.lightColumns.push(lightColumn);
             }
-            lightsProperty[0].value.lightRows.push(lightRow);
+            lightsProperty.value.lightRows.push(lightRow);
         }
     }
 
