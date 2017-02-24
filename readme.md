@@ -1,6 +1,5 @@
 ﻿# Afterglow
-Blog:
-http://afterglow.frozenpickle.com
+
 ##Description
 Afterglow is a plugin framework used to run ambient lighting behind a monitor or TV.
 
