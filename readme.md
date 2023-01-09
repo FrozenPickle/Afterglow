@@ -1,6 +1,8 @@
-﻿# Afterglow
+# Afterglow
 
-##Description
+Note: This project is no longer maintained, feel free to check out what we have built
+
+## Description
 Afterglow is a plugin framework used to run ambient lighting behind a monitor or TV.
 
 Afterglow has been designed to be a versatile plugin framework to perform image capturing, colour extraction, post processing, pre output processing, and colour output. This means with the addition of plugins Afterglow can provide heaps of settings for someone how likes to tune everything or just the basic setup to get it running. 
